@@ -1,8 +1,16 @@
 machine:
   java:
     version: oraclejdk8
-    
+
 test:
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+
+deployment:
+  release:
+    branch: master
+    commands:
+      - git config core.filemode false
+      - chmod +x maven-release.sh
+      - ./maven-release.sh

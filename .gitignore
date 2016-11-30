@@ -3,3 +3,5 @@
 target
 requests.db
 recorded-simulation.json
+pom.xml.releaseBackup
+release.properties
