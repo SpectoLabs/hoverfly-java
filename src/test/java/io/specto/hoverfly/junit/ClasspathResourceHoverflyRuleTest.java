@@ -18,8 +18,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class ClasspathResourceHoverflyRuleTest {
 
+    // tag::simulateModeQuickStart[]
     @Rule
-    public HoverflyRule hoverflyRule = HoverflyRule.buildFromClassPathResource("test-service.json").build();
+    public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json");
+    // end::simulateModeQuickStart[]
 
     private RestTemplate restTemplate;
 

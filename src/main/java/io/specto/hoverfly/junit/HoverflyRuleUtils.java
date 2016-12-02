@@ -26,22 +26,12 @@ package io.specto.hoverfly.junit;
 
 import org.apache.commons.lang3.SystemUtils;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 
 class HoverflyRuleUtils {
 
@@ -51,23 +41,21 @@ class HoverflyRuleUtils {
     private static final String ARCH_AMD64 = "amd64";
     private static final String ARCH_386 = "386";
 
-    static URI findResourceOnClasspath(String resourceName) throws URISyntaxException {
+    static URI findResourceOnClasspath(String resourceName) {
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         final URL resource = classLoader.getResource(resourceName);
         if (resource == null) {
             throw new IllegalArgumentException("Resource not found with name: " + resourceName);
         }
-        return resource.toURI();
+        try {
+            return resource.toURI();
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
-    static URI createFileRelativeToClasspath(String resourceName) throws IOException {
-        final File file = Paths.get(new File("").getAbsolutePath(), resourceName).toFile();
-        file.mkdirs();
-        if (!file.exists()) {
-            file.delete();
-        }
-        file.createNewFile();
-        return file.toURI();
+    static URI fileRelativeToTestResources(String fileName) {
+        return Paths.get("src/test/resources/", fileName).toFile().toURI();
     }
 
     static String getOs() {
@@ -94,25 +82,5 @@ class HoverflyRuleUtils {
         }
     }
 
-    static void setHoverflyTrustStore() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, KeyManagementException, URISyntaxException {
-        // load your key store as a stream and initialize a KeyStore
-        InputStream trustStream = findResourceOnClasspath("hoverfly.jks").toURL().openStream();
 
-        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-
-        // load the stream to your store
-        trustStore.load(trustStream, "hoverfly".toCharArray());
-
-        // initialize a trust manager factory with the trusted store
-        TrustManagerFactory trustFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        trustFactory.init(trustStore);
-
-        // get the trust managers from the factory
-        TrustManager[] trustManagers = trustFactory.getTrustManagers();
-
-        // initialize an ssl context to use these managers and set as default
-        SSLContext sslContext = SSLContext.getInstance("SSL");
-        sslContext.init(null, trustManagers, null);
-        SSLContext.setDefault(sslContext);
-    }
 }

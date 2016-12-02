@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import static io.specto.hoverfly.junit.HoverflyConfig.configs;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -12,11 +13,12 @@ public class HoverflyRulePortConfigurationTest {
 
     private static final int EXPECTED_ADMIN_PORT = 8889;
     private static final int EXPECTED_PROXY_PORT = 8890;
+
+    // tag::portConfiguration[]
     @Rule
-    public HoverflyRule hoverflyRule = HoverflyRule.buildFromClassPathResource("test-service.json")
-            .withAdminPort(EXPECTED_ADMIN_PORT)
-            .withProxyPort(EXPECTED_PROXY_PORT)
-            .build();
+    public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json",
+            configs().proxyPort(EXPECTED_PROXY_PORT).adminPort(EXPECTED_ADMIN_PORT));
+    // end::portConfiguration[]
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -27,12 +29,6 @@ public class HoverflyRulePortConfigurationTest {
 
         // Then
         assertThat(getBookingResponse.getStatusCode()).isEqualTo(OK);
-    }
-
-    @Test
-    public void shouldSetProxyPortToWhatIsConfigured() {
-        assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(EXPECTED_PROXY_PORT));
-        assertThat(hoverflyRule.getProxyPort()).isEqualTo(EXPECTED_PROXY_PORT);
     }
 
     @Test

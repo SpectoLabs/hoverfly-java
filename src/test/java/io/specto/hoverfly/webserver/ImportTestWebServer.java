@@ -5,14 +5,12 @@ import com.google.common.io.Resources;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 
@@ -20,12 +18,16 @@ public class ImportTestWebServer extends AbstractHandler {
 
     private static Server server;
 
-    public static URI run() throws Exception {
+    public static URL run() {
         final int port = findUnusedPort();
         server = new Server(port);
         server.setHandler(new ImportTestWebServer());
-        server.start();
-        return UriComponentsBuilder.fromUriString(String.format("http://localhost:%s", port)).build().toUri();
+        try {
+            server.start();
+            return new URL(String.format("http://localhost:%s", port));
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     private static int findUnusedPort() {

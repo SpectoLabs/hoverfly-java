@@ -2,6 +2,6 @@
 **.iml
 target
 requests.db
-recorded-simulation.json
+src/test/resources/recorded-simulation.json
 pom.xml.releaseBackup
 release.properties

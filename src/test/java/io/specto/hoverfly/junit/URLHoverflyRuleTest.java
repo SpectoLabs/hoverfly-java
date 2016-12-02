@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,9 +20,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class URLHoverflyRuleTest {
 
-    private static URI webServerUri;
+    private static URL webServerUri;
+
+    // tag::urlExample[]
     @Rule
-    public HoverflyRule hoverflyRule = HoverflyRule.buildFromUrl(webServerUri.toString()).build();
+    public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(webServerUri);
+    // end::urlExample[]
+
     private RestTemplate restTemplate = new RestTemplate();
 
     @BeforeClass

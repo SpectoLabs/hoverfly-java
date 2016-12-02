@@ -4,6 +4,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.SystemDefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -15,14 +16,22 @@ import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
 
 public class ApacheHttpClientTest {
 
+
     @Rule
-    public HoverflyRule hoverflyRule = HoverflyRule.buildFromClassPathResource("test-service.json").build();
+    public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json");
 
     private HttpClient httpClient;
 
     @Before
     public void setUp() {
+
+        // tag::legacyHttpClientExample[]
+        httpClient = new SystemDefaultHttpClient();
+        // end::legacyHttpClientExample[]
+
+        // tag::httpClientExample[]
         httpClient = HttpClientBuilder.create().useSystemProperties().build();
+        // end::httpClientExample[]
     }
 
     @Test

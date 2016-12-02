@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
+import java.net.URL;
 
 import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,13 +15,13 @@ import static org.springframework.http.HttpStatus.OK;
 
 public class HttpsHoverflyRuleTest {
 
-    private static URI webServerUri;
+    private static URL webServerUri;
     @Rule
-    public HoverflyRule hoverflyRule = HoverflyRule.buildFromUrl(webServerUri.toString()).build();
+    public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(webServerUri);
     private RestTemplate restTemplate = new RestTemplate();
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         webServerUri = ImportTestWebServer.run();
     }
 
