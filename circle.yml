@@ -6,6 +6,7 @@ test:
   post:
     - ./gradlew jacocoTestReport
     - cp -Rf build/reports/ $CIRCLE_ARTIFACTS/
+    - bash <(curl -s https://codecov.io/bash)
 
 deployment:
   release:
