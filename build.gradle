@@ -120,6 +120,12 @@ uploadArchives {
     }
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '3.1'
 }
