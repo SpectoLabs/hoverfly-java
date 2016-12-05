@@ -50,7 +50,7 @@ public class HoverflyRule extends ExternalResource {
      * Run hoverfly in capture mode
      *
      * @param recordedFilename the path to the recorded name relative to src/test/resources
-     * @return
+     * @return HoverflyRule
      */
     public static HoverflyRule inCaptureMode(String recordedFilename) {
         return inCaptureMode(recordedFilename, HoverflyConfig.configs());

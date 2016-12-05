@@ -1,0 +1,130 @@
+plugins {
+    id 'net.researchgate.release' version '2.4.0'
+}
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+group = 'io.specto'
+archivesBaseName = 'hoverfly-junit'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+ext."release.useAutomaticVersion" = true
+
+allprojects {
+    ext."signing.keyId" = "$System.env.MAVEN_GPG_KEYNAME"
+    ext."signing.password" = "$System.env.MAVEN_GPG_PASSPHRASE"
+    ext."signing.secretKeyRingFile" = "$System.env.HOME/.gnupg/secring.gpg"
+    ext.ossrhUsername = "$System.env.MAVEN_CENTRAL_USERNAME"
+    ext.ossrhPassword = "$System.env.MAVEN_CENTRAL_PASSWORD"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'junit:junit:4.12'
+    compile  'commons-io:commons-io:2.4'
+    compile  'com.fasterxml.jackson.core:jackson-core:2.6.4'
+    compile  'org.apache.commons:commons-lang3:3.4'
+    compile  'ch.qos.logback:logback-classic:1.1.3'
+    compile  'org.slf4j:slf4j-api:1.7.12'
+    compile  'org.zeroturnaround:zt-exec:1.8'
+    testCompile  'com.google.guava:guava:18.0'
+    testCompile  'org.springframework:spring-web:4.1.8.RELEASE'
+    testCompile  'org.apache.httpcomponents:httpclient:4.5.1'
+    testCompile  'org.assertj:assertj-core:3.1.0'
+    testCompile  'net.javacrumbs.json-unit:json-unit:1.9.0'
+    testCompile  'net.javacrumbs.json-unit:json-unit-fluent:1.9.0'
+    testCompile  'com.fasterxml.jackson.core:jackson-databind:2.5.4'
+    testCompile  'org.eclipse.jetty:jetty-server:9.3.11.v20160721'
+    testCompile  'org.skyscreamer:jsonassert:1.3.0'
+}
+
+
+signing {
+    sign configurations.archives
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+afterReleaseBuild.dependsOn uploadArchives
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: "$ossrhUsername", password: "$ossrhPassword")
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: "$ossrhUsername", password: "$ossrhPassword")
+            }
+
+            pom.project {
+                name 'Hoverfly JUnit'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'JUnit rule which spins up and manages hoverfly'
+                url 'https://github.com/SpectoLabs/hoverfly-junit'
+
+                scm {
+                    connection 'scm:git:git@github.com:SpectoLabs/hoverfly-junit.git'
+                    developerConnection 'scm:git:git@github.com:SpectoLabs/hoverfly-junit.git'
+                    url 'git@github.com:SpectoLabs/hoverfly-junit.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        name 'Andrew Morgan'
+                        email 'andrew.morgan@opencredo.com'
+                        organization 'Specto Labs'
+                        organizationUrl 'http://www.specto.io'
+                    }
+                    developer {
+                        name 'Tommy Situ'
+                        email 'tommy.situ@specto.io'
+                        organization 'Specto Labs'
+                        organizationUrl 'http://www.specto.io'
+                    }
+                }
+            }
+        }
+    }
+}
+
+release {
+    git {
+        requireBranch = ''
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.1'
+}
