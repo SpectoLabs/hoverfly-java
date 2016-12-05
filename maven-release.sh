@@ -20,10 +20,10 @@ if [[ "${PROJECT_VERSION}" == *"SNAPSHOT" ]]; then
 
     if [ "${IS_RELEASE}" = true ]; then
         echo "Performing a release"
-        ./gradlew clean release -Prelease.releaseVersion=${RELEASE_VERSION} -Prelease.newVersion=${NEXT_DEV_VERSION}
+        ./gradlew release -Prelease.releaseVersion=${RELEASE_VERSION} -Prelease.newVersion=${NEXT_DEV_VERSION}
     else
         echo "Deploying snapshot version"
-        ./gradlew clean uploadArchives
+        ./gradlew uploadArchives
     fi
 else
     echo "This commit is a change of release version, so doing nothing (A release was performed by the previous job)"
