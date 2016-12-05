@@ -2,10 +2,10 @@
 
 image:https://circleci.com/gh/SpectoLabs/hoverfly-junit.svg?style=shield["CircleCI", link="https://circleci.com/gh/SpectoLabs/hoverfly-junit"] image:https://img.shields.io/codecov/c/github/spectolabs/hoverfly-junit.svg["Codecov", link="https://codecov.io/gh/spectolabs/hoverfly-junit"] image:https://img.shields.io/maven-central/v/io.specto/hoverfly-junit.svg["Maven Central", link="https://mvnrepository.com/artifact/io.specto/hoverfly-junit"]
 
-A Java native language binding for http://hoverfly.io/[Hoverfly], which allows you to simulate http services in your unit tests.
+A Java native language binding for http://hoverfly.io/[Hoverfly^], which allows you to simulate http services in your unit tests.
 
 === Legacy schema migration
-If you have recorded data in the legacy schema generated before hoverfly-junit 0.1.9, you will need to run these commands using http://http://hoverfly.io/[Hoverfly] to migrate to new schema:
+If you have recorded data in the legacy schema generated before hoverfly-junit 0.1.9, you will need to run these commands using http://hoverfly.io/[Hoverfly^] to migrate to new schema:
 ```bash
 $ hoverctl start
 $ hoverctl delete simulations
@@ -49,7 +49,7 @@ public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-se
 
 === Simulation Data Schema
 
-Hoverfly simulations are stored as JSON with the http://hoverfly.io/[Hoverfly Schema].
+Hoverfly simulations are stored as JSON with the http://hoverfly.io/[Hoverfly Schema^].
 
 You can import from the ClassPath:
 
