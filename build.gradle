@@ -4,6 +4,7 @@ plugins {
     id 'maven'
     id 'signing'
     id 'idea'
+    id 'jacoco'
 }
 
 group = 'io.specto'
