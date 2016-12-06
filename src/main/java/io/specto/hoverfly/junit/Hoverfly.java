@@ -55,8 +55,7 @@ class Hoverfly {
     private static final int BOOT_TIMEOUT_SECONDS = 10;
     private static final String HEALTH_CHECK_URL = "http://localhost:%s/api/stats";
     private static final String SIMULATION_URL = "http://localhost:%s/api/v2/simulation";
-    private static final String BINARY_VERSION = "0.9.1";
-    private static final String BINARY_PATH = "hoverfly_v%s_%s_%s";
+    private static final String BINARY_PATH = "hoverfly_%s_%s";
     private final HoverflyConfig hoverflyConfig;
     private final HoverflyMode hoverflyMode;
     private final Integer proxyPort;
@@ -79,7 +78,7 @@ class Hoverfly {
 
         setProxySystemProperties();
 
-        final String binaryName = String.format(BINARY_PATH, BINARY_VERSION, HoverflyRuleUtils.getOs(), HoverflyRuleUtils.getArchitectureType()) + (SystemUtils.IS_OS_WINDOWS ? ".exe" : "");
+        final String binaryName = String.format(BINARY_PATH, HoverflyRuleUtils.getOs(), HoverflyRuleUtils.getArchitectureType()) + (SystemUtils.IS_OS_WINDOWS ? ".exe" : "");
         LOGGER.info("Selecting the following binary based on the current operating system: {}", binaryName);
         binaryPath = extractBinary(binaryName);
 
@@ -198,7 +197,7 @@ class Hoverfly {
     }
 
     private Path extractBinary(final String binaryName) throws IOException {
-        final URI sourceHoverflyUrl = HoverflyRuleUtils.findResourceOnClasspath(binaryName);
+        final URI sourceHoverflyUrl = HoverflyRuleUtils.findResourceOnClasspath("binaries/" + binaryName);
         final Path temporaryHoverflyPath = Files.createTempFile(binaryName, "");
         LOGGER.info("Storing binary in temporary directory {}", temporaryHoverflyPath);
         final File temporaryHoverflyFile = temporaryHoverflyPath.toFile();
