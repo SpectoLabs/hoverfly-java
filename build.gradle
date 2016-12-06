@@ -30,21 +30,21 @@ repositories {
 
 dependencies {
     compile 'junit:junit:4.12'
-    compile  'commons-io:commons-io:2.4'
-    compile  'com.fasterxml.jackson.core:jackson-core:2.6.4'
-    compile  'org.apache.commons:commons-lang3:3.4'
-    compile  'ch.qos.logback:logback-classic:1.1.3'
-    compile  'org.slf4j:slf4j-api:1.7.12'
-    compile  'org.zeroturnaround:zt-exec:1.8'
-    testCompile  'com.google.guava:guava:18.0'
-    testCompile  'org.springframework:spring-web:4.1.8.RELEASE'
-    testCompile  'org.apache.httpcomponents:httpclient:4.5.1'
-    testCompile  'org.assertj:assertj-core:3.1.0'
-    testCompile  'net.javacrumbs.json-unit:json-unit:1.9.0'
-    testCompile  'net.javacrumbs.json-unit:json-unit-fluent:1.9.0'
-    testCompile  'com.fasterxml.jackson.core:jackson-databind:2.5.4'
-    testCompile  'org.eclipse.jetty:jetty-server:9.3.11.v20160721'
-    testCompile  'org.skyscreamer:jsonassert:1.3.0'
+    compile 'commons-io:commons-io:2.4'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.6.4'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'ch.qos.logback:logback-classic:1.1.3'
+    compile 'org.slf4j:slf4j-api:1.7.12'
+    compile 'org.zeroturnaround:zt-exec:1.8'
+    testCompile 'com.google.guava:guava:18.0'
+    testCompile 'org.springframework:spring-web:4.1.8.RELEASE'
+    testCompile 'org.apache.httpcomponents:httpclient:4.5.1'
+    testCompile 'org.assertj:assertj-core:3.1.0'
+    testCompile 'net.javacrumbs.json-unit:json-unit:1.9.0'
+    testCompile 'net.javacrumbs.json-unit:json-unit-fluent:1.9.0'
+    testCompile 'com.fasterxml.jackson.core:jackson-databind:2.5.4'
+    testCompile 'org.eclipse.jetty:jetty-server:9.3.11.v20160721'
+    testCompile 'org.skyscreamer:jsonassert:1.3.0'
 }
 
 
@@ -125,7 +125,6 @@ task wrapper(type: Wrapper) {
     gradleVersion = '3.1'
 }
 
-
 // Tasks for updating Hoverfly binaries
 import de.undercouch.gradle.tasks.download.Download
 import java.util.regex.Pattern
@@ -133,7 +132,8 @@ import java.util.regex.Pattern
 task downloadHoverflyDistributions(type: Download) {
     def downloadUrl = 'https://github.com/SpectoLabs/hoverfly/releases/download'
     def version = project.property('hoverfly-version')
-    src ([
+    println "Checking out Hoverfly $version"
+    src([
             "$downloadUrl/$version/hoverfly_bundle_linux_386.zip",
             "$downloadUrl/$version/hoverfly_bundle_linux_amd64.zip",
             "$downloadUrl/$version/hoverfly_bundle_OSX_amd64.zip",
@@ -165,6 +165,6 @@ task updateHoverflyBinaries(dependsOn: downloadHoverflyDistributions) {
 
     distDir.listFiles()
             .findAll { it.name.endsWith('.zip') }
-            .collect { zipTree(it).matching { include 'hoverfly*'} }
+            .collect { zipTree(it).matching { include 'hoverfly*' } }
             .each { zip -> extractBinary(zip) }
 }
