@@ -1,8 +1,7 @@
-package io.specto.hoverfly.otherpackage.junit;
+package io.specto.hoverfly.junit.rule;
 
-import io.specto.hoverfly.junit.HoverflyRule;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +16,12 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-public class ClasspathResourceHoverflyRuleTest {
+public class ClassRuleHoverflyRuleTest {
 
-    // tag::simulateModeQuickStart[]
-    @Rule
-    public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json");
-    // end::simulateModeQuickStart[]
+    // tag::classRuleExample[]
+    @ClassRule
+    public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json");
+    // end::classRuleExample[]
 
     private RestTemplate restTemplate;
 

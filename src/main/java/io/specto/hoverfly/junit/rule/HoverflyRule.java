@@ -10,8 +10,11 @@
  *
  * Copyright 2016-2016 SpectoLabs Ltd.
  */
-package io.specto.hoverfly.junit;
+package io.specto.hoverfly.junit.rule;
 
+import io.specto.hoverfly.junit.core.Hoverfly;
+import io.specto.hoverfly.junit.core.HoverflyConfig;
+import io.specto.hoverfly.junit.core.HoverflyMode;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

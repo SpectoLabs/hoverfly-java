@@ -10,7 +10,7 @@
  *
  * Copyright 2016-2016 SpectoLabs Ltd.
  */
-package io.specto.hoverfly.junit;
+package io.specto.hoverfly.junit.core;
 
 public class HoverflyConfig {
     private int proxyPort;

@@ -1,4 +1,4 @@
-package io.specto.hoverfly.junit;
+package io.specto.hoverfly.junit.core;
 
 import org.junit.After;
 import org.junit.Test;
@@ -8,8 +8,8 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static io.specto.hoverfly.junit.HoverflyConfig.configs;
-import static io.specto.hoverfly.junit.HoverflyMode.SIMULATE;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static org.assertj.core.api.StrictAssertions.assertThat;
 
 public class HoverflyTest {

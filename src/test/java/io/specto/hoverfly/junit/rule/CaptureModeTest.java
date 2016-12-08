@@ -1,7 +1,6 @@
-package io.specto.hoverfly.otherpackage.junit;
+package io.specto.hoverfly.junit.rule;
 
 import com.google.common.io.Resources;
-import io.specto.hoverfly.junit.HoverflyRule;
 import io.specto.hoverfly.webserver.CaptureModeTestWebServer;
 import org.json.JSONException;
 import org.junit.AfterClass;
@@ -18,7 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static io.specto.hoverfly.junit.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static java.nio.charset.Charset.defaultCharset;
 
 public class CaptureModeTest {
