@@ -27,25 +27,13 @@ public class Simulation {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Simulation that = (Simulation) o;
-
-        return new EqualsBuilder()
-                .append(data, that.data)
-                .append(meta, that.meta)
-                .isEquals();
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(data)
-                .append(meta)
-                .toHashCode();
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Override

@@ -25,24 +25,12 @@ public class RequestResponsePair {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        RequestResponsePair that = (RequestResponsePair) o;
-
-        return new EqualsBuilder()
-                .append(request, that.request)
-                .append(response, that.response)
-                .isEquals();
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(request)
-                .append(response)
-                .toHashCode();
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

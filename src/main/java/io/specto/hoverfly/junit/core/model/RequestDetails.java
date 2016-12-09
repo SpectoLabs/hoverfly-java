@@ -112,36 +112,12 @@ public class RequestDetails {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        RequestDetails that = (RequestDetails) o;
-
-        return new EqualsBuilder()
-                .append(requestType, that.requestType)
-                .append(path, that.path)
-                .append(method, that.method)
-                .append(destination, that.destination)
-                .append(scheme, that.scheme)
-                .append(query, that.query)
-                .append(body, that.body)
-                .append(headers, that.headers)
-                .isEquals();
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(requestType)
-                .append(path)
-                .append(method)
-                .append(destination)
-                .append(scheme)
-                .append(query)
-                .append(body)
-                .append(headers)
-                .toHashCode();
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

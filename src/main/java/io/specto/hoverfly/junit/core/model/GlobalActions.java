@@ -21,22 +21,12 @@ public class GlobalActions {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        GlobalActions that = (GlobalActions) o;
-
-        return new EqualsBuilder()
-                .append(delays, that.delays)
-                .isEquals();
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(delays)
-                .toHashCode();
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }
