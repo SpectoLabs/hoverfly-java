@@ -12,9 +12,11 @@
  */
 package io.specto.hoverfly.junit.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.omg.SendingContext.RunTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -25,10 +27,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,6 +37,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE;
@@ -112,25 +112,63 @@ public class Hoverfly {
         }
     }
 
-    public void importSimulation(URI serviceDataURI) throws IOException {
+    public PayloadView getSimulation() throws IOException {
         HttpURLConnection con = (HttpURLConnection) new URL(String.format(SIMULATION_URL, adminPort)).openConnection();
-        con.setRequestMethod("PUT");
-        con.setDoOutput(true);
-        try (OutputStream os = con.getOutputStream()) {
-            if (serviceDataURI.getScheme().startsWith("http")) {
-                IOUtils.copy(serviceDataURI.toURL().openStream(), os);
-            } else {
-                Files.copy(Paths.get(serviceDataURI), os);
-            }
-            os.flush();
-        }
-        con.connect();
-        int responseCode = con.getResponseCode();
-        if (responseCode < 200 || responseCode > 299) {
+        con.setRequestMethod("GET");
 
-            String result = new BufferedReader(new InputStreamReader(con.getErrorStream()))
-                    .lines().collect(Collectors.joining("\n"));
-            throw new RuntimeException("Submit simulation data failed with error: " + result);
+        try (InputStream is = con.getInputStream()) {
+            return new ObjectMapper().readValue(is, PayloadView.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get simulation data", e);
+        }
+    }
+
+    public void importSimulation(PayloadView payloadView) {
+
+        putSimulation(os -> {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                mapper.writeValue(os, payloadView);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+    }
+
+    public void importSimulation(URI serviceDataURI) {
+        putSimulation(os -> {
+            try {
+                if (serviceDataURI.getScheme().startsWith("http")) {
+                    IOUtils.copy(serviceDataURI.toURL().openStream(), os);
+                } else {
+                    Files.copy(Paths.get(serviceDataURI), os);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private void putSimulation(Consumer<OutputStream> outputStreamConsumer) {
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL(String.format(SIMULATION_URL, adminPort)).openConnection();
+            con.setRequestMethod("PUT");
+            con.setDoOutput(true);
+            try (OutputStream os = con.getOutputStream()) {
+                outputStreamConsumer.accept(os);
+                os.flush();
+            }
+            con.connect();
+            int responseCode = con.getResponseCode();
+            if (responseCode < 200 || responseCode > 299) {
+
+                String result = new BufferedReader(new InputStreamReader(con.getErrorStream()))
+                        .lines().collect(Collectors.joining("\n"));
+                throw new RuntimeException("Submit simulation data failed with error: " + result);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

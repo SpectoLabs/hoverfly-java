@@ -1,10 +1,13 @@
 package io.specto.hoverfly.junit.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.Resources;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -33,6 +36,21 @@ public class HoverflyTest {
         final Field binaryPath = ReflectionUtils.findField(Hoverfly.class, "binaryPath", Path.class);
         binaryPath.setAccessible(true);
         assertThat(Files.exists((Path) binaryPath.get(hoverfly))).isFalse();
+    }
+
+    @Test
+    public void shouldImportSimulationGivePayLoadView() throws Exception {
+        hoverfly = new Hoverfly(configs(), SIMULATE);
+        hoverfly.start();
+        // when:
+        URL resource = Resources.getResource("test-service.json");
+        ObjectMapper objectMapper = new ObjectMapper();
+        PayloadView payloadView = objectMapper.readValue(resource, PayloadView.class);
+        hoverfly.importSimulation(payloadView);
+
+        // then:
+        PayloadView simulation = hoverfly.getSimulation();
+        assertThat(simulation).isEqualTo(payloadView);
     }
 
     @After
