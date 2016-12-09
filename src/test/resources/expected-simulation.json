@@ -4,40 +4,6 @@
       {
         "response": {
           "status": 200,
-          "body": "{\"stats\":{\"counters\":{\"capture\":0,\"modify\":0,\"simulate\":0,\"synthesize\":0}},\"recordsCount\":0}",
-          "encodedBody": false,
-          "headers": {
-            "Content-Length": [
-              "92"
-            ],
-            "Content-Type": [
-              "application/json"
-            ],
-            "Hoverfly": [
-              "Was-Here"
-            ]
-          }
-        },
-        "request": {
-          "requestType": "recording",
-          "path": "/api/stats",
-          "method": "GET",
-          "scheme": "http",
-          "query": "",
-          "body": "",
-          "headers": {
-            "Accept": [
-              "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2"
-            ],
-            "Proxy-Connection": [
-              "keep-alive"
-            ]
-          }
-        }
-      },
-      {
-        "response": {
-          "status": 200,
           "body": "\u003ch1\u003eHello World\u003c/h1\u003e\n",
           "encodedBody": false,
           "headers": {
