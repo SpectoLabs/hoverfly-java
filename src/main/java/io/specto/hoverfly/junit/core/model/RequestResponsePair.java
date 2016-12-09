@@ -1,17 +1,17 @@
-package io.specto.hoverfly.junit.core;
+package io.specto.hoverfly.junit.core.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class RequestResponsePairView {
+public class RequestResponsePair {
     private final RequestDetails request;
     private final ResponseDetails response;
 
     @JsonCreator
-    public RequestResponsePairView(@JsonProperty("request") RequestDetails request,
-                                   @JsonProperty("response") ResponseDetails response) {
+    public RequestResponsePair(@JsonProperty("request") RequestDetails request,
+                               @JsonProperty("response") ResponseDetails response) {
         this.request = request;
         this.response = response;
     }
@@ -30,7 +30,7 @@ public class RequestResponsePairView {
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        RequestResponsePairView that = (RequestResponsePairView) o;
+        RequestResponsePair that = (RequestResponsePair) o;
 
         return new EqualsBuilder()
                 .append(request, that.request)

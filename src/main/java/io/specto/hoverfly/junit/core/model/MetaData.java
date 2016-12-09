@@ -1,11 +1,11 @@
-package io.specto.hoverfly.junit.core;
+package io.specto.hoverfly.junit.core.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MetaView {
+public class MetaData {
     private final String schemaVersion = "v1";
 
     public String getSchemaVersion() {
@@ -18,10 +18,10 @@ public class MetaView {
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        MetaView metaView = (MetaView) o;
+        MetaData metaData = (MetaData) o;
 
         return new EqualsBuilder()
-                .append(schemaVersion, metaView.schemaVersion)
+                .append(schemaVersion, metaData.schemaVersion)
                 .isEquals();
     }
 

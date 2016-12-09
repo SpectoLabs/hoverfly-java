@@ -1,19 +1,19 @@
-package io.specto.hoverfly.junit.core;
+package io.specto.hoverfly.junit.core.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class DelaySetting {
+public class DelaySettings {
 
     private final String urlPattern;
     private final int delay;
 
 
     @JsonCreator
-    public DelaySetting(@JsonProperty("urlPattern") String urlPattern,
-                        @JsonProperty("delay") int delay) {
+    public DelaySettings(@JsonProperty("urlPattern") String urlPattern,
+                         @JsonProperty("delay") int delay) {
         this.urlPattern = urlPattern;
         this.delay = delay;
     }
@@ -32,7 +32,7 @@ public class DelaySetting {
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        DelaySetting that = (DelaySetting) o;
+        DelaySettings that = (DelaySettings) o;
 
         return new EqualsBuilder()
                 .append(delay, that.delay)

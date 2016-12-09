@@ -1,4 +1,4 @@
-package io.specto.hoverfly.junit.core;
+package io.specto.hoverfly.junit.core.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,14 +9,14 @@ import java.util.List;
 
 public class GlobalActions {
 
-    private final List<DelaySetting> delays;
+    private final List<DelaySettings> delays;
 
     @JsonCreator
-    public GlobalActions(@JsonProperty("delays") List<DelaySetting> delays) {
+    public GlobalActions(@JsonProperty("delays") List<DelaySettings> delays) {
         this.delays = delays;
     }
 
-    public List<DelaySetting> getDelays() {
+    public List<DelaySettings> getDelays() {
         return delays;
     }
 

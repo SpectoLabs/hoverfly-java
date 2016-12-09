@@ -1,4 +1,4 @@
-package io.specto.hoverfly.junit.core;
+package io.specto.hoverfly.junit.core.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

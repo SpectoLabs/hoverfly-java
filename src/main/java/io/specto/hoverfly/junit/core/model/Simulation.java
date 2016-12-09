@@ -1,27 +1,28 @@
-package io.specto.hoverfly.junit.core;
+package io.specto.hoverfly.junit.core.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class PayloadView {
-    private final DataView data;
-    private final MetaView meta;
+public class Simulation {
+    private final Data data;
+    private final MetaData meta;
 
     @JsonCreator
-    public PayloadView(@JsonProperty("data") DataView data,
-
-                       @JsonProperty("meta") MetaView meta) {
+    public Simulation(@JsonProperty("data") Data data,
+                      @JsonProperty("meta") MetaData meta) {
         this.data = data;
         this.meta = meta;
     }
 
-    public DataView getData() {
+    public Data getData() {
         return data;
     }
 
-    public MetaView getMeta() {
+    public MetaData getMeta() {
         return meta;
     }
 
@@ -31,7 +32,7 @@ public class PayloadView {
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        PayloadView that = (PayloadView) o;
+        Simulation that = (Simulation) o;
 
         return new EqualsBuilder()
                 .append(data, that.data)
@@ -46,4 +47,15 @@ public class PayloadView {
                 .append(meta)
                 .toHashCode();
     }
+
+    @Override
+    public String toString() {
+        try {
+            return new ObjectMapper().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert object to json string: ", e);
+        }
+    }
+
+
 }

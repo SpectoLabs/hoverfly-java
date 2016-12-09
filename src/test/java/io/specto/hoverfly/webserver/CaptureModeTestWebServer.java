@@ -15,11 +15,9 @@ import java.net.URI;
 
 public class CaptureModeTestWebServer extends AbstractHandler {
 
-    private static Server server;
-
     public static URI run() throws Exception {
         final int port = findUnusedPort();
-        server = new Server(port);
+        Server server = new Server(port);
         server.setHandler(new CaptureModeTestWebServer());
         server.start();
         return UriComponentsBuilder.fromUriString(String.format("http://localhost:%s", port)).build().toUri();

@@ -12,11 +12,23 @@
  */
 package io.specto.hoverfly.junit.core;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.specto.hoverfly.junit.core.model.Simulation;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.omg.SendingContext.RunTime;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.entity.EntityBuilder;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -26,8 +38,11 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,8 +52,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_READ;
@@ -55,6 +68,7 @@ public class Hoverfly {
     private final HoverflyMode hoverflyMode;
     private final Integer proxyPort;
     private final Integer adminPort;
+    private final CloseableHttpClient httpClient = HttpClients.createDefault();
 
     private StartedProcess startedProcess;
     private Path binaryPath;
@@ -112,86 +126,82 @@ public class Hoverfly {
         }
     }
 
-    public PayloadView getSimulation() throws IOException {
-        HttpURLConnection con = (HttpURLConnection) new URL(String.format(SIMULATION_URL, adminPort)).openConnection();
-        con.setRequestMethod("GET");
-
-        try (InputStream is = con.getInputStream()) {
-            return new ObjectMapper().readValue(is, PayloadView.class);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get simulation data", e);
+    public void importSimulation(Simulation simulation) {
+        try {
+            HttpEntity entity = EntityBuilder.create()
+                    .setText(new ObjectMapper().writeValueAsString(simulation))
+                    .build();
+            putSimulation(entity);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public void importSimulation(PayloadView payloadView) {
+    public void importSimulation(URI simulationDataUri) {
 
-        putSimulation(os -> {
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                mapper.writeValue(os, payloadView);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-    }
-
-    public void importSimulation(URI serviceDataURI) {
-        putSimulation(os -> {
-            try {
-                if (serviceDataURI.getScheme().startsWith("http")) {
-                    IOUtils.copy(serviceDataURI.toURL().openStream(), os);
-                } else {
-                    Files.copy(Paths.get(serviceDataURI), os);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    private void putSimulation(Consumer<OutputStream> outputStreamConsumer) {
         try {
-            HttpURLConnection con = (HttpURLConnection) new URL(String.format(SIMULATION_URL, adminPort)).openConnection();
-            con.setRequestMethod("PUT");
-            con.setDoOutput(true);
-            try (OutputStream os = con.getOutputStream()) {
-                outputStreamConsumer.accept(os);
-                os.flush();
-            }
-            con.connect();
-            int responseCode = con.getResponseCode();
-            if (responseCode < 200 || responseCode > 299) {
+            EntityBuilder entityBuilder = EntityBuilder.create();
 
-                String result = new BufferedReader(new InputStreamReader(con.getErrorStream()))
-                        .lines().collect(Collectors.joining("\n"));
-                throw new RuntimeException("Submit simulation data failed with error: " + result);
+            if (simulationDataUri.getScheme().startsWith("http")) {
+                entityBuilder.setStream(simulationDataUri.toURL().openStream());
+            } else {
+                entityBuilder.setFile(Paths.get(simulationDataUri).toFile());
             }
+
+            HttpEntity httpEntity = entityBuilder.build();
+            putSimulation(httpEntity);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Simulation getSimulationData() {
+        try (InputStream content = getSimulation()) {
+            return new ObjectMapper().readValue(content, Simulation.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public void exportSimulation(URI serviceDataURI) {
-        LOGGER.info("Storing captured data");
-        try {
-            HttpURLConnection con = (HttpURLConnection) new URL(String.format(SIMULATION_URL, adminPort)).openConnection();
-            con.setRequestMethod("GET");
+        LOGGER.info("Storing captured Data");
+        try (InputStream content = getSimulation()){
             final Path path = Paths.get(serviceDataURI);
             Files.deleteIfExists(path);
-            Files.copy(con.getInputStream(), path);
+            Files.copy(content, path);
         } catch (IOException e) {
-            throw new RuntimeException("Unable to persist captured data", e);
+            throw new RuntimeException("Unable to persist captured Data", e);
         }
     }
 
-    private boolean isHealthy(int adminPort) {
+    private InputStream getSimulation() throws IOException {
+        HttpUriRequest getRequest = new HttpGet(String.format(SIMULATION_URL, adminPort));
+        HttpResponse response = httpClient.execute(getRequest);
+        return response.getEntity().getContent();
+    }
+
+    private void putSimulation(HttpEntity entity) {
+        HttpUriRequest putRequest = RequestBuilder.put(String.format(SIMULATION_URL, adminPort))
+                .setEntity(entity)
+                .setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+                .build();
+        try (CloseableHttpResponse response = httpClient.execute(putRequest)) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode < 200 || statusCode > 299) {
+                throw new RuntimeException("Submit simulation data failed with error: " + EntityUtils.toString(response.getEntity()));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean isHealthy() {
         boolean isHealthy = false;
-        try {
-            HttpURLConnection con = (HttpURLConnection) new URL(String.format(HEALTH_CHECK_URL, adminPort)).openConnection();
-            con.setRequestMethod("GET");
-            LOGGER.debug("Hoverfly health check status code is: {}", con.getResponseCode());
-            isHealthy = con.getResponseCode() == 200;
+        HttpUriRequest getRequest = new HttpGet(String.format(HEALTH_CHECK_URL, adminPort));
+        try (CloseableHttpResponse response = httpClient.execute(getRequest)) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            isHealthy = statusCode == 200;
+            LOGGER.debug("Hoverfly health check status code is: {}", statusCode);
         } catch (IOException e) {
             LOGGER.debug("Exception curling health check", e);
         }
@@ -223,7 +233,7 @@ public class Hoverfly {
         final Instant now = Instant.now();
 
         while (Duration.between(now, Instant.now()).getSeconds() < BOOT_TIMEOUT_SECONDS) {
-            if (isHealthy(adminPort)) return;
+            if (isHealthy()) return;
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {

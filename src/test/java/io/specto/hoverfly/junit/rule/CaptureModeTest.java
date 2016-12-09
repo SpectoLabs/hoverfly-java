@@ -32,15 +32,6 @@ public class CaptureModeTest {
     private URI webServerBaseUrl;
     private RestTemplate restTemplate;
 
-    // We have to assert after the rule has executed because that's when the file is written to the filesystem
-    @AfterClass
-    public static void after() throws IOException, JSONException {
-        final String expectedSimulation = Resources.toString(Resources.getResource("expected-simulation.json"), defaultCharset());
-        final String actualSimulation = new String(Files.readAllBytes(RECORDED_SIMULATION_FILE), defaultCharset());
-        JSONAssert.assertEquals(expectedSimulation, actualSimulation, JSONCompareMode.LENIENT);
-
-    }
-
     @Before
     public void setUp() throws Exception {
         Files.deleteIfExists(RECORDED_SIMULATION_FILE);
@@ -52,6 +43,15 @@ public class CaptureModeTest {
     public void shouldRecordInteractions() throws Exception {
         // When
         restTemplate.getForObject(webServerBaseUrl, String.class);
+    }
+
+    // We have to assert after the rule has executed because that's when the file is written to the filesystem
+    @AfterClass
+    public static void after() throws IOException, JSONException {
+        final String expectedSimulation = Resources.toString(Resources.getResource("expected-simulation.json"), defaultCharset());
+        final String actualSimulation = new String(Files.readAllBytes(RECORDED_SIMULATION_FILE), defaultCharset());
+        JSONAssert.assertEquals(expectedSimulation, actualSimulation, JSONCompareMode.LENIENT);
+
     }
 
 }

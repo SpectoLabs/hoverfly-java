@@ -2,6 +2,7 @@ package io.specto.hoverfly.junit.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import io.specto.hoverfly.junit.core.model.Simulation;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
@@ -19,6 +20,7 @@ public class HoverflyTest {
 
     private static final int EXPECTED_PROXY_PORT = 8890;
     private Hoverfly hoverfly;
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Test
     public void hoverflyShouldStartOnConfiguredPort() throws Exception {
@@ -39,18 +41,18 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldImportSimulationGivePayLoadView() throws Exception {
+    public void shouldImportAndExportSimulation() throws Exception {
         hoverfly = new Hoverfly(configs(), SIMULATE);
         hoverfly.start();
         // when:
         URL resource = Resources.getResource("test-service.json");
-        ObjectMapper objectMapper = new ObjectMapper();
-        PayloadView payloadView = objectMapper.readValue(resource, PayloadView.class);
-        hoverfly.importSimulation(payloadView);
+        Simulation importedSimulation = mapper.readValue(resource, Simulation.class);
+
+        hoverfly.importSimulation(importedSimulation);
 
         // then:
-        PayloadView simulation = hoverfly.getSimulation();
-        assertThat(simulation).isEqualTo(payloadView);
+        Simulation exportedSimulation = hoverfly.getSimulationData();
+        assertThat(exportedSimulation).isEqualTo(importedSimulation);
     }
 
     @After

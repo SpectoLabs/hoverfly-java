@@ -1,4 +1,4 @@
-package io.specto.hoverfly.junit.core;
+package io.specto.hoverfly.junit.core.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -66,11 +66,6 @@ public class RequestDetails {
 
     public Map<String, List<String>> getHeaders() {
         return headers;
-    }
-
-    @Override
-    public String toString() {
-        return method + " " + destination + path;
     }
 
     public static Builder Builder() {
