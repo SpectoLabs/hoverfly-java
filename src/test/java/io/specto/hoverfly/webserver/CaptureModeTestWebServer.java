@@ -10,8 +10,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.URI;
+
+import static io.specto.hoverfly.webserver.WebServerUtils.findUnusedPort;
 
 public class CaptureModeTestWebServer extends AbstractHandler {
 
@@ -25,11 +26,13 @@ public class CaptureModeTestWebServer extends AbstractHandler {
         return UriComponentsBuilder.fromUriString(String.format("http://localhost:%s", port)).build().toUri();
     }
 
-    private static int findUnusedPort() {
-        try (final ServerSocket serverSocket = new ServerSocket(0)) {
-            return serverSocket.getLocalPort();
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot find available port", e);
+    public static void terminate() {
+        if (server != null) {
+            try {
+                server.stop();
+            } catch (Exception e) {
+                throw new IllegalStateException("Failed to terminate CaptureModeTestWebServer", e);
+            }
         }
     }
 

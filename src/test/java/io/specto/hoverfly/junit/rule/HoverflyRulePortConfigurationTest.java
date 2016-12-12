@@ -40,7 +40,7 @@ public class HoverflyRulePortConfigurationTest {
     @Test
     public void shouldBeAbleToGetPort() {
         // Then
-        assertThat(hoverflyRule.getProxyPort()).isEqualTo(8890);
+        assertThat(hoverflyRule.getProxyPort()).isEqualTo(EXPECTED_PROXY_PORT);
     }
 
 

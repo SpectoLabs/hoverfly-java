@@ -10,9 +10,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.URL;
 import java.nio.charset.Charset;
+
+import static io.specto.hoverfly.webserver.WebServerUtils.findUnusedPort;
 
 public class ImportTestWebServer extends AbstractHandler {
 
@@ -30,11 +31,13 @@ public class ImportTestWebServer extends AbstractHandler {
         }
     }
 
-    private static int findUnusedPort() {
-        try (final ServerSocket serverSocket = new ServerSocket(0)) {
-            return serverSocket.getLocalPort();
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot find available port", e);
+    public static void terminate() {
+        if (server != null) {
+            try {
+                server.stop();
+            } catch (Exception e) {
+                throw new IllegalStateException("Failed to terminate ImportTestWebServer", e);
+            }
         }
     }
 

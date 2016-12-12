@@ -16,16 +16,18 @@ import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import org.junit.rules.ExternalResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
+import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
+import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.fileRelativeToTestResources;
+import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.findResourceOnClasspath;
+
 public class HoverflyRule extends ExternalResource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HoverflyRule.class);
     private final Hoverfly hoverfly;
     private final URI simulation;
     private final HoverflyMode hoverflyMode;
@@ -48,7 +50,7 @@ public class HoverflyRule extends ExternalResource {
     }
 
     public static HoverflyRule inCaptureMode(String recordedFilename, HoverflyConfig hoverflyConfig) {
-        return new HoverflyRule(HoverflyRuleUtils.fileRelativeToTestResources(recordedFilename), HoverflyMode.CAPTURE, hoverflyConfig);
+        return new HoverflyRule(fileRelativeToTestResources(recordedFilename), CAPTURE, hoverflyConfig);
     }
 
     public static HoverflyRule inSimulationMode(String resourceNameOnClasspath) {
@@ -56,7 +58,7 @@ public class HoverflyRule extends ExternalResource {
     }
 
     public static HoverflyRule inSimulationMode(String resourceNameOnClasspath, HoverflyConfig hoverflyConfig) {
-        return new HoverflyRule(HoverflyRuleUtils.findResourceOnClasspath(resourceNameOnClasspath), HoverflyMode.SIMULATE, hoverflyConfig);
+        return new HoverflyRule(findResourceOnClasspath(resourceNameOnClasspath), SIMULATE, hoverflyConfig);
     }
 
     public static HoverflyRule inSimulationMode(URL webResourceUrl) {
@@ -65,7 +67,7 @@ public class HoverflyRule extends ExternalResource {
 
     public static HoverflyRule inSimulationMode(URL webResourceUrl, HoverflyConfig hoverflyConfig) {
         try {
-            return new HoverflyRule(webResourceUrl.toURI(), HoverflyMode.SIMULATE, hoverflyConfig);
+            return new HoverflyRule(webResourceUrl.toURI(), SIMULATE, hoverflyConfig);
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }
@@ -76,7 +78,7 @@ public class HoverflyRule extends ExternalResource {
 
         hoverfly.start();
 
-        if (hoverflyMode == HoverflyMode.SIMULATE) {
+        if (hoverflyMode == SIMULATE) {
             hoverfly.importSimulation(simulation);
         }
     }
@@ -84,11 +86,9 @@ public class HoverflyRule extends ExternalResource {
     @Override
     protected void after() {
         try {
-            if (hoverflyMode == HoverflyMode.CAPTURE) {
+            if (hoverflyMode == CAPTURE) {
                 hoverfly.exportSimulation(simulation);
             }
-        } catch (Exception e) {
-            LOGGER.error("Error exporting", e);
         } finally {
             hoverfly.stop();
         }

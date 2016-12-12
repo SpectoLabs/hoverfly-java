@@ -33,7 +33,7 @@ class HoverflyRuleUtils {
     }
 
     static URI fileRelativeToTestResources(String fileName) {
-        return Paths.get("src/test/resources/", fileName).toFile().toURI();
+        return Paths.get("src/test/resources/", fileName).toUri();
     }
 
 }

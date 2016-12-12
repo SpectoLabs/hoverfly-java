@@ -27,6 +27,11 @@ class HoverflyUtils {
     private static final String LINUX = "linux";
     private static final String ARCH_AMD64 = "amd64";
     private static final String ARCH_386 = "386";
+    private static final String BINARY_PATH = "hoverfly_%s_%s";
+
+    static String getBinaryName() {
+        return String.format(BINARY_PATH, getOs(), getArchitectureType()) + (SystemUtils.IS_OS_WINDOWS ? ".exe" : "");
+    }
 
     static String getOs() {
         if (SystemUtils.IS_OS_MAC) {
@@ -45,7 +50,7 @@ class HoverflyUtils {
     }
 
     static int findUnusedPort() {
-        try(final ServerSocket serverSocket = new ServerSocket(0)){
+        try (final ServerSocket serverSocket = new ServerSocket(0)) {
             return serverSocket.getLocalPort();
         } catch (IOException e) {
             throw new RuntimeException("Cannot find available port", e);

@@ -1,9 +1,7 @@
 package io.specto.hoverfly.junit.rule;
 
 import io.specto.hoverfly.webserver.ImportTestWebServer;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -65,4 +63,8 @@ public class URLHoverflyRuleTest {
                 "}");
     }
 
+    @AfterClass
+    public static void tearDown() throws Exception {
+        ImportTestWebServer.terminate();
+    }
 }

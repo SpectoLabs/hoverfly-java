@@ -12,8 +12,11 @@
  */
 package io.specto.hoverfly.junit.core;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import io.specto.hoverfly.junit.core.model.Simulation;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +27,13 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import java.io.*;
-import java.net.HttpURLConnection;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriBuilder;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,8 +43,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static io.specto.hoverfly.junit.core.HoverflyUtils.*;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_READ;
 import static java.util.Arrays.asList;
@@ -48,14 +53,14 @@ public class Hoverfly {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hoverfly.class);
     private static final int BOOT_TIMEOUT_SECONDS = 10;
-    private static final String HEALTH_CHECK_URL = "http://localhost:%s/api/stats";
-    private static final String SIMULATION_URL = "http://localhost:%s/api/v2/simulation";
-    private static final String BINARY_PATH = "hoverfly_%s_%s";
+    private static final String HOVERFLY_URL = "http://localhost";
+    private static final String HEALTH_CHECK_PATH = "/api/stats";
+    private static final String SIMULATION_PATH = "/api/v2/simulation";
     private final HoverflyConfig hoverflyConfig;
     private final HoverflyMode hoverflyMode;
     private final Integer proxyPort;
     private final Integer adminPort;
-
+    private final WebResource hoverflyResource;
     private StartedProcess startedProcess;
     private Path binaryPath;
 
@@ -63,8 +68,9 @@ public class Hoverfly {
     public Hoverfly(HoverflyConfig hoverflyConfig, HoverflyMode hoverflyMode) {
         this.hoverflyConfig = hoverflyConfig;
         this.hoverflyMode = hoverflyMode;
-        proxyPort = hoverflyConfig.getProxyPort() == 0 ? HoverflyUtils.findUnusedPort() : hoverflyConfig.getProxyPort();
-        adminPort = hoverflyConfig.getAdminPort() == 0 ? HoverflyUtils.findUnusedPort() : hoverflyConfig.getAdminPort();
+        proxyPort = hoverflyConfig.getProxyPort() == 0 ? findUnusedPort() : hoverflyConfig.getProxyPort();
+        adminPort = hoverflyConfig.getAdminPort() == 0 ? findUnusedPort() : hoverflyConfig.getAdminPort();
+        hoverflyResource = Client.create().resource(UriBuilder.fromUri(HOVERFLY_URL).port(adminPort).build());
     }
 
     public void start() throws IOException, URISyntaxException {
@@ -73,13 +79,10 @@ public class Hoverfly {
 
         setProxySystemProperties();
 
-        final String binaryName = String.format(BINARY_PATH, HoverflyUtils.getOs(), HoverflyUtils.getArchitectureType()) + (SystemUtils.IS_OS_WINDOWS ? ".exe" : "");
-        LOGGER.info("Selecting the following binary based on the current operating system: {}", binaryName);
-        binaryPath = extractBinary(binaryName);
+        binaryPath = extractBinary(getBinaryName());
 
         LOGGER.info("Executing binary at {}", binaryPath);
         final List<String> commands = new ArrayList<>();
-
         commands.add(binaryPath.toString());
         commands.add("-db");
         commands.add("memory");
@@ -108,56 +111,59 @@ public class Hoverfly {
         try {
             Files.deleteIfExists(binaryPath);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to delete hoverfly binary", e);
+            throw new IllegalStateException("Failed to delete hoverfly binary", e);
         }
     }
 
-    public void importSimulation(URI serviceDataURI) throws IOException {
-        HttpURLConnection con = (HttpURLConnection) new URL(String.format(SIMULATION_URL, adminPort)).openConnection();
-        con.setRequestMethod("PUT");
-        con.setDoOutput(true);
-        try (OutputStream os = con.getOutputStream()) {
-            if (serviceDataURI.getScheme().startsWith("http")) {
-                IOUtils.copy(serviceDataURI.toURL().openStream(), os);
-            } else {
-                Files.copy(Paths.get(serviceDataURI), os);
-            }
-            os.flush();
-        }
-        con.connect();
-        int responseCode = con.getResponseCode();
-        if (responseCode < 200 || responseCode > 299) {
+    public void importSimulation(Simulation simulation) {
+        hoverflyResource.path(SIMULATION_PATH)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .put(simulation);
+    }
 
-            String result = new BufferedReader(new InputStreamReader(con.getErrorStream()))
-                    .lines().collect(Collectors.joining("\n"));
-            throw new RuntimeException("Submit simulation data failed with error: " + result);
+    public void importSimulation(URI simulationDataUri) {
+        final WebResource resource = hoverflyResource.path(SIMULATION_PATH);
+        try {
+            if (simulationDataUri.getScheme().startsWith("http")) {
+                resource.put(simulationDataUri.toURL().openStream());
+            } else {
+                resource.put(Paths.get(simulationDataUri).toFile());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to submit simulation data", e);
         }
     }
 
     public void exportSimulation(URI serviceDataURI) {
-        LOGGER.info("Storing captured data");
+        LOGGER.info("Storing captured Data");
         try {
-            HttpURLConnection con = (HttpURLConnection) new URL(String.format(SIMULATION_URL, adminPort)).openConnection();
-            con.setRequestMethod("GET");
             final Path path = Paths.get(serviceDataURI);
             Files.deleteIfExists(path);
-            Files.copy(con.getInputStream(), path);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to persist captured data", e);
+            Files.write(path, hoverflyResource.path(SIMULATION_PATH).get(String.class).getBytes());
+        } catch (Exception e) {
+            LOGGER.error("Failed to persist captured data", e);
         }
     }
 
-    private boolean isHealthy(int adminPort) {
-        boolean isHealthy = false;
+    public Simulation getSimulation() {
+        return hoverflyResource.path(SIMULATION_PATH).get(Simulation.class);
+    }
+
+    private boolean isHealthy() {
+        ClientResponse response = null;
         try {
-            HttpURLConnection con = (HttpURLConnection) new URL(String.format(HEALTH_CHECK_URL, adminPort)).openConnection();
-            con.setRequestMethod("GET");
-            LOGGER.debug("Hoverfly health check status code is: {}", con.getResponseCode());
-            isHealthy = con.getResponseCode() == 200;
-        } catch (IOException e) {
-            LOGGER.debug("Exception curling health check", e);
+            response = hoverflyResource.path(HEALTH_CHECK_PATH).get(ClientResponse.class);
+            LOGGER.debug("Hoverfly health check status code is: {}", response.getStatus());
+            return response.getStatus() == 200;
         }
-        return isHealthy;
+        catch (Exception e) {
+            LOGGER.debug("Not yet healthy", e);
+        } finally {
+            if(response != null) {
+                response.close();
+            }
+        }
+        return false;
     }
 
     private void setProxySystemProperties() {
@@ -185,7 +191,7 @@ public class Hoverfly {
         final Instant now = Instant.now();
 
         while (Duration.between(now, Instant.now()).getSeconds() < BOOT_TIMEOUT_SECONDS) {
-            if (isHealthy(adminPort)) return;
+            if (isHealthy()) return;
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -196,7 +202,8 @@ public class Hoverfly {
     }
 
     private Path extractBinary(final String binaryName) throws IOException {
-        final URI sourceHoverflyUrl = HoverflyUtils.findResourceOnClasspath("binaries/" + binaryName);
+        LOGGER.info("Selecting the following binary based on the current operating system: {}", binaryName);
+        final URI sourceHoverflyUrl = findResourceOnClasspath("binaries/" + binaryName);
         final Path temporaryHoverflyPath = Files.createTempFile(binaryName, "");
         LOGGER.info("Storing binary in temporary directory {}", temporaryHoverflyPath);
         final File temporaryHoverflyFile = temporaryHoverflyPath.toFile();
@@ -215,7 +222,7 @@ public class Hoverfly {
     private void setTrustStore() {
         try {
             // load your key store as a stream and initialize a KeyStore
-            InputStream trustStream = HoverflyUtils.findResourceOnClasspath("hoverfly.jks").toURL().openStream();
+            InputStream trustStream = findResourceOnClasspath("hoverfly.jks").toURL().openStream();
 
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
 
@@ -234,7 +241,7 @@ public class Hoverfly {
             sslContext.init(null, trustManagers, null);
             SSLContext.setDefault(sslContext);
         } catch (Exception e) {
-            throw new RuntimeException("Unable to set hoverfly trust store", e);
+            throw new IllegalStateException("Unable to set hoverfly trust store", e);
         }
     }
 }

@@ -1,6 +1,7 @@
 package io.specto.hoverfly.junit.rule;
 
 import io.specto.hoverfly.webserver.ImportTestWebServer;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,5 +40,10 @@ public class HttpsHoverflyRuleTest {
                 "\"time\":\"2011-09-01T12:30\"," +
                 "\"_links\":{\"self\":{\"href\":\"http://localhost/api/bookings/1\"}}" +
                 "}");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        ImportTestWebServer.terminate();
     }
 }

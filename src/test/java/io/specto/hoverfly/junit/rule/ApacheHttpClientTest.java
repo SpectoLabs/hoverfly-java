@@ -3,8 +3,7 @@ package io.specto.hoverfly.junit.rule;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.SystemDefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,12 +24,8 @@ public class ApacheHttpClientTest {
     @Before
     public void setUp() {
 
-        // tag::legacyHttpClientExample[]
-        httpClient = new SystemDefaultHttpClient();
-        // end::legacyHttpClientExample[]
-
         // tag::httpClientExample[]
-        httpClient = HttpClientBuilder.create().useSystemProperties().build();
+        httpClient = HttpClients.createSystem();
         // end::httpClientExample[]
     }
 
