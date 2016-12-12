@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import static com.sun.jersey.api.client.ClientResponse.Status.OK;
 import static io.specto.hoverfly.junit.core.HoverflyUtils.*;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_READ;
@@ -53,6 +54,7 @@ public class Hoverfly {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hoverfly.class);
     private static final int BOOT_TIMEOUT_SECONDS = 10;
+    private static final int RETRY_BACKOFF_INTERVAL_MS = 100;
     private static final String HOVERFLY_URL = "http://localhost";
     private static final String HEALTH_CHECK_PATH = "/api/stats";
     private static final String SIMULATION_PATH = "/api/v2/simulation";
@@ -135,7 +137,7 @@ public class Hoverfly {
     }
 
     public void exportSimulation(URI serviceDataURI) {
-        LOGGER.info("Storing captured Data");
+        LOGGER.info("Storing captured HoverflyData");
         try {
             final Path path = Paths.get(serviceDataURI);
             Files.deleteIfExists(path);
@@ -154,7 +156,7 @@ public class Hoverfly {
         try {
             response = hoverflyResource.path(HEALTH_CHECK_PATH).get(ClientResponse.class);
             LOGGER.debug("Hoverfly health check status code is: {}", response.getStatus());
-            return response.getStatus() == 200;
+            return response.getStatus() == OK.getStatusCode();
         }
         catch (Exception e) {
             LOGGER.debug("Not yet healthy", e);
@@ -193,7 +195,7 @@ public class Hoverfly {
         while (Duration.between(now, Instant.now()).getSeconds() < BOOT_TIMEOUT_SECONDS) {
             if (isHealthy()) return;
             try {
-                Thread.sleep(100);
+                Thread.sleep(RETRY_BACKOFF_INTERVAL_MS);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

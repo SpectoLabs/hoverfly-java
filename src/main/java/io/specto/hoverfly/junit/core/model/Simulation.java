@@ -8,22 +8,25 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class Simulation {
-    private final Data data;
-    private final MetaData meta;
+    @JsonProperty("data")
+    private final HoverflyData hoverflyData;
+    @JsonProperty("meta")
+    private final HoverflyMetaData hoverflyMetaData;
 
     @JsonCreator
-    public Simulation(@JsonProperty("data") Data data,
-                      @JsonProperty("meta") MetaData meta) {
-        this.data = data;
-        this.meta = meta;
+    public Simulation(@JsonProperty("data") HoverflyData hoverflyData,
+                      @JsonProperty("meta") HoverflyMetaData hoverflyMetaData) {
+        this.hoverflyData = hoverflyData;
+        this.hoverflyMetaData = hoverflyMetaData;
     }
 
-    public Data getData() {
-        return data;
+    public HoverflyData getHoverflyData() {
+        return hoverflyData;
     }
 
-    public MetaData getMeta() {
-        return meta;
+
+    public HoverflyMetaData getHoverflyMetaData() {
+        return hoverflyMetaData;
     }
 
     @Override

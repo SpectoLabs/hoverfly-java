@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MetaData {
+public class HoverflyMetaData {
     private final String schemaVersion = "v1";
 
     public String getSchemaVersion() {

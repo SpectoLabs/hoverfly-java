@@ -7,13 +7,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Set;
 
-public class Data {
+public class HoverflyData {
     private final Set<RequestResponsePair> pairs;
     private final GlobalActions globalActions;
 
     @JsonCreator
-    public Data(@JsonProperty("pairs") Set<RequestResponsePair> pairs,
-                @JsonProperty("globalActions") GlobalActions globalActions) {
+    public HoverflyData(@JsonProperty("pairs") Set<RequestResponsePair> pairs,
+                        @JsonProperty("globalActions") GlobalActions globalActions) {
         this.pairs = pairs;
         this.globalActions = globalActions;
     }
