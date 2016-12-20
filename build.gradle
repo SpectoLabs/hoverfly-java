@@ -47,6 +47,7 @@ dependencies {
     testCompile 'net.javacrumbs.json-unit:json-unit-fluent:1.17.0'
     testCompile 'org.eclipse.jetty:jetty-server:9.3.11.v20160721'
     testCompile 'org.skyscreamer:jsonassert:1.4.0'
+    testCompile 'org.mockito:mockito-core:2.3.7'
 }
 
 

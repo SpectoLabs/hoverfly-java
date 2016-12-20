@@ -1,14 +1,9 @@
 package io.specto.hoverfly.junit.rule;
 
-import io.specto.hoverfly.webserver.ImportTestWebServer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.URL;
 
 import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,20 +11,14 @@ import static org.springframework.http.HttpStatus.OK;
 
 public class HttpsHoverflyRuleTest {
 
-    private static URL webServerUri;
-    @Rule
-    public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(webServerUri);
+    @ClassRule
+    public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json");
     private RestTemplate restTemplate = new RestTemplate();
-
-    @BeforeClass
-    public static void setUp() {
-        webServerUri = ImportTestWebServer.run();
-    }
 
     @Test
     public void shouldBeAbleToGetABookingUsingHttps() {
         // When
-        final ResponseEntity<String> getBookingResponse = restTemplate.getForEntity("http://www.my-test.com/api/bookings/1", String.class);
+        final ResponseEntity<String> getBookingResponse = restTemplate.getForEntity("https://www.my-test.com/api/bookings/1", String.class);
 
         // Then
         assertThat(getBookingResponse.getStatusCode()).isEqualTo(OK);
@@ -42,8 +31,4 @@ public class HttpsHoverflyRuleTest {
                 "}");
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
-        ImportTestWebServer.terminate();
-    }
 }

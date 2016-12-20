@@ -16,6 +16,10 @@ import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import org.junit.rules.ExternalResource;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,13 +29,14 @@ import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.fileRelativeToTestResources;
 import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.findResourceOnClasspath;
+import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.isAnnotatedWithRule;
 
 public class HoverflyRule extends ExternalResource {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(HoverflyRule.class);
     private final Hoverfly hoverfly;
     private final URI simulation;
     private final HoverflyMode hoverflyMode;
-
 
     private HoverflyRule(final URI simulation, final HoverflyMode hoverflyMode, final HoverflyConfig hoverflyConfig) {
         this.hoverflyMode = hoverflyMode;
@@ -74,8 +79,15 @@ public class HoverflyRule extends ExternalResource {
     }
 
     @Override
-    protected void before() throws Throwable {
+    public Statement apply(Statement base, Description description) {
+        if (isAnnotatedWithRule(description)) {
+            LOGGER.warn("It is recommended to use HoverflyRule with @ClassRule to get better performance in your tests.");
+        }
+        return super.apply(base, description);
+    }
 
+    @Override
+    protected void before() throws Throwable {
         hoverfly.start();
 
         if (hoverflyMode == SIMULATE) {

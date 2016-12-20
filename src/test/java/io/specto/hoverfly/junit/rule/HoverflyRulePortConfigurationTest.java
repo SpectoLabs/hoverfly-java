@@ -1,5 +1,6 @@
 package io.specto.hoverfly.junit.rule;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +16,8 @@ public class HoverflyRulePortConfigurationTest {
     private static final int EXPECTED_PROXY_PORT = 8890;
 
     // tag::portConfiguration[]
-    @Rule
-    public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json",
+    @ClassRule
+    public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json",
             configs().proxyPort(EXPECTED_PROXY_PORT).adminPort(EXPECTED_ADMIN_PORT));
     // end::portConfiguration[]
 

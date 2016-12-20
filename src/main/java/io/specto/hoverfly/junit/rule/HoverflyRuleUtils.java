@@ -12,6 +12,10 @@
  */
 package io.specto.hoverfly.junit.rule;
 
+import org.junit.Rule;
+import org.junit.runner.Description;
+
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -34,6 +38,18 @@ class HoverflyRuleUtils {
 
     static URI fileRelativeToTestResources(String fileName) {
         return Paths.get("src/test/resources/", fileName).toUri();
+    }
+
+    static boolean isAnnotatedWithRule(Description description) {
+        boolean isRule = false;
+        Field[] fields = description.getTestClass().getFields();
+        for (Field field : fields) {
+            if (field.getType().isAssignableFrom(HoverflyRule.class) && field.getAnnotation(Rule.class) != null) {
+                isRule = true;
+                break;
+            }
+        }
+        return isRule;
     }
 
 }
