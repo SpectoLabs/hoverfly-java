@@ -1,4 +1,4 @@
-== Hoverfly JUnit Rule
+== Hoverfly Java
 
 image:https://circleci.com/gh/SpectoLabs/hoverfly-junit.svg?style=shield["CircleCI", link="https://circleci.com/gh/SpectoLabs/hoverfly-junit"]
 image:https://codecov.io/gh/spectolabs/hoverfly-junit/branch/master/graph/badge.svg["Codecov", link="https://codecov.io/gh/spectolabs/hoverfly-junit"]

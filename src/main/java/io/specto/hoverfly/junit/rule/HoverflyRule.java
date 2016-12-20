@@ -81,7 +81,7 @@ public class HoverflyRule extends ExternalResource {
     @Override
     public Statement apply(Statement base, Description description) {
         if (isAnnotatedWithRule(description)) {
-            LOGGER.warn(" It is recommended to use HoverflyRule with @ClassRule to get better performance in your tests, and prevent known issue with Apache HttpClient. For more information, please see https://github.com/SpectoLabs/hoverfly-junit.");
+            LOGGER.warn("It is recommended to use HoverflyRule with @ClassRule to get better performance in your tests, and prevent known issue with Apache HttpClient. For more information, please see https://github.com/SpectoLabs/hoverfly-java.");
         }
         return super.apply(base, description);
     }

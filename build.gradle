@@ -11,7 +11,7 @@ plugins {
 }
 
 group = 'io.specto'
-archivesBaseName = 'hoverfly-junit'
+archivesBaseName = 'hoverfly-java'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -85,16 +85,16 @@ uploadArchives {
             }
 
             pom.project {
-                name 'Hoverfly JUnit'
+                name 'Hoverfly Java'
                 packaging 'jar'
                 // optionally artifactId can be defined here
-                description 'JUnit rule which spins up and manages hoverfly'
-                url 'https://github.com/SpectoLabs/hoverfly-junit'
+                description 'Hoverfly for Java. Capture and simulate Http services in JUnit tests.'
+                url 'https://github.com/SpectoLabs/hoverfly-java'
 
                 scm {
-                    connection 'scm:git:git@github.com:SpectoLabs/hoverfly-junit.git'
-                    developerConnection 'scm:git:git@github.com:SpectoLabs/hoverfly-junit.git'
-                    url 'git@github.com:SpectoLabs/hoverfly-junit.git'
+                    connection 'scm:git:git@github.com:SpectoLabs/hoverfly-java.git'
+                    developerConnection 'scm:git:git@github.com:SpectoLabs/hoverfly-java.git'
+                    url 'git@github.com:SpectoLabs/hoverfly-java.git'
                 }
 
                 licenses {
