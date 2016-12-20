@@ -1,6 +1,5 @@
 package io.specto.hoverfly.junit.rule;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.RequestEntity;
@@ -23,12 +22,7 @@ public class ClasspathResourceHoverflyRuleTest {
     public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json");
     // end::simulateModeQuickStart[]
 
-    private RestTemplate restTemplate;
-
-    @Before
-    public void setUp() {
-        restTemplate = new RestTemplate();
-    }
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Test
     public void shouldBeAbleToMakeABookingUsingHoverfly() throws URISyntaxException {

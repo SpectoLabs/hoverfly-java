@@ -21,13 +21,12 @@ public class ApacheHttpClientTest {
 
     private HttpClient httpClient;
 
+    // tag::httpClientExample[]
     @Before
     public void setUp() {
-
-        // tag::httpClientExample[]
         httpClient = HttpClients.createSystem();
-        // end::httpClientExample[]
     }
+    // end::httpClientExample[]
 
     @Test
     public void shouldBeAbleToGetABookingUsingApacheHttpClientAndHoverfly() throws IOException {

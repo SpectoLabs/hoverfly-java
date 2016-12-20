@@ -1,0 +1,117 @@
+== Hoverfly JUnit Rule
+
+image:https://circleci.com/gh/SpectoLabs/hoverfly-junit.svg?style=shield["CircleCI", link="https://circleci.com/gh/SpectoLabs/hoverfly-junit"]
+image:https://codecov.io/gh/spectolabs/hoverfly-junit/branch/master/graph/badge.svg["Codecov", link="https://codecov.io/gh/spectolabs/hoverfly-junit"]
+image:https://img.shields.io/maven-central/v/io.specto/hoverfly-junit.svg["Maven Central", link="https://mvnrepository.com/artifact/io.specto/hoverfly-junit"]
+
+A Java native language binding for http://hoverfly.io/[Hoverfly^], which allows you to simulate http services in your unit tests.
+
+=== Legacy Schema Migration
+If you have recorded data in the legacy schema generated before hoverfly-junit v0.1.9, you will need to run the following commands using http://hoverfly.io/[Hoverfly^] to migrate to the new schema:
+```bash
+$ hoverctl start
+$ hoverctl delete simulations
+$ hoverctl import --v1 path-to-my-json/file.json
+$ hoverctl export path-to-my-json/file.json
+$ hoverctl stop
+```
+
+=== Quick Start
+
+==== Maven Build
+Import to your Maven project:
+
+```xml
+<groupId>io.specto</groupId>
+<artifactId>hoverfly-junit</artifactId>
+<version>0.2.2</version>
+```
+
+==== Gradle Build
+```
+compile group: 'io.specto', name: 'hoverfly-junit', version: '0.2.2'
+```
+==== Capturing
+Sometimes, it can be useful to write your tests against the real external dependency, recording it along the way.  Once you're happy, you can swap the real external service for your simulation.  This helps produce quick deterministic tests which are able to run in a sandbox.  Simply specify where you want the simulation to be output, relative to `src/test/resources`
+
+[source,java,indent=0]
+----
+@ClassRule
+public static HoverflyRule hoverflyRule = HoverflyRule.inCaptureMode("test-service.json");
+----
+
+==== Simulation
+To use the recorded data to run a simulation, simply add the following rule to your test, giving it the path to the recorded JSON on the classpath.
+
+[source,java,indent=0]
+----
+@ClassRule
+public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json");
+----
+
+As Hoverfly is a proxy, all requests (assuming they respect the JVM proxy settings) will be routed through it.  Hoverfly will then respond instead of the real service.
+
+The rule will attempt to detect the operating system and architecture type of the host, and then extract and execute the correct Hoverfly binary.  It will import the json into its database and destroy the process at the end of the tests.
+
+
+=== Performance
+
+It is recommended to boot Hoverfly once and share it across multiple tests by using a `@ClassRule` rather than `@Rule`.
+
+=== Simulation Data Schema
+
+Hoverfly simulations are stored as JSON with the http://hoverfly.io/[Hoverfly Schema^].
+
+You can import from the classpath:
+
+[source,java,indent=0]
+----
+@ClassRule
+public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json");
+----
+
+Or you can import from a URL:
+
+[source,java,indent=0]
+----
+@ClassRule
+public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(webServerUri);
+----
+
+=== Configuration
+==== Using Fixed Ports
+The admin and proxy port is default to zero, which means they will be randomized to unused ports. This can be helpful in order to avoid port clashes.
+If you want to set them statically you can do so through the fluent builder:
+
+[source,java,indent=0]
+----
+@ClassRule
+public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json",
+        configs().proxyPort(EXPECTED_PROXY_PORT).adminPort(EXPECTED_ADMIN_PORT));
+----
+
+=== Apache Http Client
+
+This doesn't respect JVM system properties for things such as the proxy and truststore settings. Therefore when you build one you would need to:
+
+[source,java,indent=0]
+----
+HttpClient httpClient = HttpClients.createSystem();
+// or
+HttpClient httpClient = HttpClientBuilder.create().useSystemProperties().build();
+----
+
+Or on older versions you may need to:
+
+[source,java,indent=0]
+----
+HttpClient httpClient = new SystemDefaultHttpClient();
+----
+
+In addition, HoverflyRule should be initialized before Apache HttpClient to ensure that the relevant JVM system properties are set before they are used by Apache library to configure the HttpClient.
+
+There are several options to achieve this:
+
+* Use `@ClassRule` and it gurantees that `HoverflyRule` is executed at the very start and end of the test case
+* If using `@Rule` is inevitable, you should initialize the HttpClient inside your `@Before` setUp method which will be executed after `@Rule`
+* As a last resort, you may want to manually configured Apache HttpClient to use custom proxy or ssl context, please check out https://hc.apache.org/httpcomponents-client-ga/examples.html[HttpClient examples^]
