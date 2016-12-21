@@ -1,8 +1,8 @@
 == Hoverfly Java
 
-image:https://circleci.com/gh/SpectoLabs/hoverfly-junit.svg?style=shield["CircleCI", link="https://circleci.com/gh/SpectoLabs/hoverfly-junit"]
-image:https://codecov.io/gh/spectolabs/hoverfly-junit/branch/master/graph/badge.svg["Codecov", link="https://codecov.io/gh/spectolabs/hoverfly-junit"]
-image:https://img.shields.io/maven-central/v/io.specto/hoverfly-junit.svg["Maven Central", link="https://mvnrepository.com/artifact/io.specto/hoverfly-junit"]
+image:https://circleci.com/gh/SpectoLabs/hoverfly-java.svg?style=shield["CircleCI", link="https://circleci.com/gh/SpectoLabs/hoverfly-java"]
+image:https://codecov.io/gh/spectolabs/hoverfly-java/branch/master/graph/badge.svg["Codecov", link="https://codecov.io/gh/spectolabs/hoverfly-java"]
+image:https://img.shields.io/maven-central/v/io.specto/hoverfly-java.svg["Maven Central", link="https://mvnrepository.com/artifact/io.specto/hoverfly-java"]
 
 A Java native language binding for http://hoverfly.io/[Hoverfly^], which allows you to simulate http services in your unit tests.
 
