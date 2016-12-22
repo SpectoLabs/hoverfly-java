@@ -32,7 +32,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyStore;
@@ -117,13 +117,8 @@ public class Hoverfly {
     }
 
     private void startHoverflyProcess() {
-        if (isPortInUse(proxyPort)) {
-            throw new IllegalStateException("Proxy port is already in use: " + proxyPort);
-        }
-
-        if (isPortInUse(adminPort)) {
-            throw new IllegalStateException("Admin port is already in use: " + adminPort);
-        }
+        checkPortInUse(proxyPort);
+        checkPortInUse(adminPort);
 
         try {
             binaryPath = extractBinary(getBinaryName());
@@ -284,11 +279,11 @@ public class Hoverfly {
      */
     private Path extractBinary(final String binaryName) throws IOException {
         LOGGER.info("Selecting the following binary based on the current operating system: {}", binaryName);
-        final URI sourceHoverflyUrl = findResourceOnClasspath("binaries/" + binaryName);
+        final URL sourceHoverflyUrl = findResourceOnClasspath("binaries/" + binaryName);
         final Path temporaryHoverflyPath = Files.createTempFile(binaryName, "");
         LOGGER.info("Storing binary in temporary directory {}", temporaryHoverflyPath);
         final File temporaryHoverflyFile = temporaryHoverflyPath.toFile();
-        FileUtils.copyURLToFile(sourceHoverflyUrl.toURL(), temporaryHoverflyFile);
+        FileUtils.copyURLToFile(sourceHoverflyUrl, temporaryHoverflyFile);
         if (SystemUtils.IS_OS_WINDOWS) {
             temporaryHoverflyFile.setExecutable(true);
             temporaryHoverflyFile.setReadable(true);
@@ -306,7 +301,7 @@ public class Hoverfly {
     private void setTrustStore() {
         try {
             // load your key store as a stream and initialize a KeyStore
-            InputStream trustStream = findResourceOnClasspath("hoverfly.jks").toURL().openStream();
+            InputStream trustStream = findResourceOnClasspath("hoverfly.jks").openStream();
 
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
 

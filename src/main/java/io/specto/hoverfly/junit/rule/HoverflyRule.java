@@ -198,13 +198,16 @@ public class HoverflyRule extends ExternalResource {
      * @param simulationSource the simulation
      */
     public void simulate(SimulationSource simulationSource) {
+        if (simulationSource == null) {
+            simulationSource = SimulationSource.empty();
+        }
         this.simulationSource = simulationSource;
         importSimulationSource();
     }
 
 
     private void importSimulationSource() {
-        if (hoverflyMode == SIMULATE && simulationSource != null) {
+        if (hoverflyMode == SIMULATE) {
             hoverfly.importSimulation(simulationSource);
         }
     }
