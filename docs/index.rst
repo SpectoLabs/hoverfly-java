@@ -152,6 +152,12 @@ You can also set fixed port:
 
     config().proxyPort(8080)
 
+You can also configure Hoverfly to use a remote instance which is already running
+
+.. code-block:: java
+
+    config().remote()
+
 SSL
 ===
 
