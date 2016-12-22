@@ -57,7 +57,6 @@ public class Hoverfly {
     private static final Logger LOGGER = LoggerFactory.getLogger(Hoverfly.class);
     private static final int BOOT_TIMEOUT_SECONDS = 10;
     private static final int RETRY_BACKOFF_INTERVAL_MS = 100;
-    private static final String HOVERFLY_URL = "http://localhost";
     private static final String HEALTH_CHECK_PATH = "/api/stats";
     private static final String SIMULATION_PATH = "/api/v2/simulation";
     private final HoverflyConfig hoverflyConfig;
@@ -79,7 +78,7 @@ public class Hoverfly {
         this.hoverflyMode = hoverflyMode;
         proxyPort = hoverflyConfig.getProxyPort() == 0 ? findUnusedPort() : hoverflyConfig.getProxyPort();
         adminPort = hoverflyConfig.getAdminPort() == 0 ? findUnusedPort() : hoverflyConfig.getAdminPort();
-        hoverflyResource = Client.create().resource(UriBuilder.fromUri(HOVERFLY_URL).port(adminPort).build());
+        hoverflyResource = Client.create().resource(UriBuilder.fromUri(configs().isRemoteInstance() ? configs().getRemoteHost() : "http://localhost").port(adminPort).build());
     }
 
     /**
@@ -100,7 +99,7 @@ public class Hoverfly {
      *
      */
     public void start() {
-        if (!hoverflyConfig.isRemote()) {
+        if (!hoverflyConfig.isRemoteInstance()) {
             startHoverflyProcess();
         }
         waitForHoverflyToBecomeHealthy();

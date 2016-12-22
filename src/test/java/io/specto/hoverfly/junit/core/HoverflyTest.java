@@ -124,14 +124,30 @@ public class HoverflyTest {
 
 
     @Test
-    public void shouldBeAbleToUseARemoteHoverfly() throws Exception {
+    public void shouldBeAbleToUseARemoteHoverflyDefaultingToLocalhost() throws Exception {
         // Given
         startDefaultHoverfly();
         final int adminPort = hoverfly.getAdminPort();
         final int proxyPort = hoverfly.getProxyPort();
-        final Hoverfly hoverfly = new Hoverfly(configs().remote().adminPort(adminPort).proxyPort(proxyPort), SIMULATE);
+        final Hoverfly hoverfly = new Hoverfly(configs().useRemoteInstance().adminPort(adminPort).proxyPort(proxyPort), SIMULATE);
 
         // When
+        assertRemoteHoverflyIsWorking(hoverfly);
+    }
+
+    @Test
+    public void shouldBeAbleToUseARemoteHoverflyConfiguringTheHost() throws Exception {
+        // Given
+        startDefaultHoverfly();
+        final int adminPort = hoverfly.getAdminPort();
+        final int proxyPort = hoverfly.getProxyPort();
+        final Hoverfly remoteHoverfly = new Hoverfly(configs().useRemoteInstance("http://localhost").adminPort(adminPort).proxyPort(proxyPort), SIMULATE);
+
+        // When
+        assertRemoteHoverflyIsWorking(remoteHoverfly);
+    }
+
+    private void assertRemoteHoverflyIsWorking(final Hoverfly hoverfly) {
         try {
             hoverfly.start();
             hoverfly.importSimulation(classpath("test-service.json"));
