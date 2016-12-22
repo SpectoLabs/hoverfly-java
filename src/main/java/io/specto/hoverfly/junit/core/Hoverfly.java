@@ -59,6 +59,8 @@ public class Hoverfly {
     private static final int RETRY_BACKOFF_INTERVAL_MS = 100;
     private static final String HEALTH_CHECK_PATH = "/api/stats";
     private static final String SIMULATION_PATH = "/api/v2/simulation";
+    private static final int DEFAULT_PROXY_PORT = 8500;
+    private static final int DEFAULT_ADMIN_PORT = 8888;
     private final HoverflyConfig hoverflyConfig;
     private final HoverflyMode hoverflyMode;
     private final Integer proxyPort;
@@ -76,8 +78,15 @@ public class Hoverfly {
     public Hoverfly(HoverflyConfig hoverflyConfig, HoverflyMode hoverflyMode) {
         this.hoverflyConfig = hoverflyConfig;
         this.hoverflyMode = hoverflyMode;
-        proxyPort = hoverflyConfig.getProxyPort() == 0 ? findUnusedPort() : hoverflyConfig.getProxyPort();
-        adminPort = hoverflyConfig.getAdminPort() == 0 ? findUnusedPort() : hoverflyConfig.getAdminPort();
+
+        if (hoverflyConfig.isRemoteInstance()) {
+            proxyPort = hoverflyConfig.getProxyPort() == 0 ? DEFAULT_PROXY_PORT : hoverflyConfig.getProxyPort();
+            adminPort = hoverflyConfig.getAdminPort() == 0 ? DEFAULT_ADMIN_PORT : hoverflyConfig.getAdminPort();
+        } else {
+            proxyPort = hoverflyConfig.getProxyPort() == 0 ? findUnusedPort() : hoverflyConfig.getProxyPort();
+            adminPort = hoverflyConfig.getAdminPort() == 0 ? findUnusedPort() : hoverflyConfig.getAdminPort();
+        }
+
         hoverflyResource = Client.create().resource(UriBuilder.fromUri(configs().isRemoteInstance() ? configs().getRemoteHost() : "http://localhost").port(adminPort).build());
     }
 

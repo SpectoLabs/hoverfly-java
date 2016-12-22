@@ -147,6 +147,20 @@ public class HoverflyTest {
         assertRemoteHoverflyIsWorking(remoteHoverfly);
     }
 
+    @Test
+    public void shouldDefaultRemoteHoverflyInstancePortsToStaticValues() {
+        // Given
+        hoverfly = new Hoverfly(configs().proxyPort(8500).adminPort(8888), SIMULATE);
+        hoverfly.start();
+
+        // When
+        final Hoverfly remoteHoverfly = new Hoverfly(configs().useRemoteInstance("http://localhost"), SIMULATE);
+
+        // When
+        assertRemoteHoverflyIsWorking(remoteHoverfly);
+    }
+
+
     private void assertRemoteHoverflyIsWorking(final Hoverfly hoverfly) {
         try {
             hoverfly.start();
