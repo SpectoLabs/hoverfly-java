@@ -14,13 +14,11 @@ package io.specto.hoverfly.junit.core;
 
 import org.apache.commons.lang3.SystemUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Paths;
 
 /**
  * Utils for Hoverfly
@@ -71,6 +69,15 @@ class HoverflyUtils {
             return serverSocket.getLocalPort();
         } catch (IOException e) {
             throw new RuntimeException("Cannot find available port", e);
+        }
+    }
+
+    static boolean isPortInUse(int port) {
+        try (final ServerSocket serverSocket = new ServerSocket(port)) {
+            serverSocket.close();
+            return false;
+        } catch (IOException e) {
+            return true;
         }
     }
 

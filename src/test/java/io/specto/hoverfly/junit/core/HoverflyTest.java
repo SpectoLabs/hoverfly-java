@@ -83,6 +83,67 @@ public class HoverflyTest {
                 .hasMessageContaining("Cannot load classpath resource: 'test-service-v1.json'");
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionWhenProxyPortIsAlreadyInUse() {
+        // Given
+        final Hoverfly hoverfly = new Hoverfly(configs(), SIMULATE);
+        Hoverfly portClashHoverfly = null;
+
+        try {
+            hoverfly.start();
+            portClashHoverfly = new Hoverfly(configs().proxyPort(hoverfly.getProxyPort()), SIMULATE);
+            portClashHoverfly.start();
+        } finally {
+            hoverfly.stop();
+            if (portClashHoverfly != null) {
+                portClashHoverfly.stop();
+            }
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionWhenAdminPortIsAlreadyInUse() {
+        // Given
+        final Hoverfly hoverfly = new Hoverfly(configs(), SIMULATE);
+        Hoverfly portClashHoverfly = null;
+
+        try {
+            hoverfly.start();
+            portClashHoverfly = new Hoverfly(configs().adminPort(hoverfly.getAdminPort()), SIMULATE);
+            portClashHoverfly.start();
+        } finally {
+            hoverfly.stop();
+            if (portClashHoverfly != null) {
+                portClashHoverfly.stop();
+            }
+        }
+    }
+
+
+//    @Test
+//    public void shouldBeAbleToUseARemoteHoverfly() throws Exception {
+//        // Given
+//        startDefaultHoverfly();
+//        final int adminPort = hoverfly.getAdminPort();
+//        final int proxyPort = hoverfly.getProxyPort();
+//        final Hoverfly hoverfly = new Hoverfly(configs().remote().adminPort(adminPort).proxyPort(proxyPort), SIMULATE);
+//
+//        // When
+//        try {
+//            hoverfly.start();
+//            hoverfly.importSimulation(classpath("test-service.json"));
+//            final ResponseEntity<String> getBookingResponse = new RestTemplate().getForEntity("http://www.my-test.com/api/bookings/1", String.class);
+//
+//            // Then
+//            assertThat(hoverfly.getSimulation()).isNotNull();
+//            assertThat(getBookingResponse.getStatusCode()).isEqualTo(OK);
+//        }
+//        finally {
+//            hoverfly.stop();
+//        }
+//    }
+
+
     @After
     public void tearDown() throws Exception {
         if (hoverfly != null) {

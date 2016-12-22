@@ -85,4 +85,5 @@ public class HoverflyConfig {
     public boolean isProxyLocalHost() {
         return proxyLocalHost;
     }
+
 }

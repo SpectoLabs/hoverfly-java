@@ -99,13 +99,21 @@ public class Hoverfly {
      * </ol>
      *
      */
-    public void start() throws IOException {
+    public void start() {
 
-        setTrustStore();
+        if (isPortInUse(proxyPort)) {
+            throw new IllegalStateException("Proxy port is already in use: " + proxyPort);
+        }
 
-        setProxySystemProperties();
+        if (isPortInUse(adminPort)) {
+            throw new IllegalStateException("Admin port is already in use: " + adminPort);
+        }
 
-        binaryPath = extractBinary(getBinaryName());
+        try {
+            binaryPath = extractBinary(getBinaryName());
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not excecute binary", e);
+        }
 
         LOGGER.info("Executing binary at {}", binaryPath);
         final List<String> commands = new ArrayList<>();
@@ -121,13 +129,19 @@ public class Hoverfly {
             commands.add("-capture");
         }
 
-        startedProcess = new ProcessExecutor()
-                .command(commands)
-                .redirectOutput(Slf4jStream.of(LOGGER).asInfo())
-                .directory(binaryPath.getParent().toFile())
-                .start();
+        try {
+            startedProcess = new ProcessExecutor()
+                    .command(commands)
+                    .redirectOutput(Slf4jStream.of(LOGGER).asInfo())
+                    .directory(binaryPath.getParent().toFile())
+                    .start();
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not start Hoverfly process", e);
+        }
 
         waitForHoverflyToStart();
+        setTrustStore();
+        setProxySystemProperties();
     }
 
     /**
@@ -135,12 +149,17 @@ public class Hoverfly {
      */
     public void stop() {
         LOGGER.info("Destroying hoverfly process");
-        startedProcess.getProcess().destroy();
 
-        try {
-            Files.deleteIfExists(binaryPath);
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to delete hoverfly binary", e);
+        if (startedProcess != null) {
+            startedProcess.getProcess().destroy();
+        }
+
+        if (binaryPath != null) {
+            try {
+                Files.deleteIfExists(binaryPath);
+            } catch (IOException e) {
+                throw new IllegalStateException("Failed to delete hoverfly binary", e);
+            }
         }
     }
 
@@ -296,4 +315,10 @@ public class Hoverfly {
             throw new IllegalStateException("Unable to set Hoverfly trust store", e);
         }
     }
+
+    public int getAdminPort() {
+        return adminPort;
+    }
+
+
 }
