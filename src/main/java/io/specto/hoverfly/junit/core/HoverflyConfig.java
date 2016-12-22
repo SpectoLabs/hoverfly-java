@@ -90,7 +90,7 @@ public class HoverflyConfig {
     }
 
     /**
-     * By calling this it means a remote Hoverfly will be used - not started by Java
+     * By calling this it means a remote Hoverfly will be used - not started by Java.  This method will assume the host is localhost.
      *
      * @return this
      */

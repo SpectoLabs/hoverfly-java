@@ -156,8 +156,8 @@ You can also configure Hoverfly to use a remote instance which is already runnin
 
 .. code-block:: java
 
-    config().remote() // localhost
-    config().remote("http://foo") // other host
+    config().useRemoteInstance() // localhost
+    config().useRemoteInstance("http://foo") // other host
 
 SSL
 ===
