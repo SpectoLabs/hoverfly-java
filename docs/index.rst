@@ -3,7 +3,7 @@ Overview
 What is Hoverfly?
 =================
 
-`Hoverfly <http://hoverfly.io>`_ is a lightweight service virtualisation tool which allows you to stub / simulate http services. It is a proxy written in Go which responds to http requests with stored responses, pretending to be it's real counterpart.
+`Hoverfly <http://hoverfly.io>`_ is a lightweight service virtualisation tool which allows you to stub / simulate HTTP(S) services. It is a proxy written in `Go <https://golang.org/>`_ which responds to HTTP(S) requests with stored responses, pretending to be it's real counterpart.
 
 It enables you to get around common testing problems caused by external dependencies, such as non-deterministic data, flakiness, not yet implemented API's, licensing fees, slow tests and more.
 
@@ -19,7 +19,7 @@ Quick start
 Maven
 =====
 
-If using maven, add the following dependency to your pom:
+If using Maven, add the following dependency to your pom:
 
 .. code-block:: xml
 
@@ -27,12 +27,13 @@ If using maven, add the following dependency to your pom:
         <groupId>io.specto</groupId>
         <artifactId>hoverfly-java</artifactId>
         <version>0.3.0</version>
+        <scope>test</scope>
     </dependency>
 
 Gradle
 ======
 
-Or with gradle add the dependency to your *.gradle file:
+Or with Gradle add the dependency to your *.gradle file:
 
 .. code-block:: groovy
 
@@ -41,7 +42,7 @@ Or with gradle add the dependency to your *.gradle file:
 Code example
 ============
 
-The simplest way is to get started is with the JUnit rule. Just give it some valid Hoverfly JSON. Behind the scenes the JVM proxy settings will be configured to use the managed Hoverfly process, so you can just make requests as normal, only this time Hoverfly will respond instead of the real service (assuming your http client respects JVM proxy settings).
+The simplest way is to get started is with the JUnit rule. Just give it some valid Hoverfly JSON. Behind the scenes the JVM proxy settings will be configured to use the managed Hoverfly process, so you can just make requests as normal, only this time Hoverfly will respond instead of the real service (assuming your HTTP client respects JVM proxy settings).
 
 .. code-block:: java
 
@@ -83,7 +84,7 @@ Capturing
 
 The previous examples have only used Hoverfly in simulate mode. You can also run it in capture mode, meaning that requests will be made to the real service as normal,
 only they will be intercepted and recorded by Hoverfly.  This can be a simple way of breaking a test's dependency on an external service; wait until you have a green
-test, then switch back into simulate mode using the data produced during capture mode.
+test, then switch back into simulate mode using the simulation data recorded during capture mode.
 
 .. code-block:: java
 
@@ -124,7 +125,7 @@ The rule is fluent and hierarchical, allowing you to define multiple service end
             .get("/api/bookings/1")
             .willReturn(success("{\"bookingId\":\"1\"\}", "application/json")),
 
-        .service("www.anotherService.com")
+        service("www.anotherService.com")
 
             .put("/api/bookings/1").body("{\"flightId\": \"1\"\"}")
             .willReturn(success())
@@ -133,16 +134,17 @@ The rule is fluent and hierarchical, allowing you to define multiple service end
             .willReturn(noContent())
         )
 
-The entrypoint for the DSL is `HoverflyDSL.service`.  After calling this you can provide a `method` and `path`, followed by optional request components.
+The entry point for the DSL is `HoverflyDSL.service`.  After calling this you can provide a `method` and `path`, followed by optional request components.
 You can then use `willReturn` to state which response you want when there is a match, which takes `responseBuilder` object that you can instantiate directly,
-or via the helper class `responseCreators`.
+or via the helper class `ResponseCreators`.
 
 
-Config
-======
+Configuration
+=============
 
-Hoverfly takes a config, which contains sensible defaults if not configured.  Ports will be randomised to unused ones, which is useful on something like a CI server if you want
+Hoverfly takes a config object, which contains sensible defaults if not configured.  Ports will be randomised to unused ones, which is useful on something like a CI server if you want
 to avoid port clashes.
+You can also set fixed port:
 
 .. code-block:: java
 
@@ -161,7 +163,7 @@ JUnit
 Overview
 ========
 
-An easier way to orchestrate Hoverfly is via the rule.  This is because it will create destroy the process for you automatically, doing any cleanup work and auto-importing / exporting if required.
+An easier way to orchestrate Hoverfly is via the JUnit Rule.  This is because it will create destroy the process for you automatically, doing any cleanup work and auto-importing / exporting if required.
 
 Simulate
 ========
@@ -177,7 +179,7 @@ Capture
 .. code-block:: java
 
     @ClassRule
-    public HoverflyRule hoverflyRule = HoverflyRule.inCaptureMode(classpath("simulation.json"));
+    public static HoverflyRule hoverflyRule = HoverflyRule.inCaptureMode(classpath("simulation.json"));
 
 Use @ClassRule
 ==============
@@ -188,7 +190,7 @@ and also guarantees that all your system properties are set correctly before exe
 Misc
 ####
 
-Apache Httpclient
+Apache HttpClient
 =================
 
 This doesn't respect JVM system properties for things such as the proxy and truststore settings. Therefore when you build one you would need to:
@@ -196,6 +198,8 @@ This doesn't respect JVM system properties for things such as the proxy and trus
 .. code-block:: java
 
     HttpClient httpClient = HttpClients.createSystem();
+    // or
+    HttpClient httpClient = HttpClientBuilder.create().useSystemProperties().build();
 
 
 Or on older versions you may need to:
@@ -211,13 +215,13 @@ There are several options to achieve this:
 
 * Use `@ClassRule` and it guarantees that `HoverflyRule` is executed at the very start and end of the test case
 * If using `@Rule` is inevitable, you should initialize the HttpClient inside your `@Before` setUp method which will be executed after `@Rule`
-* As a last resort, you may want to manually configured Apache HttpClient to use custom proxy or ssl context, please check out https://hc.apache.org/httpcomponents-client-ga/examples.html[HttpClient examples^]
+* As a last resort, you may want to manually configured Apache HttpClient to use custom proxy or ssl context, please check out `HttpClient examples <https://hc.apache.org/httpcomponents-client-ga/examples.html>`_
 
 
 Legacy Schema Migration
 =======================
 
-If you have recorded data in the legacy schema generated before hoverfly-junit v0.1.9, you will need to run the following commands using http://hoverfly.io/[Hoverfly^] to migrate to the new schema:
+If you have recorded data in the legacy schema generated before hoverfly-junit v0.1.9, you will need to run the following commands using `Hoverfly <http://hoverfly.io>`_ to migrate to the new schema:
 
 .. code-block:: bash
     $ hoverctl start

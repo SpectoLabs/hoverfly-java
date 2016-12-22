@@ -14,9 +14,8 @@ package io.specto.hoverfly.junit.dsl;
 
 /**
  * Entry point to a DSL which can be used to generate a Hoverfly simulation.  Example code:
- * <p>
  * <pre>
- * hoverflyRule.simulate(
+ * hoverflyRule.simulate(dsl(
  *
  *      service("www.my-test.com")
  *
@@ -26,7 +25,7 @@ package io.specto.hoverfly.junit.dsl;
  *          .get("/api/bookings/1")
  *          .willReturn(success("{\"bookingId\":\"1\"}", "application/json")),
  *
- *      .service("www.other-service.com")
+ *      service("www.other-service.com")
  *
  *          .put("/api/bookings/1").body("{\"flightId\": \"1\", \"class\": \"PREMIUM\"}")
  *          .willReturn(success())
@@ -36,6 +35,7 @@ package io.specto.hoverfly.junit.dsl;
  *
  *          .get("/api/bookings").query("destination=new%20york")
  *          .willReturn(success("{\"bookingId\":\"2\"}", "application/json")))
+ *      )
  * );
  * </pre>
  *
