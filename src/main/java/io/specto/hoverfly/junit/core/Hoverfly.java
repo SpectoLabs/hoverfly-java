@@ -169,6 +169,7 @@ public class Hoverfly {
      * @param simulationSource the simulation to import
      */
     public void importSimulation(SimulationSource simulationSource) {
+        LOGGER.info("Importing simulation data to Hoverfly");
         simulationSource.getSimulation().ifPresent(s ->
                 hoverflyResource.path(SIMULATION_PATH)
                         .type(MediaType.APPLICATION_JSON_TYPE)
