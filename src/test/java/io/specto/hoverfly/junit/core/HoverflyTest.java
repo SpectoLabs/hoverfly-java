@@ -5,7 +5,9 @@ import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -20,6 +22,7 @@ import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 import static io.specto.hoverfly.junit.core.SimulationSource.simulation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.springframework.http.HttpStatus.OK;
 
 public class HoverflyTest {
 
@@ -120,28 +123,27 @@ public class HoverflyTest {
     }
 
 
-//    @Test
-//    public void shouldBeAbleToUseARemoteHoverfly() throws Exception {
-//        // Given
-//        startDefaultHoverfly();
-//        final int adminPort = hoverfly.getAdminPort();
-//        final int proxyPort = hoverfly.getProxyPort();
-//        final Hoverfly hoverfly = new Hoverfly(configs().remote().adminPort(adminPort).proxyPort(proxyPort), SIMULATE);
-//
-//        // When
-//        try {
-//            hoverfly.start();
-//            hoverfly.importSimulation(classpath("test-service.json"));
-//            final ResponseEntity<String> getBookingResponse = new RestTemplate().getForEntity("http://www.my-test.com/api/bookings/1", String.class);
-//
-//            // Then
-//            assertThat(hoverfly.getSimulation()).isNotNull();
-//            assertThat(getBookingResponse.getStatusCode()).isEqualTo(OK);
-//        }
-//        finally {
-//            hoverfly.stop();
-//        }
-//    }
+    @Test
+    public void shouldBeAbleToUseARemoteHoverfly() throws Exception {
+        // Given
+        startDefaultHoverfly();
+        final int adminPort = hoverfly.getAdminPort();
+        final int proxyPort = hoverfly.getProxyPort();
+        final Hoverfly hoverfly = new Hoverfly(configs().remote().adminPort(adminPort).proxyPort(proxyPort), SIMULATE);
+
+        // When
+        try {
+            hoverfly.start();
+            hoverfly.importSimulation(classpath("test-service.json"));
+            final ResponseEntity<String> getBookingResponse = new RestTemplate().getForEntity("http://www.my-test.com/api/bookings/1", String.class);
+
+            // Then
+            assertThat(hoverfly.getSimulation()).isNotNull();
+            assertThat(getBookingResponse.getStatusCode()).isEqualTo(OK);
+        } finally {
+            hoverfly.stop();
+        }
+    }
 
 
     @After

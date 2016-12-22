@@ -100,7 +100,15 @@ public class Hoverfly {
      *
      */
     public void start() {
+        if (!hoverflyConfig.isRemote()) {
+            startHoverflyProcess();
+        }
+        waitForHoverflyToBecomeHealthy();
+        setTrustStore();
+        setProxySystemProperties();
+    }
 
+    private void startHoverflyProcess() {
         if (isPortInUse(proxyPort)) {
             throw new IllegalStateException("Proxy port is already in use: " + proxyPort);
         }
@@ -138,10 +146,6 @@ public class Hoverfly {
         } catch (IOException e) {
             throw new IllegalStateException("Could not start Hoverfly process", e);
         }
-
-        waitForHoverflyToStart();
-        setTrustStore();
-        setProxySystemProperties();
     }
 
     /**
@@ -252,7 +256,7 @@ public class Hoverfly {
     /**
      * Blocks until the Hoverfly process becomes healthy, otherwise time out
      */
-    private void waitForHoverflyToStart() {
+    private void waitForHoverflyToBecomeHealthy() {
         final Instant now = Instant.now();
 
         while (Duration.between(now, Instant.now()).getSeconds() < BOOT_TIMEOUT_SECONDS) {

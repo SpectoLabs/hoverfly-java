@@ -19,6 +19,7 @@ public class HoverflyConfig {
     private int proxyPort;
     private int adminPort;
     private boolean proxyLocalHost;
+    private boolean remote = false;
 
     private HoverflyConfig() {
     }
@@ -86,4 +87,12 @@ public class HoverflyConfig {
         return proxyLocalHost;
     }
 
+    public HoverflyConfig remote() {
+        this.remote = true;
+        return this;
+    }
+
+    public boolean isRemote() {
+        return remote;
+    }
 }
