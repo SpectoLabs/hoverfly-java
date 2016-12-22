@@ -102,7 +102,7 @@ There are a few different potential sources for Simulations:
 .. code-block:: java
 
     SimulationSource.classpath("simulation.json"); //classpath
-    SimulationSource.url(new URL("http://www.my-service.com/simulation")); // URL
+    SimulationSource.url(new URL("http://www.my-service.com/simulation.json")); // URL
     SimulationSource.dsl(service("www.foo.com").get("/bar).willReturn(success())); // Object
     SimulationSource.simulation(new Simulation()); // Object
     SimulationSource.empty(); // None
@@ -215,7 +215,7 @@ There are several options to achieve this:
 
 * Use `@ClassRule` and it guarantees that `HoverflyRule` is executed at the very start and end of the test case
 * If using `@Rule` is inevitable, you should initialize the HttpClient inside your `@Before` setUp method which will be executed after `@Rule`
-* As a last resort, you may want to manually configured Apache HttpClient to use custom proxy or ssl context, please check out `HttpClient examples <https://hc.apache.org/httpcomponents-client-ga/examples.html>`_
+* As a last resort, you may want to manually configured Apache HttpClient to use custom proxy or SSL context, please check out `HttpClient examples <https://hc.apache.org/httpcomponents-client-ga/examples.html>`_
 
 
 Legacy Schema Migration
@@ -224,9 +224,9 @@ Legacy Schema Migration
 If you have recorded data in the legacy schema generated before hoverfly-junit v0.1.9, you will need to run the following commands using `Hoverfly <http://hoverfly.io>`_ to migrate to the new schema:
 
 .. code-block:: bash
+
     $ hoverctl start
     $ hoverctl delete simulations
     $ hoverctl import --v1 path-to-my-json/file.json
     $ hoverctl export path-to-my-json/file.json
     $ hoverctl stop
-```

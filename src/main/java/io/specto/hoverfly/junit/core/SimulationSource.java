@@ -83,7 +83,7 @@ public interface SimulationSource {
     }
 
     /**
-     * Creates a simulation by returning itself
+     * Creates a simulation from a {@link Simulation} object
      *
      * @param simulation the simulation
      * @return the simulation
