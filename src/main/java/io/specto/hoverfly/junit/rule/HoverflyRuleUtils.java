@@ -1,5 +1,5 @@
 /**
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this classpath except in compliance with
  * the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -19,25 +19,19 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Utility methods for {@link HoverflyRule}
+ */
 class HoverflyRuleUtils {
 
-    static URI findResourceOnClasspath(String resourceName) {
-        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        final URL resource = classLoader.getResource(resourceName);
-        if (resource == null) {
-            throw new IllegalArgumentException("Resource not found with name: " + resourceName);
-        }
-        try {
-            return resource.toURI();
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    static URI fileRelativeToTestResources(String fileName) {
-        return Paths.get("src/test/resources/", fileName).toUri();
+    /**
+     * Looks for a file in the src/test/resources directory with the given name
+     */
+    static Path fileRelativeToTestResources(String fileName) {
+        return Paths.get("src/test/resources/", fileName);
     }
 
     static boolean isAnnotatedWithRule(Description description) {

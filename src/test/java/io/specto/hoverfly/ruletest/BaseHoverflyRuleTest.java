@@ -1,14 +1,13 @@
-package io.specto.hoverfly.junit.rule;
+package io.specto.hoverfly.ruletest;
 
-import io.specto.hoverfly.webserver.ImportTestWebServer;
-import org.junit.*;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,21 +15,10 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-public class URLHoverflyRuleTest {
+@Ignore
+public class BaseHoverflyRuleTest {
 
-    private static URL webServerUri;
-
-    // tag::urlExample[]
-    @Rule
-    public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(webServerUri);
-    // end::urlExample[]
-
-    private RestTemplate restTemplate = new RestTemplate();
-
-    @BeforeClass
-    public static void setUp() throws Exception {
-        webServerUri = ImportTestWebServer.run();
-    }
+    protected RestTemplate restTemplate = new RestTemplate();
 
     @Test
     public void shouldBeAbleToMakeABookingUsingHoverfly() throws URISyntaxException {
@@ -61,10 +49,5 @@ public class URLHoverflyRuleTest {
                 "\"time\":\"2011-09-01T12:30\"," +
                 "\"_links\":{\"self\":{\"href\":\"http://localhost/api/bookings/1\"}}" +
                 "}");
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        ImportTestWebServer.terminate();
     }
 }

@@ -1,5 +1,6 @@
-package io.specto.hoverfly.junit.rule;
+package io.specto.hoverfly.ruletest;
 
+import io.specto.hoverfly.junit.rule.HoverflyRule;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -11,13 +12,14 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
 
 public class ApacheHttpClientTest {
 
 
     @Rule
-    public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json");
+    public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(classpath("test-service.json"));
 
     private HttpClient httpClient;
 
@@ -44,6 +46,7 @@ public class ApacheHttpClientTest {
                 "\"time\":\"2011-09-01T12:30\"," +
                 "\"_links\":{\"self\":{\"href\":\"http://localhost/api/bookings/1\"}}" +
                 "}");
+
     }
 
 }

@@ -1,4 +1,4 @@
-package io.specto.hoverfly.junit.rule;
+package io.specto.hoverfly.ruletest;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -8,6 +8,7 @@ import ch.qos.logback.core.Appender;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import io.specto.hoverfly.junit.rule.HoverflyRule;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.atLeastOnce;
@@ -36,9 +38,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class NonClassRuleHoverflyRuleTest {
 
     private static Appender<ILoggingEvent> appender;
-
+    @Rule
+    public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(classpath("test-service.json"));
     @Captor
     private ArgumentCaptor<LoggingEvent> logCaptor;
+    private RestTemplate restTemplate = new RestTemplate();
+    private Client jerseyClient = Client.create();
 
     @BeforeClass
     public static void init() {
@@ -48,12 +53,6 @@ public class NonClassRuleHoverflyRuleTest {
         logger.setAdditive(false);
         logger.setLevel(Level.WARN);
     }
-    @Rule
-    public HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode("test-service.json");
-
-    private RestTemplate restTemplate = new RestTemplate();
-    private Client jerseyClient = Client.create();
-
 
     @Test
     public void shouldLogWarning() throws Exception {

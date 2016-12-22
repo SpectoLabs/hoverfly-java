@@ -16,6 +16,8 @@ import java.nio.file.Path;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
+import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
+import static io.specto.hoverfly.junit.core.SimulationSource.simulation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -48,7 +50,7 @@ public class HoverflyTest {
         // When
         URL resource = Resources.getResource("test-service.json");
         Simulation importedSimulation = mapper.readValue(resource, Simulation.class);
-        hoverfly.importSimulation(importedSimulation);
+        hoverfly.importSimulation(simulation(importedSimulation));
 
         // Then
         Simulation exportedSimulation = hoverfly.getSimulation();
@@ -61,7 +63,7 @@ public class HoverflyTest {
         // When
         URL resource = Resources.getResource("test-service.json");
         Simulation importedSimulation = mapper.readValue(resource, Simulation.class);
-        hoverfly.importSimulation(resource.toURI());
+        hoverfly.importSimulation(classpath("test-service.json"));
 
         // Then
         Simulation exportedSimulation = hoverfly.getSimulation();
@@ -73,12 +75,12 @@ public class HoverflyTest {
 
         startDefaultHoverfly();
         // When
-        Throwable throwable = catchThrowable(() -> hoverfly.importSimulation(Resources.getResource("test-service-v1.json").toURI()));
+        Throwable throwable = catchThrowable(() -> hoverfly.importSimulation(classpath("test-service-v1.json")));
 
         // Then
         assertThat(throwable)
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to submit simulation data");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Cannot load classpath resource: 'test-service-v1.json'");
     }
 
     @After
