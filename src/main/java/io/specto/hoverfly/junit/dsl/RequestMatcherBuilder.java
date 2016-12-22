@@ -81,7 +81,6 @@ public class RequestMatcherBuilder {
      * @param value the header value to match on
      * @return the {@link RequestMatcherBuilder} for further customizations
      */
-    // TODO missing test
     public RequestMatcherBuilder header(final String key, final String value) {
         headers.put(key, Collections.singletonList(value));
         return this;
@@ -97,12 +96,12 @@ public class RequestMatcherBuilder {
         return invoker.addRequestResponsePair(new RequestResponsePair(this.build(), responseBuilder.build()));
     }
 
-    private RequestMatcherBuilder queryParam(final String key, final Object... values) {
-        for(Object value : values) {
-            queryParams.add(key, value.toString());
-        }
-        return this;
-    }
+//    private RequestMatcherBuilder queryParam(final String key, final Object... values) {
+//        for(Object value : values) {
+//            queryParams.add(key, value.toString());
+//        }
+//        return this;
+//    }
 
     private RequestMatcher build() {
         // TODO Hoverfly only supports exact request query matching at the moment, will enable queryParams builder when the problem is resolved
@@ -113,11 +112,11 @@ public class RequestMatcherBuilder {
     }
 
 
-    private String encodeUrl(String str) {
-        try {
-            return URLEncoder.encode(str, UTF_8).replaceAll("\\+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            throw new UnsupportedOperationException(e);
-        }
-    }
+//    private String encodeUrl(String str) {
+//        try {
+//            return URLEncoder.encode(str, UTF_8).replaceAll("\\+", "%20");
+//        } catch (UnsupportedEncodingException e) {
+//            throw new UnsupportedOperationException(e);
+//        }
+//    }
 }

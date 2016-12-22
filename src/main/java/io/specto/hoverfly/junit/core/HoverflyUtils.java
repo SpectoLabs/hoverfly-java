@@ -72,29 +72,24 @@ class HoverflyUtils {
         }
     }
 
-    static boolean isPortInUse(int port) {
+    static void checkPortInUse(int port) {
         try (final ServerSocket serverSocket = new ServerSocket(port)) {
             serverSocket.close();
-            return false;
         } catch (IOException e) {
-            return true;
+            throw new IllegalStateException("Port is already in use: " + port);
         }
     }
 
     /**
      * Looks for a resource on the classpath with the given name
      */
-    static URI findResourceOnClasspath(String resourceName) {
+    static URL findResourceOnClasspath(String resourceName) {
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         final URL resource = classLoader.getResource(resourceName);
         if (resource == null) {
             throw new IllegalArgumentException("Resource not found with name: " + resourceName);
         }
-        try {
-            return resource.toURI();
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(e);
-        }
+        return resource;
     }
 
 }

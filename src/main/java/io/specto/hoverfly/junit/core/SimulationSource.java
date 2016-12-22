@@ -75,7 +75,7 @@ public interface SimulationSource {
     static SimulationSource classpath(final String classpath) {
         return () -> {
             try {
-                return Optional.of(OBJECT_READER.readValue(Paths.get(findResourceOnClasspath(classpath)).toFile()));
+                return Optional.of(OBJECT_READER.readValue(findResourceOnClasspath(classpath)));
             } catch (IOException e) {
                 throw new IllegalArgumentException("Cannot load classpath resource: '" + classpath + "'", e);
             }

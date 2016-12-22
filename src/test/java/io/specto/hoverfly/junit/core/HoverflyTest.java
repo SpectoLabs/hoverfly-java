@@ -48,20 +48,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldImportSimulationObject() throws Exception {
-        startDefaultHoverfly();
-        // When
-        URL resource = Resources.getResource("test-service.json");
-        Simulation importedSimulation = mapper.readValue(resource, Simulation.class);
-        hoverfly.importSimulation(simulation(importedSimulation));
-
-        // Then
-        Simulation exportedSimulation = hoverfly.getSimulation();
-        assertThat(exportedSimulation).isEqualTo(importedSimulation);
-    }
-
-    @Test
-    public void shouldImportFileURI() throws Exception {
+    public void shouldImportSimulation() throws Exception {
         startDefaultHoverfly();
         // When
         URL resource = Resources.getResource("test-service.json");
@@ -74,51 +61,40 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenSubmitSimulationFailed() throws Exception {
-
-        startDefaultHoverfly();
-        // When
-        Throwable throwable = catchThrowable(() -> hoverfly.importSimulation(classpath("test-service-v1.json")));
-
-        // Then
-        assertThat(throwable)
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Cannot load classpath resource: 'test-service-v1.json'");
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionWhenProxyPortIsAlreadyInUse() {
+    public void shouldThrowExceptionWhenProxyPortIsAlreadyInUse() throws Exception {
         // Given
-        final Hoverfly hoverfly = new Hoverfly(configs(), SIMULATE);
-        Hoverfly portClashHoverfly = null;
+        startDefaultHoverfly();
+        Hoverfly portClashHoverfly = new Hoverfly(configs().proxyPort(hoverfly.getProxyPort()), SIMULATE);
 
         try {
-            hoverfly.start();
-            portClashHoverfly = new Hoverfly(configs().proxyPort(hoverfly.getProxyPort()), SIMULATE);
-            portClashHoverfly.start();
+            // When
+            Throwable throwable = catchThrowable(portClashHoverfly::start);
+
+            //Then
+            assertThat(throwable)
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("Port is already in use");
         } finally {
-            hoverfly.stop();
-            if (portClashHoverfly != null) {
-                portClashHoverfly.stop();
-            }
+            portClashHoverfly.stop();
         }
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionWhenAdminPortIsAlreadyInUse() {
+    @Test
+    public void shouldThrowExceptionWhenAdminPortIsAlreadyInUse() throws Exception {
         // Given
-        final Hoverfly hoverfly = new Hoverfly(configs(), SIMULATE);
-        Hoverfly portClashHoverfly = null;
+        startDefaultHoverfly();
+        Hoverfly portClashHoverfly = new Hoverfly(configs().adminPort(hoverfly.getAdminPort()), SIMULATE);;
 
         try {
-            hoverfly.start();
-            portClashHoverfly = new Hoverfly(configs().adminPort(hoverfly.getAdminPort()), SIMULATE);
-            portClashHoverfly.start();
+            // When
+            Throwable throwable = catchThrowable(portClashHoverfly::start);
+
+            //Then
+            assertThat(throwable)
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("Port is already in use");
         } finally {
-            hoverfly.stop();
-            if (portClashHoverfly != null) {
-                portClashHoverfly.stop();
-            }
+            portClashHoverfly.stop();
         }
     }
 
@@ -184,7 +160,7 @@ public class HoverflyTest {
     }
 
     private void startDefaultHoverfly() throws IOException, URISyntaxException {
-        hoverfly = new Hoverfly(configs(), SIMULATE);
+        hoverfly = new Hoverfly(SIMULATE);
         hoverfly.start();
     }
 }
