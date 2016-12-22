@@ -12,6 +12,7 @@ import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Optional;
@@ -49,6 +50,23 @@ public interface SimulationSource {
     }
 
     /**
+     * Creates a simulation from a URL string
+     *
+     * @param url the url of the simulation
+     * @return the resource
+     */
+    static SimulationSource url(final String url) {
+        return () -> {
+            try {
+                return Optional.of(OBJECT_READER.readValue(new URL(url)));
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Cannot read simulation", e);
+            }
+        };
+    }
+
+
+    /**
      * Creates a simulation from the classpath
      *
      * @param classpath the classpath of the simulation
@@ -60,6 +78,22 @@ public interface SimulationSource {
                 return Optional.of(OBJECT_READER.readValue(Paths.get(findResourceOnClasspath(classpath)).toFile()));
             } catch (IOException e) {
                 throw new IllegalArgumentException("Cannot load classpath resource: '" + classpath + "'", e);
+            }
+        };
+    }
+
+    /**
+     * Creates a simulation from a file
+     *
+     * @param path the file path of the simulation
+     * @return the resource
+     */
+    static SimulationSource file(final Path path) {
+        return () -> {
+            try {
+                return Optional.of(OBJECT_READER.readValue(path.toFile()));
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Cannot load file resource: '" + path.toString() + "'", e);
             }
         };
     }

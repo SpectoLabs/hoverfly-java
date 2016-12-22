@@ -75,9 +75,9 @@ public class HoverflyRule extends ExternalResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HoverflyRule.class);
     private final Hoverfly hoverfly;
-    private final SimulationSource simulationSource;
     private final HoverflyMode hoverflyMode;
     private final Path capturePath;
+    private SimulationSource simulationSource;
 
     private HoverflyRule(final SimulationSource simulationSource, final HoverflyConfig hoverflyConfig) {
         this.hoverflyMode = SIMULATE;
@@ -96,22 +96,22 @@ public class HoverflyRule extends ExternalResource {
     /**
      * Instantiates a rule which runs {@link Hoverfly} in capture mode
      *
-     * @param recordedFilename the path to the recorded name relative to src/test/resources
+     * @param outputFilename the path to the recorded name relative to src/test/resources
      * @return the rule
      */
-    public static HoverflyRule inCaptureMode(String recordedFilename) {
-        return inCaptureMode(recordedFilename, configs());
+    public static HoverflyRule inCaptureMode(String outputFilename) {
+        return inCaptureMode(outputFilename, configs());
     }
 
     /**
      * Instantiates a rule which runs {@link Hoverfly} in capture mode
      *
-     * @param recordedFilename the path to the recorded name relative to src/test/resources
+     * @param outputFilename the path to the recorded name relative to src/test/resources
      * @param hoverflyConfig   the config
      * @return the rule
      */
-    public static HoverflyRule inCaptureMode(String recordedFilename, HoverflyConfig hoverflyConfig) {
-        return new HoverflyRule(fileRelativeToTestResources(recordedFilename), hoverflyConfig);
+    public static HoverflyRule inCaptureMode(String outputFilename, HoverflyConfig hoverflyConfig) {
+        return new HoverflyRule(fileRelativeToTestResources(outputFilename), hoverflyConfig);
     }
 
     /**
@@ -167,9 +167,7 @@ public class HoverflyRule extends ExternalResource {
     protected void before() throws Throwable {
         hoverfly.start();
 
-        if (hoverflyMode == SIMULATE && simulationSource != null) {
-            hoverfly.importSimulation(simulationSource);
-        }
+        importSimulationSource();
     }
 
     /**
@@ -195,13 +193,20 @@ public class HoverflyRule extends ExternalResource {
         return hoverfly.getProxyPort();
     }
 
-
     /**
      * Changes the Simulation used by {@link Hoverfly}
      * @param simulationSource the simulation
      */
     public void simulate(SimulationSource simulationSource) {
-        hoverfly.importSimulation(simulationSource);
+        this.simulationSource = simulationSource;
+        importSimulationSource();
+    }
+
+
+    private void importSimulationSource() {
+        if (hoverflyMode == SIMULATE && simulationSource != null) {
+            hoverfly.importSimulation(simulationSource);
+        }
     }
 
 }
