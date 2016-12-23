@@ -12,9 +12,9 @@
  */
 package io.specto.hoverfly.junit.dsl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.specto.hoverfly.junit.core.model.Response;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +27,8 @@ import static java.util.Collections.singletonList;
  * @see ResponseCreators
  */
 public class ResponseBuilder {
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Map<String, List<String>> headers = new HashMap<>();
     private String body = "";
@@ -81,6 +83,12 @@ public class ResponseBuilder {
      */
     Response build() {
         return new Response(status, body, false, headers);
+    }
+
+    public ResponseBuilder body(final BodyConverter bodyConverter) {
+        this.body = bodyConverter.body();
+        this.header("Content-Type", bodyConverter.contentType());
+        return this;
     }
 }
 

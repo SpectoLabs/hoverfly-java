@@ -56,7 +56,7 @@ public class Simulation {
         try {
             return new ObjectMapper().writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to convert object to json string: ", e);
+            throw new RuntimeException("Failed to convert object to string: ", e);
         }
     }
 

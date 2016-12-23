@@ -12,6 +12,7 @@ for this is https://en.wikipedia.org/wiki/Service_virtualization[Service Virtual
 - Simulation of http services
 - Strict or loose http request matching based on URL, method, body and header combinations
 - Fluent and expressive DSL for easy generation of simulated services
+- Automatic marshalling of objects into JSON during request / response body generation
 - Create simulations by running in capture mode
 - Hoverfly is a proxy, so you don't need to alter the host that you make requests to
 - Multiple hosts / services per single instance of Hoverfly

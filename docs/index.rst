@@ -129,7 +129,7 @@ The rule is fluent and hierarchical, allowing you to define multiple service end
 
         service("www.anotherService.com")
 
-            .put("/api/bookings/1").body("{\"flightId\": \"1\"\"}")
+            .put("/api/bookings/1").body(json(new Booking("foo", "bar")))
             .willReturn(success())
 
             .delete("/api/bookings/1")
@@ -139,6 +139,16 @@ The rule is fluent and hierarchical, allowing you to define multiple service end
 The entry point for the DSL is `HoverflyDSL.service`.  After calling this you can provide a `method` and `path`, followed by optional request components.
 You can then use `willReturn` to state which response you want when there is a match, which takes `responseBuilder` object that you can instantiate directly,
 or via the helper class `ResponseCreators`.
+
+Conversion
+==========
+
+There is currently a `BodyConverter` interface which can be used to serialise Java objects into strings, and also set a content type header automatically
+
+.. code-block:: java
+
+    .body(json(new JsonObject("foo", "bar"))) // default
+    .body(json(new JsonObject("foo", "bar"), myObjectMapper)) // Object mapper configured
 
 
 Configuration
