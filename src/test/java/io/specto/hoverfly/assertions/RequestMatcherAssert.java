@@ -1,29 +1,21 @@
 package io.specto.hoverfly.assertions;
 
-import io.specto.hoverfly.junit.core.model.Response;
+import io.specto.hoverfly.junit.core.model.RequestMatcher;
 import org.assertj.core.api.AbstractAssert;
 
 import java.util.Arrays;
 import java.util.Set;
 
+import static io.specto.hoverfly.assertions.Header.header;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
-    public ResponseAssert(final Response actual) {
-        super(actual, ResponseAssert.class);
+public class RequestMatcherAssert extends AbstractAssert<RequestMatcherAssert, RequestMatcher> {
+    public RequestMatcherAssert(final RequestMatcher actual) {
+        super(actual, RequestMatcherAssert.class);
     }
 
-
-    public ResponseAssert hasStatus(final int status) {
-        isNotNull();
-
-        assertThat(actual.getStatus()).isEqualTo(status);
-
-        return this;
-    }
-
-    public ResponseAssert hasNoBody() {
+    public RequestMatcherAssert hasNoBody() {
         isNotNull();
 
         assertThat(actual.getBody()).isEmpty();
@@ -31,7 +23,7 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
         return this;
     }
 
-    public ResponseAssert hasBody(final String body) {
+    public RequestMatcherAssert hasBody(final String body) {
         isNotNull();
 
         assertThat(actual.getBody()).isEqualTo(body);
@@ -39,11 +31,11 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
         return this;
     }
 
-    public ResponseAssert hasExactHeaders(final Header... headers) {
+    public RequestMatcherAssert hasExactHeaders(final Header... headers) {
         isNotNull();
 
         final Set<Header> setOfHeaders = Arrays.stream(headers)
-                .map(h -> Header.header(h.getKey(), h.getValue()))
+                .map(h -> header(h.getKey(), h.getValue()))
                 .collect(toSet());
 
         assertThat(actual.getHeaders()).containsOnly(setOfHeaders.toArray(new Header[setOfHeaders.size()]));
@@ -51,13 +43,11 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
         return this;
     }
 
-    public ResponseAssert hasNoHeaders() {
+    public RequestMatcherAssert hasNoHeaders() {
         isNotNull();
 
         assertThat(actual.getHeaders()).isEmpty();
 
         return this;
     }
-
-
 }

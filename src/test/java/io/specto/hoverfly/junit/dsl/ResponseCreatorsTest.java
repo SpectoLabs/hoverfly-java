@@ -4,7 +4,7 @@ import io.specto.hoverfly.junit.core.model.Response;
 import org.junit.Test;
 
 import static io.specto.hoverfly.assertions.Assertions.assertThat;
-import static io.specto.hoverfly.assertions.ResponseAssert.header;
+import static io.specto.hoverfly.assertions.Header.header;
 
 public class ResponseCreatorsTest {
     @Test
