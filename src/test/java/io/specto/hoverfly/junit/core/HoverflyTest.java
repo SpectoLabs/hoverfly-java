@@ -6,33 +6,42 @@ import io.specto.hoverfly.junit.core.model.Simulation;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.RestTemplate;
+import org.zeroturnaround.exec.StartedProcess;
 
-import javax.net.ssl.*;
+import javax.net.ssl.SSLContext;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.KeyStore;
-import java.util.Properties;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.easymock.EasyMock.expect;
+import static org.mockito.Mockito.*;
+import static org.powermock.api.easymock.PowerMock.mockStatic;
+import static org.powermock.api.easymock.PowerMock.replayAll;
 import static org.springframework.http.HttpStatus.OK;
 
+@PowerMockIgnore("javax.net.ssl.*")
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Hoverfly.class)
 public class HoverflyTest {
 
     private static final int EXPECTED_PROXY_PORT = 8890;
@@ -154,6 +163,41 @@ public class HoverflyTest {
         // TODO: Find better way to test trust store
         HttpResponse response = client.execute(new HttpGet("https://specto.io"));
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+
+    @Test
+    public void shouldDeleteHoverflyBinariesOnJvmTerminatesIfInitialDeletionFailed() throws Exception {
+
+        // Given
+        Hoverfly hoverfly = new Hoverfly(SIMULATE);
+
+        Field binaryPath = hoverfly.getClass().getDeclaredField("binaryPath");
+        binaryPath.setAccessible(true);
+        Path mockPath = mock(Path.class);
+        binaryPath.set(hoverfly, mockPath);
+
+        File mockFile = mock(File.class);
+        when(mockPath.toFile()).thenReturn(mockFile);
+
+        mockStatic(Files.class);
+        expect(Files.deleteIfExists(mockPath)).andThrow(new IOException());
+        replayAll();
+
+        Field startedProcess = hoverfly.getClass().getDeclaredField("startedProcess");
+        startedProcess.setAccessible(true);
+        StartedProcess mockStartedProcess = mock(StartedProcess.class);
+        Process mockProcess = mock(Process.class);
+        startedProcess.set(hoverfly, mockStartedProcess);
+
+        when(mockStartedProcess.getProcess()).thenReturn(mockProcess);
+
+        // When
+        hoverfly.stop();
+
+        // Then
+        verify(mockProcess).destroy();
+        verify(mockFile).deleteOnExit();
     }
 
     private void assertRemoteHoverflyIsWorking(final Hoverfly hoverfly) {

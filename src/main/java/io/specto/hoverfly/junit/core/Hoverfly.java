@@ -160,7 +160,9 @@ public class Hoverfly {
             try {
                 Files.deleteIfExists(binaryPath);
             } catch (IOException e) {
-                throw new IllegalStateException("Failed to delete hoverfly binary", e);
+                LOGGER.warn("Failed to delete hoverfly binary", e);
+                // Try deleting the binary again on JVM terminates, and this should fix issue on Windows where the file lock is not immediately released
+                binaryPath.toFile().deleteOnExit();
             }
         }
     }
