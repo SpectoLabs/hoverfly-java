@@ -10,6 +10,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -35,8 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.easymock.EasyMock.expect;
 import static org.mockito.Mockito.*;
-import static org.powermock.api.easymock.PowerMock.mockStatic;
-import static org.powermock.api.easymock.PowerMock.replayAll;
+import static org.powermock.api.easymock.PowerMock.*;
 import static org.springframework.http.HttpStatus.OK;
 
 @PowerMockIgnore("javax.net.ssl.*")
@@ -167,9 +167,7 @@ public class HoverflyTest {
 
 
     @Test
-    public void shouldDeleteHoverflyBinariesOnJvmTerminatesIfInitialDeletionFailed() throws Exception {
-
-        // Given
+    public void shouldWaitForHoverflyProcessTerminatedBeforeDeletingBinary() throws Exception {
         Hoverfly hoverfly = new Hoverfly(SIMULATE);
 
         Field binaryPath = hoverfly.getClass().getDeclaredField("binaryPath");
@@ -196,8 +194,11 @@ public class HoverflyTest {
         hoverfly.stop();
 
         // Then
-        verify(mockProcess).destroy();
-        verify(mockFile).deleteOnExit();
+        InOrder inOrder = inOrder(mockProcess, mockFile);
+        inOrder.verify(mockProcess).destroy();
+        inOrder.verify(mockProcess).waitFor();
+        inOrder.verify(mockFile).deleteOnExit();
+        verifyAll();
     }
 
     private void assertRemoteHoverflyIsWorking(final Hoverfly hoverfly) {

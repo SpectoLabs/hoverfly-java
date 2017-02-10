@@ -36,6 +36,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.*;
 
 import static com.sun.jersey.api.client.ClientResponse.Status.OK;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
@@ -153,16 +154,27 @@ public class Hoverfly {
         LOGGER.info("Destroying hoverfly process");
 
         if (startedProcess != null) {
-            startedProcess.getProcess().destroy();
+            Process process = startedProcess.getProcess();
+            process.destroy();
+
+            // Some platform terminates process asynchronously, eg. Windows, and cannot guarantee releasing the file lock to
+            // allow deletion
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            Future<Integer> future = executorService.submit((Callable<Integer>) process::waitFor);
+            try {
+                future.get(5, TimeUnit.SECONDS);
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                LOGGER.warn("Timeout when waiting for hoverfly process to terminate.");
+            }
+            executorService.shutdownNow();
         }
 
         if (binaryPath != null) {
             try {
+                binaryPath.toFile().deleteOnExit();
                 Files.deleteIfExists(binaryPath);
             } catch (IOException e) {
-                LOGGER.warn("Failed to delete hoverfly binary", e);
-                // Try deleting the binary again on JVM terminates, and this should fix issue on Windows where the file lock is not immediately released
-                binaryPath.toFile().deleteOnExit();
+                LOGGER.warn("Failed to delete hoverfly binary, will try again on JVM terminating", e);
             }
         }
     }
