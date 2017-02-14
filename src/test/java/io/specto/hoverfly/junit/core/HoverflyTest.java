@@ -2,6 +2,7 @@ package io.specto.hoverfly.junit.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import com.sun.jersey.api.client.WebResource;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -24,6 +25,7 @@ import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -116,42 +118,46 @@ public class HoverflyTest {
         }
     }
 
-
     @Test
-    public void shouldBeAbleToUseARemoteHoverflyDefaultingToLocalhost() throws Exception {
+    public void shouldBeAbleToUseRemoteHoverflyInstance() throws Exception {
         // Given
         startDefaultHoverfly();
-        final int adminPort = hoverfly.getAdminPort();
-        final int proxyPort = hoverfly.getProxyPort();
-        final Hoverfly hoverfly = new Hoverfly(configs().useRemoteInstance().adminPort(adminPort).proxyPort(proxyPort), SIMULATE);
 
         // When
-        assertRemoteHoverflyIsWorking(hoverfly);
-    }
+        final Hoverfly remoteHoverfly = new Hoverfly(
+                configs().useRemoteInstance()
+                        .adminPort(hoverfly.getAdminPort())
+                        .proxyPort(hoverfly.getProxyPort()),
+                SIMULATE);
 
-    @Test
-    public void shouldBeAbleToUseARemoteHoverflyConfiguringTheHost() throws Exception {
-        // Given
-        startDefaultHoverfly();
-        final int adminPort = hoverfly.getAdminPort();
-        final int proxyPort = hoverfly.getProxyPort();
-        final Hoverfly remoteHoverfly = new Hoverfly(configs().useRemoteInstance("http://localhost").adminPort(adminPort).proxyPort(proxyPort), SIMULATE);
-
-        // When
+        // Then
         assertRemoteHoverflyIsWorking(remoteHoverfly);
     }
 
+
     @Test
-    public void shouldDefaultRemoteHoverflyInstancePortsToStaticValues() {
-        // Given
-        hoverfly = new Hoverfly(configs().proxyPort(8500).adminPort(8888), SIMULATE);
-        hoverfly.start();
+    public void shouldSetDefaultConfigForRemoteHoverflyInstance() throws Exception {
 
-        // When
-        final Hoverfly remoteHoverfly = new Hoverfly(configs().useRemoteInstance("http://localhost"), SIMULATE);
+        Hoverfly remoteHoverfly = new Hoverfly(configs().useRemoteInstance(), SIMULATE);
 
-        // When
-        assertRemoteHoverflyIsWorking(remoteHoverfly);
+        URI hoverflyUrl = getHoverflyUrl(remoteHoverfly);
+
+        assertThat(hoverflyUrl.toString()).isEqualTo("http://localhost:8888");
+        assertThat(remoteHoverfly.getProxyPort()).isEqualTo(8500);
+        assertThat(remoteHoverfly.getAdminPort()).isEqualTo(8888);
+    }
+
+    @Test
+    public void shouldSetCustomConfigForRemoteHoverflyInstance() throws Exception {
+
+        Hoverfly remoteHoverfly = new Hoverfly(configs().useRemoteInstance("http://hoverfly-cloud").proxyPort(8000).adminPort(9000), SIMULATE);
+
+        URI hoverflyUrl = getHoverflyUrl(remoteHoverfly);
+
+        assertThat(hoverflyUrl.toString()).isEqualTo("http://hoverfly-cloud:9000");
+        assertThat(remoteHoverfly.getProxyPort()).isEqualTo(8000);
+        assertThat(remoteHoverfly.getAdminPort()).isEqualTo(9000);
+
     }
 
     @Test
@@ -201,6 +207,7 @@ public class HoverflyTest {
         verifyAll();
     }
 
+
     private void assertRemoteHoverflyIsWorking(final Hoverfly hoverfly) {
         try {
             hoverfly.start();
@@ -215,7 +222,6 @@ public class HoverflyTest {
         }
     }
 
-
     @After
     public void tearDown() throws Exception {
         if (hoverfly != null) {
@@ -226,5 +232,11 @@ public class HoverflyTest {
     private void startDefaultHoverfly() throws IOException, URISyntaxException {
         hoverfly = new Hoverfly(SIMULATE);
         hoverfly.start();
+    }
+
+    private URI getHoverflyUrl(Hoverfly remoteHoverfly) throws NoSuchFieldException, IllegalAccessException {
+        Field hoverflyResource = remoteHoverfly.getClass().getDeclaredField("hoverflyResource");
+        hoverflyResource.setAccessible(true);
+        return ((WebResource) hoverflyResource.get(remoteHoverfly)).getURI();
     }
 }
