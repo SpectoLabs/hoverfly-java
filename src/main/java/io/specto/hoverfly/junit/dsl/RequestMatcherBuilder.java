@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
@@ -67,16 +68,6 @@ public class RequestMatcherBuilder {
     }
 
     /**
-     * Sets the request query
-     * @param query the query params string to match on
-     * @return the {@link RequestMatcherBuilder} for further customizations
-     */
-    public RequestMatcherBuilder query(final String query) {
-        this.query = query;
-        return this;
-    }
-
-    /**
      * Sets one request header
      * @param key the header key to match on
      * @param value the header value to match on
@@ -84,6 +75,19 @@ public class RequestMatcherBuilder {
      */
     public RequestMatcherBuilder header(final String key, final String value) {
         headers.put(key, Collections.singletonList(value));
+        return this;
+    }
+
+    /**
+     * Sets the request query
+     * @param key the query params key to match on
+     * @param values the query params values to match on
+     * @return the {@link RequestMatcherBuilder} for further customizations
+     */
+    public RequestMatcherBuilder queryParam(final String key, final Object... values) {
+        for(Object value : values) {
+            queryParams.add(key, value.toString());
+        }
         return this;
     }
 
@@ -97,18 +101,10 @@ public class RequestMatcherBuilder {
         return invoker.addRequestResponsePair(new RequestResponsePair(this.build(), responseBuilder.build()));
     }
 
-//    private RequestMatcherBuilder queryParam(final String key, final Object... values) {
-//        for(Object value : values) {
-//            queryParams.add(key, value.toString());
-//        }
-//        return this;
-//    }
-
     private RequestMatcher build() {
-        // TODO Hoverfly only supports exact request query matching at the moment, will enable queryParams builder when the problem is resolved
-//        query = queryParams.entrySet().stream()
-//                .flatMap(e -> e.getValue().stream().map(v -> encodeUrl(e.getKey()) + "=" + encodeUrl(v)))
-//                .collect(Collectors.joining("&"));
+        query = queryParams.entrySet().stream()
+                .flatMap(e -> e.getValue().stream().map(v -> encodeUrl(e.getKey()) + "=" + encodeUrl(v)))
+                .collect(Collectors.joining("&"));
         return new RequestMatcher(path, method, destination, scheme, query, body, headers, TEMPLATE);
     }
 

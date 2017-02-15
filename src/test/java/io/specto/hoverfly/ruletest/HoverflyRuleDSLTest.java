@@ -49,9 +49,9 @@ public class HoverflyRuleDSLTest {
                         .delete("/api/bookings/1")
                         .willReturn(noContent())
 
-                        .get("/api/bookings").query("destination=new%20york")
-//                            .queryParam("class", "business", "premium")
-//                            .queryParam("destination", "new york"))
+                        .get("/api/bookings")
+                            .queryParam("class", "business", "premium")
+                            .queryParam("destination", "new york")
                         .willReturn(success("{\"bookingId\":\"2\",\"origin\":\"London\",\"destination\":\"New York\",\"class\":\"BUSINESS\",\"time\":\"2011-09-01T12:30\",\"_links\":{\"self\":{\"href\":\"http://localhost/api/bookings/2\"}}}", "application/json"))
 
                         .patch("/api/bookings/1").body("{\"class\": \"BUSINESS\"}")
@@ -92,7 +92,7 @@ public class HoverflyRuleDSLTest {
         // When
         URI uri = UriComponentsBuilder.fromHttpUrl("http://www.other-anotherservice.com")
                 .path("/api/bookings")
-//                .queryParam("class", "business", "premium")
+                .queryParam("class", "business", "premium")
                 .queryParam("destination", "new york")
                 .build()
                 .toUri();
