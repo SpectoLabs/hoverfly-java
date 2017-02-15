@@ -15,6 +15,7 @@ package io.specto.hoverfly.junit.dsl;
 import io.specto.hoverfly.junit.core.model.RequestMatcher;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.UnsupportedEncodingException;
@@ -42,7 +43,6 @@ public class RequestMatcherBuilder {
     private final MultivaluedMap<String, String> queryParams = new MultivaluedHashMap<>();
     private final Map<String, List<String>> headers = new HashMap<>();
     private String body;
-    private String query;
 
     private RequestMatcherBuilder(final StubServiceBuilder invoker, final String method, final String scheme, final String destination, final String path) {
         this.invoker = invoker;
@@ -64,6 +64,17 @@ public class RequestMatcherBuilder {
      */
     public RequestMatcherBuilder body(final String body) {
         this.body = body;
+        return this;
+    }
+
+    /**
+     * Sets the request body and the matching content-type header using {@link HttpBodyConverter}
+     * @param httpBodyConverter custom http body converter
+     * @return the {@link RequestMatcherBuilder} for further customizations
+     */
+    public RequestMatcherBuilder body(HttpBodyConverter httpBodyConverter) {
+        this.body = httpBodyConverter.body();
+        header(HttpHeaders.CONTENT_TYPE, httpBodyConverter.contentType());
         return this;
     }
 
@@ -102,12 +113,11 @@ public class RequestMatcherBuilder {
     }
 
     private RequestMatcher build() {
-        query = queryParams.entrySet().stream()
+        String query = queryParams.entrySet().stream()
                 .flatMap(e -> e.getValue().stream().map(v -> encodeUrl(e.getKey()) + "=" + encodeUrl(v)))
                 .collect(Collectors.joining("&"));
         return new RequestMatcher(path, method, destination, scheme, query, body, headers, TEMPLATE);
     }
-
 
     private String encodeUrl(String str) {
         try {
@@ -115,11 +125,5 @@ public class RequestMatcherBuilder {
         } catch (UnsupportedEncodingException e) {
             throw new UnsupportedOperationException(e);
         }
-    }
-
-    public RequestMatcherBuilder body(HttpBodyConverter httpBodyConverter) {
-        this.body = httpBodyConverter.body();
-        header("Content-Type", httpBodyConverter.contentType());
-        return this;
     }
 }
