@@ -1,0 +1,80 @@
+import sys
+import os
+import shlex
+
+extensions = [
+    'sphinxcontrib.mermaid',
+    'sphinx.ext.extlinks',
+    'sphinx.ext.todo'
+]
+
+templates_path = ['_templates']
+
+source_suffix = '.rst'
+
+master_doc = 'index'
+
+project = u'Hoverfly Java'
+copyright = u'2017, SpectoLabs'
+author = u'SpectoLabs'
+
+
+version = 'v0.10.1'
+# The full version, including alpha/beta/rc tags.
+release = version
+
+language = None
+
+exclude_patterns = ['_build']
+
+pygments_style = 'sphinx'
+
+todo_include_todos = False
+
+
+if 'READTHEDOCS' not in os.environ:
+    import sphinx_rtd_theme
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
+html_static_path = ['_static']
+
+html_context = {
+   'css_files': [                                                           
+            'https://media.readthedocs.org/css/sphinx_rtd_theme.css',            
+            'https://media.readthedocs.org/css/readthedocs-doc-embed.css',       
+            '_static/theme_overrides.css',   
+        ],
+    }
+
+htmlhelp_basename = 'hoverfly-java-doc'
+
+latex_elements = {
+    # The paper size ('letterpaper' or 'a4paper').
+    #'papersize': 'letterpaper',
+
+    # The font size ('10pt', '11pt' or '12pt').
+    #'pointsize': '10pt',
+
+    # Additional stuff for the LaTeX preamble.
+    #'preamble': '',
+
+    # Latex figure (float) alignment
+    #'figure_align': 'htbp',
+}
+
+latex_documents = [
+    (master_doc, 'hoverfly-java.tex', u'Hoverfly Java Documentation',
+     u'SpectoLabs', 'manual'),
+]
+
+man_pages = [
+    (master_doc, 'Hoverfly Java', u'Hoverfly Java Documentation',
+     [author], 1)
+]
+
+texinfo_documents = [
+    (master_doc, 'Hoverfly Java', u'Hoverfly Java Documentation',
+     author, 'Hoverfly Java', 'Java library for Hoverfly API simulation tool',
+     'Miscellaneous'),
+]
