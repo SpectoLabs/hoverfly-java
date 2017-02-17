@@ -17,6 +17,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,6 @@ import java.util.concurrent.*;
 
 import static com.sun.jersey.api.client.ClientResponse.Status.OK;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
-import static io.specto.hoverfly.junit.core.HoverflySslUtils.setTrustStore;
 import static io.specto.hoverfly.junit.core.HoverflyUtils.*;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_READ;
@@ -67,6 +67,9 @@ public class Hoverfly {
     private StartedProcess startedProcess;
     private Path binaryPath;
 
+    private SslConfigurer sslConfigurer = new SslConfigurer();
+    private boolean useDefaultSslCert = true;
+
     /**
      * Instantiates {@link Hoverfly}
      *
@@ -77,6 +80,7 @@ public class Hoverfly {
         this.hoverflyConfig = hoverflyConfig;
         this.hoverflyMode = hoverflyMode;
 
+        // TODO: too much logic in constructor
         String url = DEFAULT_HOVERFLY_URL;
         if (hoverflyConfig.isRemoteInstance()) {
             proxyPort = hoverflyConfig.getProxyPort() == 0 ? DEFAULT_PROXY_PORT : hoverflyConfig.getProxyPort();
@@ -107,11 +111,20 @@ public class Hoverfly {
      * </ol>
      */
     public void start() {
+
         if (!hoverflyConfig.isRemoteInstance()) {
+
+            if (StringUtils.isNotBlank(hoverflyConfig.getSslCertificatePath()) && StringUtils.isNotBlank(hoverflyConfig.getSslKeyPath())) {
+                useDefaultSslCert = false;
+            }
             startHoverflyProcess();
         }
+
         waitForHoverflyToBecomeHealthy();
-        setTrustStore();
+
+        if (useDefaultSslCert) {
+            sslConfigurer.setTrustStore();
+        }
         setProxySystemProperties();
     }
 
@@ -122,7 +135,7 @@ public class Hoverfly {
         try {
             binaryPath = extractBinary(getBinaryName());
         } catch (IOException e) {
-            throw new IllegalStateException("Could not excecute binary", e);
+            throw new IllegalStateException("Could not execute binary", e);
         }
 
         LOGGER.info("Executing binary at {}", binaryPath);
@@ -171,6 +184,8 @@ public class Hoverfly {
             }
             executorService.shutdownNow();
         }
+
+        // TODO: clear system properties, and reset default SslContext?
 
         if (binaryPath != null) {
             try {
@@ -253,6 +268,7 @@ public class Hoverfly {
      */
     private void setProxySystemProperties() {
         LOGGER.info("Setting proxy host to {}", "localhost");
+        // TODO: There might be a bug here
         System.setProperty("http.proxyHost", "localhost");
         System.setProperty("https.proxyHost", "localhost");
 
@@ -277,6 +293,7 @@ public class Hoverfly {
         while (Duration.between(now, Instant.now()).getSeconds() < BOOT_TIMEOUT_SECONDS) {
             if (isHealthy()) return;
             try {
+                // TODO: prefer executors and tasks to threads
                 Thread.sleep(RETRY_BACKOFF_INTERVAL_MS);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

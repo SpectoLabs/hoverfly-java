@@ -13,17 +13,15 @@ import java.util.Optional;
 import static io.specto.hoverfly.junit.core.HoverflyUtils.findResourceOnClasspath;
 
 
-public class HoverflySslUtils {
+public class SslConfigurer {
 
     public static final String HOVERFLY_TRUST_STORE = "hoverfly.jks";
     public static final String HOVERFLY_TRUST_STORE_PASS = "hoverfly";
 
-    private HoverflySslUtils() {}
-
     /**
      * Sets the JVM trust store so Hoverflies SSL certificate is trusted
      */
-    static void setTrustStore() {
+    void setTrustStore() {
         try {
             // initialize a trust manager factory with default trust store
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());

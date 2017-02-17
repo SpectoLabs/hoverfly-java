@@ -174,13 +174,11 @@ public class HoverflyTest {
 
     @Test
     public void shouldWaitForHoverflyProcessTerminatedBeforeDeletingBinary() throws Exception {
+        // Given
         Hoverfly hoverfly = new Hoverfly(SIMULATE);
 
-        Field binaryPath = hoverfly.getClass().getDeclaredField("binaryPath");
-        binaryPath.setAccessible(true);
         Path mockPath = mock(Path.class);
-        binaryPath.set(hoverfly, mockPath);
-
+        setField("binaryPath", hoverfly, mockPath);
         File mockFile = mock(File.class);
         when(mockPath.toFile()).thenReturn(mockFile);
 
@@ -188,12 +186,9 @@ public class HoverflyTest {
         expect(Files.deleteIfExists(mockPath)).andThrow(new IOException());
         replayAll();
 
-        Field startedProcess = hoverfly.getClass().getDeclaredField("startedProcess");
-        startedProcess.setAccessible(true);
         StartedProcess mockStartedProcess = mock(StartedProcess.class);
+        setField("startedProcess", hoverfly, mockStartedProcess);
         Process mockProcess = mock(Process.class);
-        startedProcess.set(hoverfly, mockStartedProcess);
-
         when(mockStartedProcess.getProcess()).thenReturn(mockProcess);
 
         // When
@@ -207,6 +202,43 @@ public class HoverflyTest {
         verifyAll();
     }
 
+
+    @Test
+    public void shouldSetTrustStoreWhenStartingHoverfly() throws Exception {
+        // Given
+        hoverfly = new Hoverfly(SIMULATE);
+        SslConfigurer sslConfigurer = mock(SslConfigurer.class);
+        setField("sslConfigurer", hoverfly, sslConfigurer);
+
+        // When
+        hoverfly.start();
+
+        // Then
+        verify(sslConfigurer).setTrustStore();
+    }
+
+    @Test
+    public void shouldNotSetJVMTrustStoreIfSslCertificatePathExists() throws Exception {
+        // Given
+        hoverfly = new Hoverfly(configs()
+                .sslCertificatePath("ssl/ca.crt")
+                .sslKeyPath("ssl/ca.key"), SIMULATE);
+        SslConfigurer sslConfigurer = mock(SslConfigurer.class);
+        setField("sslConfigurer", hoverfly, sslConfigurer);
+
+        // When
+        hoverfly.start();
+
+        // Then
+        verify(sslConfigurer, never()).setTrustStore();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        if (hoverfly != null) {
+            hoverfly.stop();
+        }
+    }
 
     private void assertRemoteHoverflyIsWorking(final Hoverfly hoverfly) {
         try {
@@ -222,11 +254,10 @@ public class HoverflyTest {
         }
     }
 
-    @After
-    public void tearDown() throws Exception {
-        if (hoverfly != null) {
-            hoverfly.stop();
-        }
+    private void setField(String fieldName, Object target, Object value) throws NoSuchFieldException, IllegalAccessException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, value);
     }
 
     private void startDefaultHoverfly() throws IOException, URISyntaxException {
