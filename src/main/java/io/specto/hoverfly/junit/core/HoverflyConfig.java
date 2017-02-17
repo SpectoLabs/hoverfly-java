@@ -20,8 +20,10 @@ public class HoverflyConfig {
     private int proxyPort;
     private int adminPort;
     private boolean proxyLocalHost;
-    private boolean remote = false;
+    private boolean remote;
     private String remoteHost;
+    private String sslCertificatePath;
+    private String sslKeyPath;
 
     private HoverflyConfig() {
     }
@@ -93,7 +95,7 @@ public class HoverflyConfig {
     /**
      * By calling this it means a remote Hoverfly will be used - not started by Java.  This method will assume the host is localhost.
      *
-     * @return this
+     * @return the {@link HoverflyConfig} for further customizations
      */
     public HoverflyConfig useRemoteInstance() {
         this.remote = true;
@@ -105,7 +107,7 @@ public class HoverflyConfig {
      * By calling this it means a remote Hoverfly will be used - not started by Java
      *
      * @param remoteHost the url of the remote hoverfly
-     * @return this
+     * @return the {@link HoverflyConfig} for further customizations
      */
     public HoverflyConfig useRemoteInstance(final String remoteHost) {
         this.remote = true;
@@ -130,4 +132,44 @@ public class HoverflyConfig {
     public String getRemoteHost() {
         return remoteHost;
     }
+
+    /**
+     * Sets the SSL certificate file for overriding default Hoverfly self-signed certificate
+     * The file can be in any PEM encoded certificate, in .crt or .pem extensions
+     * @param sslCertificatePath certificate file in classpath
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public HoverflyConfig sslCertificatePath(String sslCertificatePath) {
+        this.sslCertificatePath = sslCertificatePath;
+        return this;
+    }
+
+
+    /**
+     * Sets the SSL key file for overriding default Hoverfly SSL key
+     * The file can be in any PEM encoded key, in .key or .pem extensions
+     * @param sslKeyPath key file in classpath
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public HoverflyConfig sslKeyPath(String sslKeyPath) {
+        this.sslKeyPath = sslKeyPath;
+        return this;
+    }
+
+    /**
+     * Gets the path to SSL certificate
+     * @return the SSL certificate path
+     */
+    public String getSslCertificatePath() {
+        return sslCertificatePath;
+    }
+
+    /**
+     * Gets the path to SSL key
+     * @return the SSL key path
+     */
+    public String getSslKeyPath() {
+        return sslKeyPath;
+    }
+
 }
