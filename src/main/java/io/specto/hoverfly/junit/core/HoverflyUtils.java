@@ -12,8 +12,6 @@
  */
 package io.specto.hoverfly.junit.core;
 
-import org.apache.commons.lang3.SystemUtils;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URL;
@@ -23,42 +21,6 @@ import java.util.Optional;
  * Utils for Hoverfly
  */
 class HoverflyUtils {
-
-    private static final String OSX = "OSX";
-    private static final String WINDOWS = "windows";
-    private static final String LINUX = "linux";
-    private static final String ARCH_AMD64 = "amd64";
-    private static final String ARCH_386 = "386";
-    private static final String BINARY_PATH = "hoverfly_%s_%s";
-
-    /**
-     * Calculates the binary to used based on OS and architecture
-     */
-    static String getBinaryName() {
-        return String.format(BINARY_PATH, getOs(), getArchitectureType()) + (SystemUtils.IS_OS_WINDOWS ? ".exe" : "");
-    }
-
-    /**
-     * Gets the correct operating system
-     */
-    private static String getOs() {
-        if (SystemUtils.IS_OS_MAC) {
-            return OSX;
-        } else if (SystemUtils.IS_OS_WINDOWS) {
-            return WINDOWS;
-        } else if (SystemUtils.IS_OS_LINUX) {
-            return LINUX;
-        } else {
-            throw new UnsupportedOperationException(SystemUtils.OS_NAME + " is not currently supported");
-        }
-    }
-
-    /**
-     * Detects whether the application is 64 bits
-     */
-    private static String getArchitectureType() {
-        return SystemUtils.OS_ARCH.contains("64") ? ARCH_AMD64 : ARCH_386;
-    }
 
     /**
      * Looks for an unused port on the current machine

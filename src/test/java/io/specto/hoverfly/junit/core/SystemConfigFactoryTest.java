@@ -10,7 +10,7 @@ import static io.specto.hoverfly.junit.core.SystemConfigFactory.ArchType.ARCH_AM
 import static io.specto.hoverfly.junit.core.SystemConfigFactory.OsName.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class SystemConfigFactoryTest {
@@ -21,7 +21,7 @@ public class SystemConfigFactoryTest {
     @Before
     public void setUp() throws Exception {
         factory = new SystemConfigFactory();
-        systemInfo = spy(SystemInfo.class);
+        systemInfo = mock(SystemInfo.class);
         Whitebox.setInternalState(factory, "systemInfo", systemInfo);
     }
 
@@ -58,6 +58,7 @@ public class SystemConfigFactoryTest {
     @Test
     public void shouldCreateSystemConfigWith32BitArchType() throws Exception {
 
+        when(systemInfo.isOsMac()).thenReturn(true);
         when(systemInfo.is64BitSystem()).thenReturn(false);
 
         SystemConfig systemConfig = factory.createSystemConfig();
@@ -68,6 +69,7 @@ public class SystemConfigFactoryTest {
     @Test
     public void shouldCreateSystemConfigWith64BitArchType() throws Exception {
 
+        when(systemInfo.isOsMac()).thenReturn(true);
         when(systemInfo.is64BitSystem()).thenReturn(true);
 
         SystemConfig systemConfig = factory.createSystemConfig();

@@ -18,9 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import org.zeroturnaround.exec.StartedProcess;
 
 import javax.net.ssl.SSLContext;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
@@ -254,12 +252,12 @@ public class HoverflyTest {
         }
     }
 
-    private void startDefaultHoverfly() throws IOException, URISyntaxException {
+    private void startDefaultHoverfly() {
         hoverfly = new Hoverfly(SIMULATE);
         hoverfly.start();
     }
 
-    private URI getHoverflyUrl(Hoverfly remoteHoverfly) throws NoSuchFieldException, IllegalAccessException {
+    private URI getHoverflyUrl(Hoverfly remoteHoverfly) {
         WebResource hoverflyResource = Whitebox.getInternalState(remoteHoverfly, "hoverflyResource");
         return hoverflyResource.getURI();
     }

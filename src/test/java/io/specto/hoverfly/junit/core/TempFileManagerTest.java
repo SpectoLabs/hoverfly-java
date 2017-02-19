@@ -36,7 +36,7 @@ public class TempFileManagerTest {
         Path tempDir = tempFileManager.getTempDirectory();
         assertThat(Files.isDirectory(tempDir)).isTrue();
         assertThat(Files.isWritable(tempDir)).isTrue();
-        assertThat(tempDir.getParent().toString() + "/").isEqualTo(systemTempDir);
+        assertThat(tempDir.getParent()).isEqualTo(Paths.get(systemTempDir));
     }
 
 

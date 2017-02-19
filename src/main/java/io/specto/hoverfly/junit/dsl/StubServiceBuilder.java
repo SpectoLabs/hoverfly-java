@@ -15,7 +15,6 @@ package io.specto.hoverfly.junit.dsl;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 import jersey.repackaged.com.google.common.collect.ImmutableSet;
 
-import javax.ws.rs.HttpMethod;
 import java.util.HashSet;
 import java.util.Set;
 
