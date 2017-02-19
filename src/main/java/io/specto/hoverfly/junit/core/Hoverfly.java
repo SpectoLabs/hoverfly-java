@@ -16,9 +16,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import io.specto.hoverfly.junit.core.model.Simulation;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -27,24 +25,19 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.*;
 
 import static com.sun.jersey.api.client.ClientResponse.Status.OK;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
-import static io.specto.hoverfly.junit.core.HoverflyUtils.*;
-import static java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE;
-import static java.nio.file.attribute.PosixFilePermission.OWNER_READ;
-import static java.util.Arrays.asList;
+import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
+import static io.specto.hoverfly.junit.core.HoverflyUtils.findUnusedPort;
 
 /**
  * A wrapper class for the Hoverfly binary.  Manage the lifecycle of the processes, and then manage Hoverfly itself by using it's API endpoints.
@@ -65,9 +58,9 @@ public class Hoverfly {
     private final Integer adminPort;
     private final WebResource hoverflyResource;
     private StartedProcess startedProcess;
-    private Path binaryPath;
 
     private SslConfigurer sslConfigurer = new SslConfigurer();
+    private TempFileManager tempFileManager = new TempFileManager();
     private boolean useDefaultSslCert = true;
 
     /**
@@ -80,7 +73,6 @@ public class Hoverfly {
         this.hoverflyConfig = hoverflyConfig;
         this.hoverflyMode = hoverflyMode;
 
-        // TODO: too much logic in constructor
         String url = DEFAULT_HOVERFLY_URL;
         if (hoverflyConfig.isRemoteInstance()) {
             proxyPort = hoverflyConfig.getProxyPort() == 0 ? DEFAULT_PROXY_PORT : hoverflyConfig.getProxyPort();
@@ -132,11 +124,7 @@ public class Hoverfly {
         checkPortInUse(proxyPort);
         checkPortInUse(adminPort);
 
-        try {
-            binaryPath = extractBinary(getBinaryName());
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not execute binary", e);
-        }
+        Path binaryPath = tempFileManager.copyHoverflyBinary(new SystemConfigFactory().createSystemConfig());
 
         LOGGER.info("Executing binary at {}", binaryPath);
         final List<String> commands = new ArrayList<>();
@@ -156,7 +144,7 @@ public class Hoverfly {
             startedProcess = new ProcessExecutor()
                     .command(commands)
                     .redirectOutput(Slf4jStream.of(LOGGER).asInfo())
-                    .directory(binaryPath.getParent().toFile())
+                    .directory(tempFileManager.getTempDirectory().toFile())
                     .start();
         } catch (IOException e) {
             throw new IllegalStateException("Could not start Hoverfly process", e);
@@ -166,6 +154,7 @@ public class Hoverfly {
     /**
      * Stops the running {@link Hoverfly} process
      */
+    // TODO add shutdown hook for stop
     public void stop() {
         LOGGER.info("Destroying hoverfly process");
 
@@ -186,17 +175,10 @@ public class Hoverfly {
         }
 
         // TODO: clear system properties, and reset default SslContext?
-
-        if (binaryPath != null) {
-            try {
-                binaryPath.toFile().deleteOnExit();
-                Files.deleteIfExists(binaryPath);
-            } catch (IOException e) {
-                LOGGER.warn("Failed to delete hoverfly binary, will try again on JVM shutdown", e);
-            }
-        }
+        tempFileManager.purge();
     }
 
+    // TODO: Extract HoverflyClient??
     /**
      * Imports a simulation into {@link Hoverfly} from a {@link SimulationSource}
      *
@@ -300,28 +282,6 @@ public class Hoverfly {
             }
         }
         throw new IllegalStateException("Hoverfly has not become healthy in " + BOOT_TIMEOUT_SECONDS + " seconds");
-    }
-
-    /**
-     * Extracts and runs the binary, setting any appropriate permissions.
-     *
-     */
-    private Path extractBinary(final String binaryName) throws IOException {
-        LOGGER.info("Selecting the following binary based on the current operating system: {}", binaryName);
-        final URL sourceHoverflyUrl = findResourceOnClasspath("binaries/" + binaryName);
-        final Path temporaryHoverflyPath = Files.createTempFile(binaryName, "");
-        LOGGER.info("Storing binary in temporary directory {}", temporaryHoverflyPath);
-        final File temporaryHoverflyFile = temporaryHoverflyPath.toFile();
-        FileUtils.copyURLToFile(sourceHoverflyUrl, temporaryHoverflyFile);
-        if (SystemUtils.IS_OS_WINDOWS) {
-            temporaryHoverflyFile.setExecutable(true);
-            temporaryHoverflyFile.setReadable(true);
-            temporaryHoverflyFile.setWritable(true);
-        } else {
-            Files.setPosixFilePermissions(temporaryHoverflyPath, new HashSet<>(asList(OWNER_EXECUTE, OWNER_READ)));
-        }
-
-        return temporaryHoverflyPath;
     }
 
     public int getAdminPort() {

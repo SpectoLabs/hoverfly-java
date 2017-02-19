@@ -17,11 +17,11 @@ import java.util.Arrays;
 import static io.specto.hoverfly.junit.core.HoverflyUtils.findResourceOnClasspath;
 
 
-public class SslConfigurer {
+class SslConfigurer {
 
-    public static final String HOVERFLY_TRUST_STORE = "hoverfly.jks";
-    public static final String HOVERFLY_TRUST_STORE_PASS = "hoverfly";
-    public static final String TLS_PROTOCOL = "TLSv1.2";
+    private static final String HOVERFLY_TRUST_STORE = "hoverfly.jks";
+    private static final String HOVERFLY_TRUST_STORE_PASS = "hoverfly";
+    private static final String TLS_PROTOCOL = "TLSv1.2";
 
     /**
      * Sets the JVM trust store so Hoverfly's SSL certificate is trusted

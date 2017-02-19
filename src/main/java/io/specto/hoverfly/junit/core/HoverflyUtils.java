@@ -17,6 +17,7 @@ import org.apache.commons.lang3.SystemUtils;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URL;
+import java.util.Optional;
 
 /**
  * Utils for Hoverfly
@@ -83,11 +84,8 @@ class HoverflyUtils {
      */
     static URL findResourceOnClasspath(String resourceName) {
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        final URL resource = classLoader.getResource(resourceName);
-        if (resource == null) {
-            throw new IllegalArgumentException("Resource not found with name: " + resourceName);
-        }
-        return resource;
+        return Optional.ofNullable(classLoader.getResource(resourceName))
+                .orElseThrow(() -> new IllegalArgumentException("Resource not found with name: " + resourceName));
     }
 
 }

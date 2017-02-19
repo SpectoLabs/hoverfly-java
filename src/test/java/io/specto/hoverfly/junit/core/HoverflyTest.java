@@ -10,40 +10,27 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.After;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InOrder;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.zeroturnaround.exec.StartedProcess;
 
 import javax.net.ssl.SSLContext;
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.easymock.EasyMock.expect;
 import static org.mockito.Mockito.*;
-import static org.powermock.api.easymock.PowerMock.*;
 import static org.springframework.http.HttpStatus.OK;
 
-@PowerMockIgnore("javax.net.ssl.*")
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Hoverfly.class)
 public class HoverflyTest {
 
     private static final int EXPECTED_PROXY_PORT = 8890;
@@ -60,11 +47,16 @@ public class HoverflyTest {
 
     @Test
     public void shouldDeleteTempFilesWhenStoppingHoverfly() throws Exception {
-        startDefaultHoverfly();
+        // Given
+        hoverfly = new Hoverfly(SIMULATE);
+        TempFileManager tempFileManager = spy(TempFileManager.class);
+        Whitebox.setInternalState(hoverfly, "tempFileManager", tempFileManager);
+
+        // When
         hoverfly.stop();
-        final Field binaryPath = ReflectionUtils.findField(Hoverfly.class, "binaryPath", Path.class);
-        binaryPath.setAccessible(true);
-        assertThat(Files.exists((Path) binaryPath.get(hoverfly))).isFalse();
+
+        // Then
+        verify(tempFileManager).purge();
     }
 
     @Test
@@ -175,19 +167,13 @@ public class HoverflyTest {
     @Test
     public void shouldWaitForHoverflyProcessTerminatedBeforeDeletingBinary() throws Exception {
         // Given
-        Hoverfly hoverfly = new Hoverfly(SIMULATE);
+        hoverfly = new Hoverfly(SIMULATE);
 
-        Path mockPath = mock(Path.class);
-        setField("binaryPath", hoverfly, mockPath);
-        File mockFile = mock(File.class);
-        when(mockPath.toFile()).thenReturn(mockFile);
-
-        mockStatic(Files.class);
-        expect(Files.deleteIfExists(mockPath)).andThrow(new IOException());
-        replayAll();
+        TempFileManager tempFileManager = spy(TempFileManager.class);
+        Whitebox.setInternalState(hoverfly, "tempFileManager", tempFileManager);
 
         StartedProcess mockStartedProcess = mock(StartedProcess.class);
-        setField("startedProcess", hoverfly, mockStartedProcess);
+        Whitebox.setInternalState(hoverfly, "startedProcess", mockStartedProcess);
         Process mockProcess = mock(Process.class);
         when(mockStartedProcess.getProcess()).thenReturn(mockProcess);
 
@@ -195,11 +181,10 @@ public class HoverflyTest {
         hoverfly.stop();
 
         // Then
-        InOrder inOrder = inOrder(mockProcess, mockFile);
+        InOrder inOrder = inOrder(mockProcess, tempFileManager);
         inOrder.verify(mockProcess).destroy();
         inOrder.verify(mockProcess).waitFor();
-        inOrder.verify(mockFile).deleteOnExit();
-        verifyAll();
+        inOrder.verify(tempFileManager).purge();
     }
 
 
@@ -208,7 +193,7 @@ public class HoverflyTest {
         // Given
         hoverfly = new Hoverfly(SIMULATE);
         SslConfigurer sslConfigurer = mock(SslConfigurer.class);
-        setField("sslConfigurer", hoverfly, sslConfigurer);
+        Whitebox.setInternalState(hoverfly, "sslConfigurer", sslConfigurer);
 
         // When
         hoverfly.start();
@@ -224,13 +209,28 @@ public class HoverflyTest {
                 .sslCertificatePath("ssl/ca.crt")
                 .sslKeyPath("ssl/ca.key"), SIMULATE);
         SslConfigurer sslConfigurer = mock(SslConfigurer.class);
-        setField("sslConfigurer", hoverfly, sslConfigurer);
+        Whitebox.setInternalState(hoverfly, "sslConfigurer", sslConfigurer);
 
         // When
         hoverfly.start();
 
         // Then
         verify(sslConfigurer, never()).setTrustStore();
+    }
+
+    @Test
+    public void shouldCopyHoverflyBinaryToTempFolderOnStart() throws Exception {
+
+        // Given
+        hoverfly = new Hoverfly(SIMULATE);
+        TempFileManager tempFileManager = spy(TempFileManager.class);
+        Whitebox.setInternalState(hoverfly, "tempFileManager", tempFileManager);
+
+        // When
+        hoverfly.start();
+
+        // Then
+        verify(tempFileManager).copyHoverflyBinary(any(SystemConfig.class));
     }
 
     @After
@@ -254,20 +254,13 @@ public class HoverflyTest {
         }
     }
 
-    private void setField(String fieldName, Object target, Object value) throws NoSuchFieldException, IllegalAccessException {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(target, value);
-    }
-
     private void startDefaultHoverfly() throws IOException, URISyntaxException {
         hoverfly = new Hoverfly(SIMULATE);
         hoverfly.start();
     }
 
     private URI getHoverflyUrl(Hoverfly remoteHoverfly) throws NoSuchFieldException, IllegalAccessException {
-        Field hoverflyResource = remoteHoverfly.getClass().getDeclaredField("hoverflyResource");
-        hoverflyResource.setAccessible(true);
-        return ((WebResource) hoverflyResource.get(remoteHoverfly)).getURI();
+        WebResource hoverflyResource = Whitebox.getInternalState(remoteHoverfly, "hoverflyResource");
+        return hoverflyResource.getURI();
     }
 }
