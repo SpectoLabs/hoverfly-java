@@ -22,16 +22,6 @@ import java.util.Optional;
  */
 class HoverflyUtils {
 
-    /**
-     * Looks for an unused port on the current machine
-     */
-    static int findUnusedPort() {
-        try (final ServerSocket serverSocket = new ServerSocket(0)) {
-            return serverSocket.getLocalPort();
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot find available port", e);
-        }
-    }
 
     static void checkPortInUse(int port) {
         try (final ServerSocket serverSocket = new ServerSocket(port)) {

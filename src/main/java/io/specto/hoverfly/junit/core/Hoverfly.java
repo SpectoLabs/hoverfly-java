@@ -37,7 +37,6 @@ import java.util.concurrent.*;
 import static com.sun.jersey.api.client.ClientResponse.Status.OK;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
-import static io.specto.hoverfly.junit.core.HoverflyUtils.findUnusedPort;
 
 /**
  * A wrapper class for the Hoverfly binary.  Manage the lifecycle of the processes, and then manage Hoverfly itself by using it's API endpoints.
@@ -47,20 +46,16 @@ public class Hoverfly {
     private static final Logger LOGGER = LoggerFactory.getLogger(Hoverfly.class);
     private static final int BOOT_TIMEOUT_SECONDS = 10;
     private static final int RETRY_BACKOFF_INTERVAL_MS = 100;
-    private static final String DEFAULT_HOVERFLY_URL = "http://localhost";
     private static final String HEALTH_CHECK_PATH = "/api/stats";
     private static final String SIMULATION_PATH = "/api/v2/simulation";
-    private static final int DEFAULT_PROXY_PORT = 8500;
-    private static final int DEFAULT_ADMIN_PORT = 8888;
     private final HoverflyConfig hoverflyConfig;
     private final HoverflyMode hoverflyMode;
-    private final Integer proxyPort;
-    private final Integer adminPort;
     private final WebResource hoverflyResource;
     private StartedProcess startedProcess;
 
     private SslConfigurer sslConfigurer = new SslConfigurer();
     private TempFileManager tempFileManager = new TempFileManager();
+    private HoverflyConfigValidator validator = new HoverflyConfigValidator();
     private boolean useDefaultSslCert = true;
 
     /**
@@ -70,20 +65,13 @@ public class Hoverfly {
      * @param hoverflyMode   the mode
      */
     public Hoverfly(HoverflyConfig hoverflyConfig, HoverflyMode hoverflyMode) {
-        this.hoverflyConfig = hoverflyConfig;
+        this.hoverflyConfig = validator.validate(hoverflyConfig);
         this.hoverflyMode = hoverflyMode;
 
-        String url = DEFAULT_HOVERFLY_URL;
-        if (hoverflyConfig.isRemoteInstance()) {
-            proxyPort = hoverflyConfig.getProxyPort() == 0 ? DEFAULT_PROXY_PORT : hoverflyConfig.getProxyPort();
-            adminPort = hoverflyConfig.getAdminPort() == 0 ? DEFAULT_ADMIN_PORT : hoverflyConfig.getAdminPort();
-            url = hoverflyConfig.getRemoteHost();
-        } else {
-            proxyPort = hoverflyConfig.getProxyPort() == 0 ? findUnusedPort() : hoverflyConfig.getProxyPort();
-            adminPort = hoverflyConfig.getAdminPort() == 0 ? findUnusedPort() : hoverflyConfig.getAdminPort();
-        }
-
-        hoverflyResource = Client.create().resource(UriBuilder.fromUri(url).port(adminPort).build());
+        hoverflyResource = Client.create().resource(
+                UriBuilder.fromUri(hoverflyConfig.getHost())
+                        .port(hoverflyConfig.getAdminPort())
+                        .build());
     }
 
     /**
@@ -121,8 +109,8 @@ public class Hoverfly {
     }
 
     private void startHoverflyProcess() {
-        checkPortInUse(proxyPort);
-        checkPortInUse(adminPort);
+        checkPortInUse(hoverflyConfig.getProxyPort());
+        checkPortInUse(hoverflyConfig.getAdminPort());
 
         Path binaryPath = tempFileManager.copyHoverflyBinary(new SystemConfigFactory().createSystemConfig());
 
@@ -132,9 +120,9 @@ public class Hoverfly {
         commands.add("-db");
         commands.add("memory");
         commands.add("-pp");
-        commands.add(proxyPort.toString());
+        commands.add(String.valueOf(hoverflyConfig.getProxyPort()));
         commands.add("-ap");
-        commands.add(adminPort.toString());
+        commands.add(String.valueOf(hoverflyConfig.getAdminPort()));
 
         if (hoverflyMode == HoverflyMode.CAPTURE) {
             commands.add("-capture");
@@ -217,13 +205,13 @@ public class Hoverfly {
         return hoverflyResource.path(SIMULATION_PATH).get(Simulation.class);
     }
 
+
     /**
-     * Gets the proxy port {@link Hoverfly} is running on
-     *
-     * @return the proxy port
+     * Gets the validated {@link HoverflyConfig} object used by the current Hoverfly instance
+     * @return the current Hoverfly configurations
      */
-    public int getProxyPort() {
-        return proxyPort;
+    public HoverflyConfig getHoverflyConfig() {
+        return hoverflyConfig;
     }
 
     /**
@@ -262,8 +250,8 @@ public class Hoverfly {
 
         LOGGER.info("Setting proxy proxyPort to {}", hoverflyConfig.getProxyPort());
 
-        System.setProperty("http.proxyPort", proxyPort.toString());
-        System.setProperty("https.proxyPort", proxyPort.toString());
+        System.setProperty("http.proxyPort", String.valueOf(hoverflyConfig.getProxyPort()));
+        System.setProperty("https.proxyPort", String.valueOf(hoverflyConfig.getProxyPort()));
     }
 
     /**
@@ -282,10 +270,6 @@ public class Hoverfly {
             }
         }
         throw new IllegalStateException("Hoverfly has not become healthy in " + BOOT_TIMEOUT_SECONDS + " seconds");
-    }
-
-    public int getAdminPort() {
-        return adminPort;
     }
 
 }

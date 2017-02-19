@@ -2,7 +2,6 @@ package io.specto.hoverfly.junit.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
-import com.sun.jersey.api.client.WebResource;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -18,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 import org.zeroturnaround.exec.StartedProcess;
 
 import javax.net.ssl.SSLContext;
-import java.net.URI;
 import java.net.URL;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
@@ -40,7 +38,7 @@ public class HoverflyTest {
         hoverfly = new Hoverfly(configs().proxyPort(EXPECTED_PROXY_PORT), SIMULATE);
         hoverfly.start();
         assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(EXPECTED_PROXY_PORT));
-        assertThat(hoverfly.getProxyPort()).isEqualTo(EXPECTED_PROXY_PORT);
+        assertThat(hoverfly.getHoverflyConfig().getProxyPort()).isEqualTo(EXPECTED_PROXY_PORT);
     }
 
     @Test
@@ -74,7 +72,7 @@ public class HoverflyTest {
     public void shouldThrowExceptionWhenProxyPortIsAlreadyInUse() throws Exception {
         // Given
         startDefaultHoverfly();
-        Hoverfly portClashHoverfly = new Hoverfly(configs().proxyPort(hoverfly.getProxyPort()), SIMULATE);
+        Hoverfly portClashHoverfly = new Hoverfly(configs().proxyPort(hoverfly.getHoverflyConfig().getProxyPort()), SIMULATE);
 
         try {
             // When
@@ -93,7 +91,7 @@ public class HoverflyTest {
     public void shouldThrowExceptionWhenAdminPortIsAlreadyInUse() throws Exception {
         // Given
         startDefaultHoverfly();
-        Hoverfly portClashHoverfly = new Hoverfly(configs().adminPort(hoverfly.getAdminPort()), SIMULATE);
+        Hoverfly portClashHoverfly = new Hoverfly(configs().adminPort(hoverfly.getHoverflyConfig().getAdminPort()), SIMULATE);
 
         try {
             // When
@@ -108,6 +106,7 @@ public class HoverflyTest {
         }
     }
 
+    // TODO this is not enough to test that it works with a remote instance
     @Test
     public void shouldBeAbleToUseRemoteHoverflyInstance() throws Exception {
         // Given
@@ -116,38 +115,12 @@ public class HoverflyTest {
         // When
         final Hoverfly remoteHoverfly = new Hoverfly(
                 configs().useRemoteInstance()
-                        .adminPort(hoverfly.getAdminPort())
-                        .proxyPort(hoverfly.getProxyPort()),
+                        .adminPort(hoverfly.getHoverflyConfig().getAdminPort())
+                        .proxyPort(hoverfly.getHoverflyConfig().getProxyPort()),
                 SIMULATE);
 
         // Then
         assertRemoteHoverflyIsWorking(remoteHoverfly);
-    }
-
-
-    @Test
-    public void shouldSetDefaultConfigForRemoteHoverflyInstance() throws Exception {
-
-        Hoverfly remoteHoverfly = new Hoverfly(configs().useRemoteInstance(), SIMULATE);
-
-        URI hoverflyUrl = getHoverflyUrl(remoteHoverfly);
-
-        assertThat(hoverflyUrl.toString()).isEqualTo("http://localhost:8888");
-        assertThat(remoteHoverfly.getProxyPort()).isEqualTo(8500);
-        assertThat(remoteHoverfly.getAdminPort()).isEqualTo(8888);
-    }
-
-    @Test
-    public void shouldSetCustomConfigForRemoteHoverflyInstance() throws Exception {
-
-        Hoverfly remoteHoverfly = new Hoverfly(configs().useRemoteInstance("http://hoverfly-cloud").proxyPort(8000).adminPort(9000), SIMULATE);
-
-        URI hoverflyUrl = getHoverflyUrl(remoteHoverfly);
-
-        assertThat(hoverflyUrl.toString()).isEqualTo("http://hoverfly-cloud:9000");
-        assertThat(remoteHoverfly.getProxyPort()).isEqualTo(8000);
-        assertThat(remoteHoverfly.getAdminPort()).isEqualTo(9000);
-
     }
 
     @Test
@@ -231,6 +204,15 @@ public class HoverflyTest {
         verify(tempFileManager).copyHoverflyBinary(any(SystemConfig.class));
     }
 
+    @Test
+    public void shouldValidateHoverflyConfigBeforeStart() throws Exception {
+
+        hoverfly = new Hoverfly(SIMULATE);
+
+        assertThat(hoverfly.getHoverflyConfig().getProxyPort()).isNotZero();
+        assertThat(hoverfly.getHoverflyConfig().getAdminPort()).isNotZero();
+    }
+
     @After
     public void tearDown() throws Exception {
         if (hoverfly != null) {
@@ -257,8 +239,4 @@ public class HoverflyTest {
         hoverfly.start();
     }
 
-    private URI getHoverflyUrl(Hoverfly remoteHoverfly) {
-        WebResource hoverflyResource = Whitebox.getInternalState(remoteHoverfly, "hoverflyResource");
-        return hoverflyResource.getURI();
-    }
 }

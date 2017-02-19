@@ -21,7 +21,7 @@ public class HoverflyConfig {
     private int adminPort;
     private boolean proxyLocalHost;
     private boolean remote;
-    private String remoteHost;
+    private String host = LOCALHOST;
     private String sslCertificatePath;
     private String sslKeyPath;
 
@@ -99,7 +99,6 @@ public class HoverflyConfig {
      */
     public HoverflyConfig useRemoteInstance() {
         this.remote = true;
-        this.remoteHost = LOCALHOST;
         return this;
     }
 
@@ -111,7 +110,7 @@ public class HoverflyConfig {
      */
     public HoverflyConfig useRemoteInstance(final String remoteHost) {
         this.remote = true;
-        this.remoteHost = remoteHost;
+        this.host = remoteHost;
         return this;
     }
 
@@ -129,8 +128,8 @@ public class HoverflyConfig {
      *
      * @return the remote host
      */
-    public String getRemoteHost() {
-        return remoteHost;
+    public String getHost() {
+        return host;
     }
 
     /**

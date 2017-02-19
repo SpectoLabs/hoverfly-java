@@ -10,23 +10,23 @@ class SystemInfo {
     private final boolean is64BitSystem = SystemUtils.OS_ARCH.contains("64");
     private final String osName = SystemUtils.OS_NAME;
 
-    public boolean isOsWindows() {
+    boolean isOsWindows() {
         return isOsWindows;
     }
 
-    public boolean isOsMac() {
+    boolean isOsMac() {
         return isOsMac;
     }
 
-    public boolean isOsLinux() {
+    boolean isOsLinux() {
         return isOsLinux;
     }
 
-    public boolean is64BitSystem() {
+    boolean is64BitSystem() {
         return is64BitSystem;
     }
 
-    public String getOsName() {
+    String getOsName() {
         return osName;
     }
 }

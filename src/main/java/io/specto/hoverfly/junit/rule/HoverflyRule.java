@@ -218,7 +218,7 @@ public class HoverflyRule extends ExternalResource {
      * @return the proxy port
      */
     public int getProxyPort() {
-        return hoverfly.getProxyPort();
+        return hoverfly.getHoverflyConfig().getProxyPort();
     }
 
     /**
