@@ -55,7 +55,6 @@ public class Hoverfly {
 
     private SslConfigurer sslConfigurer = new SslConfigurer();
     private TempFileManager tempFileManager = new TempFileManager();
-    private HoverflyConfigValidator validator = new HoverflyConfigValidator();
     private boolean useDefaultSslCert = true;
 
     /**
@@ -65,7 +64,7 @@ public class Hoverfly {
      * @param hoverflyMode   the mode
      */
     public Hoverfly(HoverflyConfig hoverflyConfig, HoverflyMode hoverflyMode) {
-        this.hoverflyConfig = validator.validate(hoverflyConfig);
+        this.hoverflyConfig = new HoverflyConfigValidator().validate(hoverflyConfig);
         this.hoverflyMode = hoverflyMode;
 
         hoverflyResource = Client.create().resource(
@@ -93,10 +92,6 @@ public class Hoverfly {
     public void start() {
 
         if (!hoverflyConfig.isRemoteInstance()) {
-
-            if (StringUtils.isNotBlank(hoverflyConfig.getSslCertificatePath()) && StringUtils.isNotBlank(hoverflyConfig.getSslKeyPath())) {
-                useDefaultSslCert = false;
-            }
             startHoverflyProcess();
         }
 
@@ -112,7 +107,9 @@ public class Hoverfly {
         checkPortInUse(hoverflyConfig.getProxyPort());
         checkPortInUse(hoverflyConfig.getAdminPort());
 
-        Path binaryPath = tempFileManager.copyHoverflyBinary(new SystemConfigFactory().createSystemConfig());
+        final SystemConfig systemConfig = new SystemConfigFactory().createSystemConfig();
+
+        Path binaryPath = tempFileManager.copyHoverflyBinary(systemConfig);
 
         LOGGER.info("Executing binary at {}", binaryPath);
         final List<String> commands = new ArrayList<>();
@@ -123,6 +120,18 @@ public class Hoverfly {
         commands.add(String.valueOf(hoverflyConfig.getProxyPort()));
         commands.add("-ap");
         commands.add(String.valueOf(hoverflyConfig.getAdminPort()));
+
+        if (StringUtils.isNotBlank(hoverflyConfig.getSslCertificatePath())) {
+            tempFileManager.copyClassPathResource(hoverflyConfig.getSslCertificatePath(), "ca.crt");
+            commands.add("-cert");
+            commands.add("ca.crt");
+        }
+        if (StringUtils.isNotBlank(hoverflyConfig.getSslKeyPath())) {
+            tempFileManager.copyClassPathResource(hoverflyConfig.getSslKeyPath(), "ca.key");
+            commands.add("-key");
+            commands.add("ca.key");
+            useDefaultSslCert = false;
+        }
 
         if (hoverflyMode == HoverflyMode.CAPTURE) {
             commands.add("-capture");

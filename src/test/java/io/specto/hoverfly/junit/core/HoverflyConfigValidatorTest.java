@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class HoverflyConfigValidatorTest {
 
@@ -39,4 +40,37 @@ public class HoverflyConfigValidatorTest {
         assertThat(validated.getAdminPort()).isNotZero();
     }
 
+    @Test
+    public void shouldThrowExceptionIfOnlySslKeyIsConfigured() throws Exception {
+        HoverflyConfig configs = configs().sslKeyPath("ssl/ca.key");
+
+        Throwable thrown = catchThrowable(() -> validator.validate(configs));
+
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Both SSL key and certificate files are required to override the default Hoverfly SSL");
+    }
+
+    @Test
+    public void shouldThrowExceptionIfOnlySslCertIsConfigured() throws Exception {
+        HoverflyConfig configs = configs().sslCertificatePath("ssl/ca.crt");
+
+        Throwable thrown = catchThrowable(() -> validator.validate(configs));
+
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Both SSL key and certificate files are required to override the default Hoverfly SSL");
+
+    }
+
+    @Test
+    public void shouldThrowExceptionIfSslConfigNotEmptyWhenUsingRemoteInstance() throws Exception {
+        HoverflyConfig configs = configs().useRemoteInstance()
+                .sslCertificatePath("ssl/ca.crt")
+                .sslKeyPath("ssl/ca.key");
+
+        Throwable thrown = catchThrowable(() -> validator.validate(configs));
+
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Attempt to configure SSL on remote instance is prohibited");
+
+    }
 }

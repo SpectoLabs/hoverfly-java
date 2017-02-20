@@ -190,6 +190,24 @@ public class HoverflyTest {
     }
 
     @Test
+    public void shouldCopySslCertAndKeyToTempFolderIfPresent () throws Exception {
+        // Given
+        hoverfly = new Hoverfly(configs()
+                .sslCertificatePath("ssl/ca.crt")
+                .sslKeyPath("ssl/ca.key"), SIMULATE);
+        TempFileManager tempFileManager = spy(TempFileManager.class);
+        Whitebox.setInternalState(hoverfly, "tempFileManager", tempFileManager);
+
+        // When
+        hoverfly.start();
+
+        // Then
+        verify(tempFileManager).copyClassPathResource("ssl/ca.crt", "ca.crt");
+        verify(tempFileManager).copyClassPathResource("ssl/ca.key", "ca.key");
+    }
+
+
+    @Test
     public void shouldCopyHoverflyBinaryToTempFolderOnStart() throws Exception {
 
         // Given
