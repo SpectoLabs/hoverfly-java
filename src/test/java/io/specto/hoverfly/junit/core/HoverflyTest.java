@@ -11,7 +11,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.powermock.reflect.Whitebox;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.zeroturnaround.exec.StartedProcess;
@@ -106,7 +105,6 @@ public class HoverflyTest {
         }
     }
 
-    // TODO this is not enough to test that it works with a remote instance
     @Test
     public void shouldBeAbleToUseRemoteHoverflyInstance() throws Exception {
         // Given
@@ -131,7 +129,7 @@ public class HoverflyTest {
 
         // TODO: Find better way to test trust store
         HttpResponse response = client.execute(new HttpGet("https://specto.io"));
-        assertThat(response.getStatusLine().getStatusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getStatusLine().getStatusCode()).isEqualTo(OK.value());
     }
 
 
@@ -230,6 +228,34 @@ public class HoverflyTest {
         assertThat(hoverfly.getHoverflyConfig().getProxyPort()).isNotZero();
         assertThat(hoverfly.getHoverflyConfig().getAdminPort()).isNotZero();
     }
+
+
+    @Test
+    public void shouldSetSystemPropertiesForLocalHoverflyInstance() throws Exception {
+
+        startDefaultHoverfly();
+
+        assertThat(System.getProperty("http.proxyHost")).isEqualTo("localhost");
+        assertThat(System.getProperty("https.proxyHost")).isEqualTo("localhost");
+
+        assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(hoverfly.getHoverflyConfig().getProxyPort()));
+        assertThat(System.getProperty("https.proxyPort")).isEqualTo(String.valueOf(hoverfly.getHoverflyConfig().getProxyPort()));
+
+        assertThat(System.getProperty("http.nonProxyHosts")).isEqualTo("local|*.local|169.254/16|*.169.254/16");
+
+    }
+
+    @Test
+    public void shouldSetNonProxyHostSystemPropertyToEmptyIfIsProxyLocalHost() throws Exception {
+
+        hoverfly = new Hoverfly(configs().proxyLocalHost(true), SIMULATE);
+
+        hoverfly.start();
+
+        assertThat(System.getProperty("http.nonProxyHosts")).isEqualTo("");
+    }
+
+
 
     @After
     public void tearDown() throws Exception {

@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 
 /**
@@ -19,12 +21,8 @@ class HoverflyConfigValidator {
      */
     HoverflyConfig validate(HoverflyConfig hoverflyConfig) {
 
-        if (hoverflyConfig.getProxyPort() == 0) {
-            hoverflyConfig.proxyPort(hoverflyConfig.isRemoteInstance() ? DEFAULT_PROXY_PORT : findUnusedPort());
-        }
-
-        if (hoverflyConfig.getAdminPort() == 0) {
-            hoverflyConfig.adminPort(hoverflyConfig.isRemoteInstance() ? DEFAULT_ADMIN_PORT : findUnusedPort());
+        if (hoverflyConfig == null) {
+            throw new IllegalArgumentException("HoverflyConfig cannot be null.");
         }
 
         boolean isKeyBlank = StringUtils.isBlank(hoverflyConfig.getSslKeyPath());
@@ -33,9 +31,30 @@ class HoverflyConfigValidator {
             throw new IllegalArgumentException("Both SSL key and certificate files are required to override the default Hoverfly SSL.");
         }
 
-        if (hoverflyConfig.isRemoteInstance() && !isKeyBlank && !isCertBlank) {
-            throw new IllegalArgumentException("Attempt to configure SSL on remote instance is prohibited.");
+        if (hoverflyConfig.isRemoteInstance()) {
+            if (!isKeyBlank && !isCertBlank) {
+                throw new IllegalArgumentException("Attempt to configure SSL on remote instance is prohibited.");
+            }
+
+            if (hoverflyConfig.getHost() != null && hoverflyConfig.getHost().startsWith("http")) {
+                try {
+                    URI uri = new URI(hoverflyConfig.getHost());
+                    hoverflyConfig.useRemoteInstance(uri.getHost());
+                } catch (URISyntaxException e) {
+                    throw new IllegalArgumentException("Remote hoverfly hostname is not valid: " + hoverflyConfig.getHost());
+                }
+            }
         }
+
+        if (hoverflyConfig.getProxyPort() == 0) {
+            hoverflyConfig.proxyPort(hoverflyConfig.isRemoteInstance() ? DEFAULT_PROXY_PORT : findUnusedPort());
+        }
+
+        if (hoverflyConfig.getAdminPort() == 0) {
+            hoverflyConfig.adminPort(hoverflyConfig.isRemoteInstance() ? DEFAULT_ADMIN_PORT : findUnusedPort());
+        }
+
+
 
         // TODO validate supported SSL file format
 

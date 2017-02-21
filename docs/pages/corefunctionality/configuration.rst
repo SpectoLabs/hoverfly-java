@@ -16,4 +16,4 @@ You can also configure Hoverfly to use a remote instance which is already runnin
 .. code-block:: java
 
     config().useRemoteInstance() // localhost
-    config().useRemoteInstance("http://foo") // other host
+    config().useRemoteInstance("1.2.3.4") // other host name or address

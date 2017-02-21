@@ -16,7 +16,7 @@ package io.specto.hoverfly.junit.core;
  * Config used to change the settings for {@link Hoverfly}
  */
 public class HoverflyConfig {
-    private static final String LOCALHOST = "http://localhost";
+    private static final String LOCALHOST = "localhost";
     private int proxyPort;
     private int adminPort;
     private boolean proxyLocalHost;
@@ -60,7 +60,7 @@ public class HoverflyConfig {
 
     /**
      * Controls whether we want to proxy localhost.  If false then any request to localhost will not be proxied through {@link Hoverfly}.
-     * @param proxyLocalHost whether to proxy localhost
+     * @param proxyLocalHost whether to proxy localhost, default to false
      * @return the {@link HoverflyConfig} for further customizations
      */
     public HoverflyConfig proxyLocalHost(boolean proxyLocalHost) {
@@ -105,7 +105,7 @@ public class HoverflyConfig {
     /**
      * By calling this it means a remote Hoverfly will be used - not started by Java
      *
-     * @param remoteHost the url of the remote hoverfly
+     * @param remoteHost the hostname of the remote hoverfly
      * @return the {@link HoverflyConfig} for further customizations
      */
     public HoverflyConfig useRemoteInstance(final String remoteHost) {

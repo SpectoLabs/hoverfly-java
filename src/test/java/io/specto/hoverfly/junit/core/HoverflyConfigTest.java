@@ -12,7 +12,7 @@ public class HoverflyConfigTest {
     public void shouldHaveDefaultSettings() throws Exception {
         HoverflyConfig configs = HoverflyConfig.configs();
 
-        assertThat(configs.getHost()).isEqualTo("http://localhost");
+        assertThat(configs.getHost()).isEqualTo("localhost");
         assertThat(configs.getAdminPort()).isEqualTo(0);
         assertThat(configs.getProxyPort()).isEqualTo(0);
         assertThat(configs.getSslCertificatePath()).isNull();
@@ -27,7 +27,7 @@ public class HoverflyConfigTest {
     public void shouldHaveDefaultSettingsWhenUsingRemoteInstance() throws Exception {
         HoverflyConfig configs = HoverflyConfig.configs().useRemoteInstance();
 
-        assertThat(configs.getHost()).isEqualTo("http://localhost");
+        assertThat(configs.getHost()).isEqualTo("localhost");
         assertThat(configs.getAdminPort()).isEqualTo(0);
         assertThat(configs.getProxyPort()).isEqualTo(0);
         assertThat(configs.getSslCertificatePath()).isNull();
@@ -41,9 +41,9 @@ public class HoverflyConfigTest {
     @Test
     public void shouldBeAbleToOverrideHostNameByUseRemoteInstance() throws Exception {
 
-        HoverflyConfig configs = HoverflyConfig.configs().useRemoteInstance("http://cloud-hoverfly.com");
+        HoverflyConfig configs = HoverflyConfig.configs().useRemoteInstance("cloud-hoverfly.com");
 
-        assertThat(configs.getHost()).isEqualTo("http://cloud-hoverfly.com");
+        assertThat(configs.getHost()).isEqualTo("cloud-hoverfly.com");
         assertThat(configs.getAdminPort()).isEqualTo(0);
         assertThat(configs.getProxyPort()).isEqualTo(0);
         assertThat(configs.getSslCertificatePath()).isNull();

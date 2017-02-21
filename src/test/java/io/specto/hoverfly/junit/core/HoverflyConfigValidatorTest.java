@@ -73,4 +73,24 @@ public class HoverflyConfigValidatorTest {
                 .hasMessageContaining("Attempt to configure SSL on remote instance is prohibited");
 
     }
+
+    @Test
+    public void shouldRemoveHttpSchemaFromRemoteInstanceHostName() throws Exception {
+
+        HoverflyConfig configs = configs().useRemoteInstance("http://100.100.100.1");
+
+        HoverflyConfig validated = validator.validate(configs);
+
+        assertThat(validated.getHost()).isEqualTo("100.100.100.1");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenHoverflyConfigIsNull() throws Exception {
+
+        Throwable thrown = catchThrowable(() -> validator.validate(null));
+
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("HoverflyConfig cannot be null.");
+
+    }
 }

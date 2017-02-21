@@ -37,6 +37,7 @@ import java.util.concurrent.*;
 import static com.sun.jersey.api.client.ClientResponse.Status.OK;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
+import static io.specto.hoverfly.junit.core.SystemProperty.*;
 
 /**
  * A wrapper class for the Hoverfly binary.  Manage the lifecycle of the processes, and then manage Hoverfly itself by using it's API endpoints.
@@ -68,7 +69,7 @@ public class Hoverfly {
         this.hoverflyMode = hoverflyMode;
 
         hoverflyResource = Client.create().resource(
-                UriBuilder.fromUri(hoverflyConfig.getHost())
+                UriBuilder.fromUri("http://" + hoverflyConfig.getHost())
                         .port(hoverflyConfig.getAdminPort())
                         .build());
     }
@@ -246,21 +247,30 @@ public class Hoverfly {
      * Configures the JVM system properties to use Hoverfly as a proxy
      */
     private void setProxySystemProperties() {
-        LOGGER.info("Setting proxy host to {}", "localhost");
-        // TODO: There might be a bug here
-        System.setProperty("http.proxyHost", "localhost");
-        System.setProperty("https.proxyHost", "localhost");
+        LOGGER.info("Setting proxy host to {}", hoverflyConfig.getHost());
+        System.setProperty(HTTP_PROXY_HOST, hoverflyConfig.getHost());
+        System.setProperty(HTTPS_PROXY_HOST, hoverflyConfig.getHost());
 
         if (hoverflyConfig.isProxyLocalHost()) {
-            System.setProperty("http.nonProxyHosts", "");
+            System.setProperty(HTTP_NON_PROXY_HOSTS, "");
         } else {
-            System.setProperty("http.nonProxyHosts", "local|*.local|169.254/16|*.169.254/16");
+            System.setProperty(HTTP_NON_PROXY_HOSTS, "local|*.local|169.254/16|*.169.254/16");
+        }
+
+        if (hoverflyConfig.isRemoteInstance()) {
+            String nonProxyHosts = System.getProperty(HTTP_NON_PROXY_HOSTS);
+            if (StringUtils.isNotBlank(nonProxyHosts)) {
+                nonProxyHosts = String.join("|", nonProxyHosts, hoverflyConfig.getHost());
+            } else {
+                nonProxyHosts = hoverflyConfig.getHost();
+            }
+            System.setProperty(HTTP_NON_PROXY_HOSTS, nonProxyHosts);
         }
 
         LOGGER.info("Setting proxy proxyPort to {}", hoverflyConfig.getProxyPort());
 
-        System.setProperty("http.proxyPort", String.valueOf(hoverflyConfig.getProxyPort()));
-        System.setProperty("https.proxyPort", String.valueOf(hoverflyConfig.getProxyPort()));
+        System.setProperty(HTTP_PROXY_PORT, String.valueOf(hoverflyConfig.getProxyPort()));
+        System.setProperty(HTTPS_PROXY_PORT, String.valueOf(hoverflyConfig.getProxyPort()));
     }
 
     /**
