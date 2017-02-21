@@ -44,7 +44,7 @@ import static io.specto.hoverfly.junit.core.SystemProperty.*;
 /**
  * A wrapper class for the Hoverfly binary.  Manage the lifecycle of the processes, and then manage Hoverfly itself by using it's API endpoints.
  */
-public class Hoverfly {
+public class Hoverfly implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hoverfly.class);
     private static final int BOOT_TIMEOUT_SECONDS = 10;
@@ -152,30 +152,20 @@ public class Hoverfly {
     }
 
     /**
-     * Stops the running {@link Hoverfly} process
+     * @deprecated As of release 0.3.8, replaced by {@link #close()}
      */
-    // TODO add shutdown hook for stop
+    @Deprecated
     public void stop() {
-        LOGGER.info("Destroying hoverfly process");
+        cleanUp();
+    }
 
-        if (startedProcess != null) {
-            Process process = startedProcess.getProcess();
-            process.destroy();
 
-            // Some platforms terminate process asynchronously, eg. Windows, and cannot guarantee that synchronous file deletion
-            // can acquire file lock
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-            Future<Integer> future = executorService.submit((Callable<Integer>) process::waitFor);
-            try {
-                future.get(5, TimeUnit.SECONDS);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                LOGGER.warn("Timeout when waiting for hoverfly process to terminate.");
-            }
-            executorService.shutdownNow();
-        }
-
-        // TODO: clear system properties, and reset default SslContext?
-        tempFileManager.purge();
+    /**
+     * Stops the running {@link Hoverfly} process and clean up resources
+     */
+    @Override
+    public void close() {
+        cleanUp();
     }
 
     // TODO: Extract HoverflyClient??
@@ -295,4 +285,26 @@ public class Hoverfly {
         throw new IllegalStateException("Hoverfly has not become healthy in " + BOOT_TIMEOUT_SECONDS + " seconds");
     }
 
+    private void cleanUp() {
+        LOGGER.info("Destroying hoverfly process");
+
+        if (startedProcess != null) {
+            Process process = startedProcess.getProcess();
+            process.destroy();
+
+            // Some platforms terminate process asynchronously, eg. Windows, and cannot guarantee that synchronous file deletion
+            // can acquire file lock
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            Future<Integer> future = executorService.submit((Callable<Integer>) process::waitFor);
+            try {
+                future.get(5, TimeUnit.SECONDS);
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                LOGGER.warn("Timeout when waiting for hoverfly process to terminate.");
+            }
+            executorService.shutdownNow();
+        }
+
+        // TODO: clear system properties, and reset default SslContext?
+        tempFileManager.purge();
+    }
 }

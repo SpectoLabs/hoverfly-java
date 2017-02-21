@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class RemoteHoverflyTest {
 
-    private Hoverfly hoverflyUnderTest;
     private Hoverfly remoteHoverflyStub;
 
     @Before
@@ -35,60 +34,57 @@ public class RemoteHoverflyTest {
     public void shouldSetSystemPropertiesForRemoteHoverflyInstance() throws Exception {
 
         // Given
-        hoverflyUnderTest = new Hoverfly(configs().useRemoteInstance("hoverfly-cloud"), SIMULATE);
+        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().useRemoteInstance("hoverfly-cloud"), SIMULATE)) {
 
+            // When
+            hoverflyUnderTest.start();
 
-        // When
-        hoverflyUnderTest.start();
+            // Then
+            assertThat(System.getProperty("http.proxyHost")).isEqualTo("hoverfly-cloud");
+            assertThat(System.getProperty("https.proxyHost")).isEqualTo("hoverfly-cloud");
 
-        // Then
-        assertThat(System.getProperty("http.proxyHost")).isEqualTo("hoverfly-cloud");
-        assertThat(System.getProperty("https.proxyHost")).isEqualTo("hoverfly-cloud");
+            assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(hoverflyUnderTest.getHoverflyConfig().getProxyPort()));
+            assertThat(System.getProperty("https.proxyPort")).isEqualTo(String.valueOf(hoverflyUnderTest.getHoverflyConfig().getProxyPort()));
 
-        assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(hoverflyUnderTest.getHoverflyConfig().getProxyPort()));
-        assertThat(System.getProperty("https.proxyPort")).isEqualTo(String.valueOf(hoverflyUnderTest.getHoverflyConfig().getProxyPort()));
-
-        assertThat(System.getProperty("http.nonProxyHosts")).isEqualTo("local|*.local|169.254/16|*.169.254/16|hoverfly-cloud");
-
+            assertThat(System.getProperty("http.nonProxyHosts")).isEqualTo("local|*.local|169.254/16|*.169.254/16|hoverfly-cloud");
+        }
     }
 
     @Test
     public void shouldSetNonProxyHostsWhenUsingBothRemoteHoverflyInstanceAndProxyLocalHost() throws Exception {
+
         // Given
-        hoverflyUnderTest = new Hoverfly(configs().useRemoteInstance("hoverfly-cloud").proxyLocalHost(true), SIMULATE);
+        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().useRemoteInstance("hoverfly-cloud").proxyLocalHost(true), SIMULATE)) {
 
-        // When
-        hoverflyUnderTest.start();
+            // When
+            hoverflyUnderTest.start();
 
-        // Then
-        assertThat(System.getProperty("http.nonProxyHosts")).isEqualTo("hoverfly-cloud");
-
+            // Then
+            assertThat(System.getProperty("http.nonProxyHosts")).isEqualTo("hoverfly-cloud");
+        }
     }
 
     @Test
     public void shouldNotInvokeTempFileManagerWhenUsingRemoteHoverfly() throws Exception {
 
         // Given
-        hoverflyUnderTest = new Hoverfly(configs().useRemoteInstance("hoverfly-cloud"), SIMULATE);
-        TempFileManager tempFileManager = mock(TempFileManager.class);
-        Whitebox.setInternalState(hoverflyUnderTest, "tempFileManager", tempFileManager);
+        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().useRemoteInstance("hoverfly-cloud"), SIMULATE)) {
+            TempFileManager tempFileManager = mock(TempFileManager.class);
+            Whitebox.setInternalState(hoverflyUnderTest, "tempFileManager", tempFileManager);
 
-        // When
-        hoverflyUnderTest.start();
+            // When
+            hoverflyUnderTest.start();
 
-        // Then
-        verifyZeroInteractions(tempFileManager);
+            // Then
+            verifyZeroInteractions(tempFileManager);
+        }
     }
 
     @After
     public void tearDown() throws Exception {
 
-        if(hoverflyUnderTest != null) {
-            hoverflyUnderTest.stop();
-        }
-
         if(remoteHoverflyStub != null) {
-            remoteHoverflyStub.stop();
+            remoteHoverflyStub.close();
         }
 
     }

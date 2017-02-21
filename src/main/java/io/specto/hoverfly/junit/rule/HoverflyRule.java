@@ -208,7 +208,7 @@ public class HoverflyRule extends ExternalResource {
                 hoverfly.exportSimulation(capturePath);
             }
         } finally {
-            hoverfly.stop();
+            hoverfly.close();
         }
     }
 
