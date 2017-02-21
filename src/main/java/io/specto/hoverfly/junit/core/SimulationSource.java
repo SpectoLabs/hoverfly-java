@@ -2,11 +2,7 @@ package io.specto.hoverfly.junit.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import io.specto.hoverfly.junit.core.model.GlobalActions;
-import io.specto.hoverfly.junit.core.model.HoverflyData;
-import io.specto.hoverfly.junit.core.model.HoverflyMetaData;
-import io.specto.hoverfly.junit.core.model.RequestResponsePair;
-import io.specto.hoverfly.junit.core.model.Simulation;
+import io.specto.hoverfly.junit.core.model.*;
 import io.specto.hoverfly.junit.dsl.HoverflyDsl;
 import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
 
@@ -14,10 +10,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static io.specto.hoverfly.junit.core.HoverflyUtils.findResourceOnClasspath;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static jersey.repackaged.com.google.common.collect.Lists.newArrayList;
 
@@ -109,7 +107,12 @@ public interface SimulationSource {
                     .flatMap(Set::stream)
                     .collect(toSet());
 
-            return Optional.of(new Simulation(new HoverflyData(pairs, new GlobalActions(newArrayList())), new HoverflyMetaData()));
+            final List<DelaySettings> delaySettings = Arrays.stream(stubServiceBuilder)
+                    .map(StubServiceBuilder::getDelaySettings)
+                    .flatMap(List::stream)
+                    .collect(toList());
+
+            return Optional.of(new Simulation(new HoverflyData(pairs, new GlobalActions(delaySettings)), new HoverflyMetaData()));
         };
     }
 

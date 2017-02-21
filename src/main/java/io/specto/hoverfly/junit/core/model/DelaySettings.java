@@ -21,13 +21,16 @@ public class DelaySettings {
 
     private final String urlPattern;
     private final int delay;
+    private final String httpMethod;
 
 
     @JsonCreator
     public DelaySettings(@JsonProperty("urlPattern") String urlPattern,
-                         @JsonProperty("delay") int delay) {
+                         @JsonProperty("delay") int delay,
+                         @JsonProperty("httpMethod") String httpMethod) {
         this.urlPattern = urlPattern;
         this.delay = delay;
+        this.httpMethod = httpMethod;
     }
 
     public String getUrlPattern() {
@@ -36,6 +39,10 @@ public class DelaySettings {
 
     public int getDelay() {
         return delay;
+    }
+
+    public String getHttpMethod() {
+        return httpMethod;
     }
 
     @Override

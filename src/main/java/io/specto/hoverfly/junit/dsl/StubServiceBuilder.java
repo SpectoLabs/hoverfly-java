@@ -12,14 +12,20 @@
  */
 package io.specto.hoverfly.junit.dsl;
 
+import io.specto.hoverfly.junit.core.model.DelaySettings;
+import io.specto.hoverfly.junit.core.model.RequestMatcher;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
+import jersey.repackaged.com.google.common.collect.ImmutableList;
 import jersey.repackaged.com.google.common.collect.ImmutableSet;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static io.specto.hoverfly.junit.dsl.RequestMatcherBuilder.requestMatcherBuilder;
 import static javax.ws.rs.HttpMethod.*;
+import static jersey.repackaged.com.google.common.collect.Lists.newArrayList;
 
 /**
  * Used as part of the DSL for creating a {@link RequestResponsePair} used within a Hoverfly Simulation.  Each builder is locked to a single base URL.
@@ -34,6 +40,7 @@ public class StubServiceBuilder {
     private final String destination;
     private final String scheme;
     private final Set<RequestResponsePair> requestResponsePairs = new HashSet<>();
+    private final List<DelaySettings> delaySettings = newArrayList();
 
     /**
      * Instantiates builder for a given base URL
@@ -107,6 +114,7 @@ public class StubServiceBuilder {
 
     /**
      * Used for retrieving all the requestResponsePairs that the builder contains
+     *
      * @return the set of {@link RequestResponsePair}
      */
     public Set<RequestResponsePair> getRequestResponsePairs() {
@@ -123,6 +131,46 @@ public class StubServiceBuilder {
      */
     StubServiceBuilder addRequestResponsePair(final RequestResponsePair requestResponsePair) {
         this.requestResponsePairs.add(requestResponsePair);
+        return this;
+    }
+
+    /**
+     * Used to create url pattenrs of {@link DelaySettings}.
+     *
+     * @return service destination
+     */
+    String getDestination() {
+        return this.destination;
+    }
+
+    /**
+     * Adds service wide delay settings.
+     *
+     * @param delay         amount of delay
+     * @param delayTimeUnit time unit of delay (e.g. SECONDS)
+     * @return delay settings builder
+     */
+    public StubServiceDelaySettingsBuilder andDelay(int delay, final TimeUnit delayTimeUnit) {
+        return new StubServiceDelaySettingsBuilder(delay, delayTimeUnit, this);
+    }
+
+    /**
+     * Used to initialize {@link io.specto.hoverfly.junit.core.model.GlobalActions}.
+     *
+     * @return list of {@link DelaySettings}
+     */
+    public List<DelaySettings> getDelaySettings() {
+        return ImmutableList.copyOf(this.delaySettings);
+    }
+
+    void addDelaySetting(final DelaySettings delaySettings) {
+        if (delaySettings != null) {
+            this.delaySettings.add(delaySettings);
+        }
+    }
+
+    StubServiceBuilder addDelaySetting(final RequestMatcher requestMatcher, final ResponseBuilder responseBuilder) {
+        responseBuilder.addDelay().to(this).forRequest(requestMatcher);
         return this;
     }
 }

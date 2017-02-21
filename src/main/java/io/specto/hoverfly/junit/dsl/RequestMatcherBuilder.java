@@ -12,6 +12,7 @@
  */
 package io.specto.hoverfly.junit.dsl;
 
+import io.specto.hoverfly.junit.core.model.DelaySettings;
 import io.specto.hoverfly.junit.core.model.RequestMatcher;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 
@@ -109,7 +110,10 @@ public class RequestMatcherBuilder {
      * @see ResponseBuilder
      */
     public StubServiceBuilder willReturn(final ResponseBuilder responseBuilder) {
-        return invoker.addRequestResponsePair(new RequestResponsePair(this.build(), responseBuilder.build()));
+        RequestMatcher requestMatcher = this.build();
+        return invoker
+                .addRequestResponsePair(new RequestResponsePair(requestMatcher, responseBuilder.build()))
+                .addDelaySetting(requestMatcher, responseBuilder);
     }
 
     private RequestMatcher build() {

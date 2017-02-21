@@ -18,6 +18,7 @@ import io.specto.hoverfly.junit.core.model.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.singletonList;
 
@@ -34,6 +35,8 @@ public class ResponseBuilder {
     private String body = "";
     private int status = 200;
 
+    private int delay;
+    private TimeUnit delayTimeUnit;
 
     private ResponseBuilder() {
     }
@@ -90,5 +93,22 @@ public class ResponseBuilder {
         this.header("Content-Type", httpBodyConverter.contentType());
         return this;
     }
+
+    /**
+     * Sets delay paramters.
+     * @param delay amount of delay
+     * @param delayTimeUnit time unit of delay (e.g. SECONDS)
+     * @return the {@link ResponseBuilder for further customizations}
+     */
+    public ResponseBuilder withDelay(int delay, TimeUnit delayTimeUnit) {
+        this.delay = delay;
+        this.delayTimeUnit = delayTimeUnit;
+        return this;
+    }
+
+    ResponseDelaySettingsBuilder addDelay() {
+        return new ResponseDelaySettingsBuilder(delay, delayTimeUnit);
+    }
+
 }
 
