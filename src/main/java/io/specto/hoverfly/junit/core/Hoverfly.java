@@ -94,6 +94,8 @@ public class Hoverfly implements AutoCloseable {
      */
     public void start() {
 
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+
         if (!hoverflyConfig.isRemoteInstance()) {
             startHoverflyProcess();
         }
