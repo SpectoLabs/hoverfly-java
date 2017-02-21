@@ -7,8 +7,10 @@ The core of this library is the Hoverfly class, which abstracts away and orchest
 
 .. code-block:: java
 
-    final Hoverfly hoverfly = new Hoverfly(config(), SIMULATE);
-    hoverfly.start();
-    hoverfly.importSimulation(classpath("simulation.json"))
-    // do some requests here
-    hoverfly.stop();
+    try (Hoverfly hoverfly = new Hoverfly(configs(), SIMULATE)) {
+
+        hoverfly.start();
+        hoverfly.importSimulation(classpath("simulation.json"));
+
+        // do some requests here
+    }

@@ -9,11 +9,11 @@ You can also set fixed port:
 
 .. code-block:: java
 
-    config().proxyPort(8080)
+    configs().proxyPort(8080)
 
 You can also configure Hoverfly to use a remote instance which is already running
 
 .. code-block:: java
 
-    config().useRemoteInstance() // localhost
-    config().useRemoteInstance("1.2.3.4") // other host name or address
+    configs().useRemoteInstance() // localhost
+    configs().useRemoteInstance("1.2.3.4") // other host name or address

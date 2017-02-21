@@ -9,8 +9,11 @@ test, then switch back into simulate mode using the simulation data recorded dur
 
 .. code-block:: java
 
-    final Hoverfly hoverfly = new Hoverfly(config(), CAPTURE);
-    hoverfly.start();
-    // do some requests here
-    hoverfly.exportSimulation(Paths.get("some-path/simulation.json"))
-    hoverfly.stop();
+    try(Hoverfly hoverfly = new Hoverfly(configs(), CAPTURE)) {
+
+        hoverfly.start();
+
+        // do some requests here
+
+        hoverfly.exportSimulation(Paths.get("some-path/simulation.json"));
+    }
