@@ -12,6 +12,8 @@
  */
 package io.specto.hoverfly.junit.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -200,7 +202,9 @@ public class Hoverfly {
         LOGGER.info("Exporting simulation data from Hoverfly");
         try {
             Files.deleteIfExists(path);
-            Files.write(path, hoverflyResource.path(SIMULATION_PATH).get(String.class).getBytes());
+            ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
+            Simulation simulation = hoverflyResource.path(SIMULATION_PATH).get(Simulation.class);
+            objectWriter.writeValue(path.toFile(), simulation);
         } catch (Exception e) {
             LOGGER.error("Failed to export simulation data", e);
         }
