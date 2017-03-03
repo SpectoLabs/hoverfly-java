@@ -2,8 +2,8 @@
 set -v
 set -e
 
-git config --global user.email "circleci@specto.io"
-git config --global user.name "CircleCI"
+git config user.email "circleci@specto.io"
+git config user.name "CircleCI"
 
 PROJECT_VERSION=($(cat gradle.properties | grep version | cut -d '=' -f 2))
 
