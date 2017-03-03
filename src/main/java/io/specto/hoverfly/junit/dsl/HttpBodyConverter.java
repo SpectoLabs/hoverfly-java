@@ -2,6 +2,8 @@ package io.specto.hoverfly.junit.dsl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
  * Interface for converting a java object into a http request body, and storing the appropriate content type header value
@@ -14,7 +16,10 @@ public interface HttpBodyConverter {
      * @return the converter
      */
     static HttpBodyConverter json(final Object body) {
-        return json(body, new ObjectMapper());
+        final ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        return json(body, objectMapper);
     }
 
     /**

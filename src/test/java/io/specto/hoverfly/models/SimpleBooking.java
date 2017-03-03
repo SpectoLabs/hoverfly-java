@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 
 public class SimpleBooking {
@@ -15,13 +15,13 @@ public class SimpleBooking {
     private final int id;
     private final String origin;
     private final String destination;
-    private final Date date;
+    private final LocalDate date;
 
     @JsonCreator
     public SimpleBooking(@JsonProperty("id") int id,
                          @JsonProperty("origin") String origin,
                          @JsonProperty("destination") String destination,
-                         @JsonProperty("date") Date date) {
+                         @JsonProperty("date") LocalDate date) {
         this.id = id;
         this.origin = origin;
         this.destination = destination;
@@ -40,7 +40,7 @@ public class SimpleBooking {
         return destination;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 

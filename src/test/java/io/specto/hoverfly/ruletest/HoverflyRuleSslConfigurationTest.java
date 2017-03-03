@@ -17,7 +17,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.net.ssl.SSLContext;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.sql.Date;
 import java.time.LocalDate;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
@@ -40,7 +39,7 @@ public class HoverflyRuleSslConfigurationTest {
     public void shouldBeAbleToCallHttpsServiceEndpointUsingSelfSignedCertificate() throws Exception {
 
         // Given
-        SimpleBooking booking = new SimpleBooking(1, "London", "Hong Kong", Date.valueOf(LocalDate.now()));
+        SimpleBooking booking = new SimpleBooking(1, "London", "Hong Kong", LocalDate.now());
         hoverflyRule.simulate(dsl(
                 service("https://my-service.com")
                     .get("/api/bookings/1")
