@@ -25,7 +25,7 @@ import static java.nio.charset.Charset.defaultCharset;
 public class CaptureModeTest {
 
 
-    private static final Path RECORDED_SIMULATION_FILE = Paths.get("src/test/resources/recorded-simulation.json");
+    private static final Path RECORDED_SIMULATION_FILE = Paths.get("src/test/resources/hoverfly/recorded-simulation.json");
     private static final String RECORDED_SIMULATION_JSON = "recorded-simulation.json";
     private static final String EXPECTED_SIMULATION_JSON = "expected-simulation.json";
 

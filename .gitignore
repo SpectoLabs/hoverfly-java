@@ -1,7 +1,7 @@
 .idea
 **.iml
 requests.db
-src/test/resources/recorded-simulation.json
+src/test/resources/hoverfly/recorded-simulation.json
 .gradle/
 build/
 .DS_Store

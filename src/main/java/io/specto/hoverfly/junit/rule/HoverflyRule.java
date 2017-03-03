@@ -33,7 +33,8 @@ import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static io.specto.hoverfly.junit.core.SimulationSource.file;
-import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.fileRelativeToTestResources;
+import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.createTestResourcesHoverflyDirectoryIfNoneExisting;
+import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.fileRelativeToTestResourcesHoverfly;
 import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.isAnnotatedWithRule;
 
 
@@ -65,7 +66,7 @@ import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.isAnnotatedWithRul
  *     &#064;ClassRule
  *     public static HoverflyRule hoverflyRule = HoverflyRule.inCaptureMode("recorded-simulation.json");
  * </pre>
- * <p>The recorded data will be saved in your src/test/resources directory</p>
+ * <p>The recorded data will be saved in your src/test/resources/hoverfly directory</p>
  * <p><b>It's recommended to always use the {@link ClassRule} annotation, so you can share the same instance of Hoverfly through all your tests.</b>
  * This avoids the overhead of starting Hoverfly multiple times, and also helps ensure all your system properties are set before executing any other code.
  * If you want to change the data, you can do so in {@link Before} method by calling {@link HoverflyRule#simulate}, but this will not be thread safe.</p>
@@ -98,7 +99,7 @@ public class HoverflyRule extends ExternalResource {
     /**
      * Instantiates a rule which runs {@link Hoverfly} in capture mode if
      * recorded file is not present, or in simulation mode if record file is present
-     * @param recordFile the path where captured or simulated traffic is taken. Relative to src/test/resources
+     * @param recordFile the path where captured or simulated traffic is taken. Relative to src/test/resources/hoverfly
      * @return the rule
      */
     public static HoverflyRule inCaptureOrSimulationMode(String recordFile) {
@@ -108,12 +109,12 @@ public class HoverflyRule extends ExternalResource {
     /**
      * Instantiates a rule which runs {@link Hoverfly} in capture mode if
      * recorded file is not present, or in simulation mode if record file is present
-     * @param recordFile the path where captured or simulated traffic is taken. Relative to src/test/resources
+     * @param recordFile the path where captured or simulated traffic is taken. Relative to src/test/resources/hoverfly
      * @param hoverflyConfig the config
      * @return the rule
      */
     public static HoverflyRule inCaptureOrSimulationMode(String recordFile, HoverflyConfig hoverflyConfig) {
-        final Path path = fileRelativeToTestResources(recordFile);
+        final Path path = fileRelativeToTestResourcesHoverfly(recordFile);
         if (Files.exists(path) && Files.isRegularFile(path)) {
             return inSimulationMode(file(path), hoverflyConfig);
         } else {
@@ -124,7 +125,7 @@ public class HoverflyRule extends ExternalResource {
     /**
      * Instantiates a rule which runs {@link Hoverfly} in capture mode
      *
-     * @param outputFilename the path to the recorded name relative to src/test/resources
+     * @param outputFilename the path to the recorded name relative to src/test/resources/hoverfly
      * @return the rule
      */
     public static HoverflyRule inCaptureMode(String outputFilename) {
@@ -134,12 +135,13 @@ public class HoverflyRule extends ExternalResource {
     /**
      * Instantiates a rule which runs {@link Hoverfly} in capture mode
      *
-     * @param outputFilename the path to the recorded name relative to src/test/resources
+     * @param outputFilename the path to the recorded name relative to src/test/resources/hoverfly
      * @param hoverflyConfig the config
      * @return the rule
      */
     public static HoverflyRule inCaptureMode(String outputFilename, HoverflyConfig hoverflyConfig) {
-        return new HoverflyRule(fileRelativeToTestResources(outputFilename), hoverflyConfig);
+        createTestResourcesHoverflyDirectoryIfNoneExisting();
+        return new HoverflyRule(fileRelativeToTestResourcesHoverfly(outputFilename), hoverflyConfig);
     }
 
     /**
