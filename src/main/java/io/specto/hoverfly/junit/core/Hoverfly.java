@@ -47,7 +47,6 @@ import java.util.concurrent.TimeoutException;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
-import static io.specto.hoverfly.junit.core.SystemProperty.*;
 
 /**
  * A wrapper class for the Hoverfly binary.  Manage the lifecycle of the processes, and then manage Hoverfly itself by using it's API endpoints.
@@ -61,13 +60,15 @@ public class Hoverfly implements AutoCloseable {
     private static final int RETRY_BACKOFF_INTERVAL_MS = 100;
     private static final String HEALTH_CHECK_PATH = "/api/stats";
     private static final String SIMULATION_PATH = "/api/v2/simulation";
+
     private final HoverflyConfig hoverflyConfig;
     private final HoverflyMode hoverflyMode;
-    private OkHttpClient client = new OkHttpClient();
-    private StartedProcess startedProcess;
+    private final ProxyConfigurer proxyConfigurer;
+    private final SslConfigurer sslConfigurer = new SslConfigurer();
+    private final OkHttpClient client = new OkHttpClient();
+    private final TempFileManager tempFileManager = new TempFileManager();
 
-    private SslConfigurer sslConfigurer = new SslConfigurer();
-    private TempFileManager tempFileManager = new TempFileManager();
+    private StartedProcess startedProcess;
     private boolean useDefaultSslCert = true;
 
     /**
@@ -78,6 +79,7 @@ public class Hoverfly implements AutoCloseable {
      */
     public Hoverfly(HoverflyConfig hoverflyConfig, HoverflyMode hoverflyMode) {
         this.hoverflyConfig = new HoverflyConfigValidator().validate(hoverflyConfig);
+        this.proxyConfigurer = new ProxyConfigurer(hoverflyConfig);
         this.hoverflyMode = hoverflyMode;
     }
 
@@ -110,7 +112,8 @@ public class Hoverfly implements AutoCloseable {
         if (useDefaultSslCert) {
             sslConfigurer.setTrustStore();
         }
-        setProxySystemProperties();
+
+        proxyConfigurer.setProxySystemProperties();
     }
 
     private void startHoverflyProcess() {
@@ -277,44 +280,12 @@ public class Hoverfly implements AutoCloseable {
             final Call call = client.newCall(request);
             try (final Response response = call.execute()) {
                 LOGGER.debug("Hoverfly health check status code is: {}", response.code());
-
-                final boolean successful = response.isSuccessful();
-                return successful;
+                return response.isSuccessful();
             }
         } catch (IOException e) {
             LOGGER.debug("Not yet healthy", e);
         }
         return false;
-    }
-
-    /**
-     * Configures the JVM system properties to use Hoverfly as a proxy
-     */
-    private void setProxySystemProperties() {
-        LOGGER.info("Setting proxy host to {}", hoverflyConfig.getHost());
-        System.setProperty(HTTP_PROXY_HOST, hoverflyConfig.getHost());
-        System.setProperty(HTTPS_PROXY_HOST, hoverflyConfig.getHost());
-
-        if (hoverflyConfig.isProxyLocalHost()) {
-            System.setProperty(HTTP_NON_PROXY_HOSTS, "");
-        } else {
-            System.setProperty(HTTP_NON_PROXY_HOSTS, "local|*.local|169.254/16|*.169.254/16");
-        }
-
-        if (hoverflyConfig.isRemoteInstance()) {
-            String nonProxyHosts = System.getProperty(HTTP_NON_PROXY_HOSTS);
-            if (StringUtils.isNotBlank(nonProxyHosts)) {
-                nonProxyHosts = String.join("|", nonProxyHosts, hoverflyConfig.getHost());
-            } else {
-                nonProxyHosts = hoverflyConfig.getHost();
-            }
-            System.setProperty(HTTP_NON_PROXY_HOSTS, nonProxyHosts);
-        }
-
-        LOGGER.info("Setting proxy proxyPort to {}", hoverflyConfig.getProxyPort());
-
-        System.setProperty(HTTP_PROXY_PORT, String.valueOf(hoverflyConfig.getProxyPort()));
-        System.setProperty(HTTPS_PROXY_PORT, String.valueOf(hoverflyConfig.getProxyPort()));
     }
 
     /**
@@ -354,7 +325,8 @@ public class Hoverfly implements AutoCloseable {
             executorService.shutdownNow();
         }
 
-        // TODO: clear system properties, and reset default SslContext?
+        proxyConfigurer.restoreProxySystemProperties();
+        // TODO: reset default SslContext?
         tempFileManager.purge();
     }
 
