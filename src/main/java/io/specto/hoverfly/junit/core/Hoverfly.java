@@ -198,6 +198,12 @@ public class Hoverfly implements AutoCloseable {
         });
     }
 
+    /**
+     * Clears Hoverfly instance nn case of running Hoverfly in standalone.
+     */
+    public void reset() {
+        importSimulation(SimulationSource.empty());
+    }
 
     /**
      * Exports a simulation and stores it on the filesystem at the given path
