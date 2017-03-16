@@ -1,5 +1,7 @@
 package io.specto.hoverfly.junit.core;
 
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.core.model.Simulation;
@@ -9,8 +11,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
 import org.powermock.reflect.Whitebox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.zeroturnaround.exec.StartedProcess;
@@ -99,6 +104,32 @@ public class HoverflyTest {
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("Port is already in use");
         }
+    }
+
+    @Test
+    public void shouldWarnWhenStartHoverflyInstanceTwice() {
+        // Given
+        // Reference: https://dzone.com/articles/unit-testing-asserting-line
+        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        final Appender mockAppender = mock(Appender.class);
+        when(mockAppender.getName()).thenReturn("test-shouldWarnWhenStartHoverflyInstanceTwice");
+        root.addAppender(mockAppender);
+
+        startDefaultHoverfly();
+
+        // when
+        hoverfly.start();
+
+        // then
+        verify(mockAppender).doAppend(argThat(new ArgumentMatcher() {
+            @Override
+            public boolean matches(final Object argument) {
+                LoggingEvent event = (LoggingEvent) argument;
+                boolean r = event.getLevel().levelStr.equals("WARN") &&
+                        event.getMessage().contains("Your local Hoverfly is already running");
+                return r;
+            }
+        }));
     }
 
     @Test
