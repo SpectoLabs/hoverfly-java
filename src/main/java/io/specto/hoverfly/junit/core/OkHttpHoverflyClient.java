@@ -8,26 +8,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class OkHttpHoverflyClient implements HoverflyClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OkHttpHoverflyClient.class);
 
-    private static final String HEALTH_CHECK_PATH = "/api/health";
-    private static final String SIMULATION_PATH = "/api/v2/simulation";
-    private static final String INFO_PATH = "/api/v2/hoverfly";
-    private static final String DESTINATION_PATH = "/api/v2/hoverfly/destination";
-    private static final String MODE_PATH = "/api/v2/hoverfly/mode";
+    private static final String HEALTH_CHECK_PATH = "api/health";
+    private static final String SIMULATION_PATH = "api/v2/simulation";
+    private static final String INFO_PATH = "api/v2/hoverfly";
+    private static final String DESTINATION_PATH = "api/v2/hoverfly/destination";
+    private static final String MODE_PATH = "api/v2/hoverfly/mode";
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    private OkHttpClient client = new OkHttpClient();
-    private HoverflyConfig hoverflyConfig;
+    private OkHttpClient client;
+
+    private HttpUrl baseUrl;
 
     public OkHttpHoverflyClient(HoverflyConfig hoverflyConfig) {
-        this.hoverflyConfig = hoverflyConfig;
+
+        this.client = new OkHttpClient();
+
+        this.baseUrl = new HttpUrl.Builder()
+                .scheme("http")
+                .host(hoverflyConfig.getHost())
+                .port(hoverflyConfig.getAdminPort()).build();
     }
 
     @Override
@@ -136,17 +142,9 @@ public class OkHttpHoverflyClient implements HoverflyClient {
     }
 
 
-
     private Request.Builder createRequestBuilderWithUrl(String path) {
-        final Request.Builder builder;
-        try {
-            builder = new Request.Builder()
-                    .url(new URL("http", hoverflyConfig.getHost(), hoverflyConfig.getAdminPort(), path));
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException(e);
-        }
-
-        return builder;
+        return new Request.Builder()
+                .url(baseUrl.newBuilder().addPathSegments(path).build());
     }
 
 

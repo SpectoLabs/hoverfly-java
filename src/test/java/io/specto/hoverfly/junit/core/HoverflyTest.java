@@ -121,14 +121,11 @@ public class HoverflyTest {
         hoverfly.start();
 
         // then
-        verify(mockAppender).doAppend(argThat(new ArgumentMatcher() {
-            @Override
-            public boolean matches(final Object argument) {
-                LoggingEvent event = (LoggingEvent) argument;
-                boolean r = event.getLevel().levelStr.equals("WARN") &&
-                        event.getMessage().contains("Local Hoverfly is already running");
-                return r;
-            }
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent event = (LoggingEvent) argument;
+            boolean r = event.getLevel().levelStr.equals("WARN") &&
+                    event.getMessage().contains("Local Hoverfly is already running");
+            return r;
         }));
     }
 
