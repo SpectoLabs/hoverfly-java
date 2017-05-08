@@ -25,6 +25,7 @@ public class HoverflyConfig {
     private String sslCertificatePath;
     private String sslKeyPath;
     private String destination;
+    private AuthenticationConfig authenticationConfig;
 
     private HoverflyConfig() {
     }
@@ -99,8 +100,7 @@ public class HoverflyConfig {
      * @return the {@link HoverflyConfig} for further customizations
      */
     public HoverflyConfig useRemoteInstance() {
-        this.remote = true;
-        return this;
+        return useRemoteInstance(LOCALHOST, null);
     }
 
     /**
@@ -110,8 +110,13 @@ public class HoverflyConfig {
      * @return the {@link HoverflyConfig} for further customizations
      */
     public HoverflyConfig useRemoteInstance(final String remoteHost) {
+        return useRemoteInstance(remoteHost, null);
+    }
+
+    public HoverflyConfig useRemoteInstance(final String remoteHost, final AuthenticationConfig authenticationConfig) {
         this.remote = true;
         this.host = remoteHost;
+        this.authenticationConfig = authenticationConfig;
         return this;
     }
 
@@ -179,5 +184,43 @@ public class HoverflyConfig {
     public HoverflyConfig destination(String destination) {
         this.destination = destination;
         return this;
+    }
+
+    public AuthenticationConfig getAuthenticationConfig() {
+        return authenticationConfig;
+    }
+
+    public static AuthenticationConfig authenticationConfigs() {
+        return new AuthenticationConfig();
+    }
+
+
+    public static class AuthenticationConfig {
+        private String proxyAuthToken;
+        private String sslCert;
+        private boolean isHttps;
+
+        public AuthenticationConfig withHttps(String sslCert) {
+            this.sslCert = sslCert;
+            this.isHttps = true;
+            return this;
+        }
+
+        public AuthenticationConfig withProxyAuthorization(String authToken) {
+            this.proxyAuthToken = authToken;
+            return this;
+        }
+
+        public boolean isHttps() {
+            return isHttps;
+        }
+
+        public String getProxyAuthToken() {
+            return proxyAuthToken;
+        }
+
+        public String getSslCert() {
+            return sslCert;
+        }
     }
 }
