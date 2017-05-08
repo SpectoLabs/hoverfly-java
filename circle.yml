@@ -1,6 +1,6 @@
 machine:
   java:
-    version: oraclejdk8
+    version: openjdk8
 
 dependencies:
   post:
