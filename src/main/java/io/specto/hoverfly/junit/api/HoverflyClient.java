@@ -1,5 +1,6 @@
-package io.specto.hoverfly.junit.core;
+package io.specto.hoverfly.junit.api;
 
+import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.HoverflyInfo;
 import io.specto.hoverfly.junit.core.model.Simulation;
 

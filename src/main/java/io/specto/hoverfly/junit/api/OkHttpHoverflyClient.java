@@ -1,6 +1,8 @@
-package io.specto.hoverfly.junit.core;
+package io.specto.hoverfly.junit.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.specto.hoverfly.junit.core.HoverflyConfig;
+import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.HoverflyInfo;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import okhttp3.*;
@@ -28,10 +30,13 @@ public class OkHttpHoverflyClient implements HoverflyClient {
 
     public OkHttpHoverflyClient(HoverflyConfig hoverflyConfig) {
 
-        this.client = new OkHttpClient();
-
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        if (hoverflyConfig.getAuthenticationConfig() != null && hoverflyConfig.getAuthenticationConfig().getAuthToken() != null) {
+            clientBuilder.addInterceptor(new AuthHeaderInterceptor(hoverflyConfig.getAuthenticationConfig().getAuthToken()));
+        }
+        this.client = clientBuilder.build();
         this.baseUrl = new HttpUrl.Builder()
-                .scheme("http")
+                .scheme(hoverflyConfig.getScheme())
                 .host(hoverflyConfig.getHost())
                 .port(hoverflyConfig.getAdminPort()).build();
     }
@@ -135,8 +140,8 @@ public class OkHttpHoverflyClient implements HoverflyClient {
                 LOGGER.debug("Hoverfly health check status code is: {}", response.code());
                 return response.isSuccessful();
             }
-        } catch (IOException e) {
-            LOGGER.debug("Not yet healthy", e);
+        } catch (Exception e) {
+            LOGGER.info("Hoverfly health check failed.", e);
         }
         return false;
     }

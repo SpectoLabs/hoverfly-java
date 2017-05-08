@@ -16,8 +16,9 @@ public class HoverflyRuleRemoteInstanceTest extends BaseHoverflyRuleTest {
 
     @ClassRule
     public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(classpath("test-service.json"),
-            configs().useRemoteInstance(REMOTE_HOST,
-                    authenticationConfigs()
-                            .withHttps("ssl.cert")
-                            .withProxyAuthorization("token")));
+            configs()
+                    .useRemoteInstance(REMOTE_HOST,
+                        authenticationConfigs()
+                                .withHttps("ssl.cert")
+                                .withAuthHeader("token")));
 }

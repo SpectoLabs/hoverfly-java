@@ -12,11 +12,14 @@
  */
 package io.specto.hoverfly.junit.core;
 
+
 /**
  * Config used to change the settings for {@link Hoverfly}
  */
 public class HoverflyConfig {
     private static final String LOCALHOST = "localhost";
+    private static final String HTTP = "http";
+    private static final String HTTPS = "https";
     private int proxyPort;
     private int adminPort;
     private boolean proxyLocalHost;
@@ -26,6 +29,7 @@ public class HoverflyConfig {
     private String sslKeyPath;
     private String destination;
     private AuthenticationConfig authenticationConfig;
+    private String scheme = HTTP;
 
     private HoverflyConfig() {
     }
@@ -117,6 +121,9 @@ public class HoverflyConfig {
         this.remote = true;
         this.host = remoteHost;
         this.authenticationConfig = authenticationConfig;
+        if (authenticationConfig != null) {
+            this.scheme = authenticationConfig.isHttps() ? HTTPS : HTTP;
+        }
         return this;
     }
 
@@ -194,9 +201,12 @@ public class HoverflyConfig {
         return new AuthenticationConfig();
     }
 
+    public String getScheme() {
+        return scheme;
+    }
 
     public static class AuthenticationConfig {
-        private String proxyAuthToken;
+        private String authToken;
         private String sslCert;
         private boolean isHttps;
 
@@ -206,17 +216,18 @@ public class HoverflyConfig {
             return this;
         }
 
-        public AuthenticationConfig withProxyAuthorization(String authToken) {
-            this.proxyAuthToken = authToken;
+        public AuthenticationConfig withAuthHeader(String authToken) {
+            this.authToken = authToken;
             return this;
         }
+
 
         public boolean isHttps() {
             return isHttps;
         }
 
-        public String getProxyAuthToken() {
-            return proxyAuthToken;
+        public String getAuthToken() {
+            return authToken;
         }
 
         public String getSslCert() {

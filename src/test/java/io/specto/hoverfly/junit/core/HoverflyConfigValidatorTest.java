@@ -4,6 +4,7 @@ package io.specto.hoverfly.junit.core;
 import org.junit.Before;
 import org.junit.Test;
 
+import static io.specto.hoverfly.junit.core.HoverflyConfig.authenticationConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -92,5 +93,20 @@ public class HoverflyConfigValidatorTest {
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("HoverflyConfig cannot be null.");
 
+    }
+
+    @Test
+    public void shouldSetDefaultHttpsAdminPortTo443() throws Exception {
+
+        HoverflyConfig validated = validator.validate(configs().useRemoteInstance("remote-host.hoverfly.io", authenticationConfigs().withHttps("ca.cert")));
+
+        assertThat(validated.getAdminPort()).isEqualTo(443);
+    }
+
+    @Test
+    public void shouldNotChangeUserDefinedHttpsAdminPort() throws Exception {
+        HoverflyConfig validated = validator.validate(configs().useRemoteInstance("remote-host.hoverfly.io", authenticationConfigs().withHttps("ca.cert")).adminPort(8443));
+
+        assertThat(validated.getAdminPort()).isEqualTo(8443);
     }
 }

@@ -15,6 +15,7 @@ class HoverflyConfigValidator {
 
     private static final int DEFAULT_PROXY_PORT = 8500;
     private static final int DEFAULT_ADMIN_PORT = 8888;
+    private static final int DEFAULT_HTTPS_ADMIN_PORT = 443;
 
     /**
      * Sanity checking hoverfly configs and assign port number if necessary
@@ -31,11 +32,13 @@ class HoverflyConfigValidator {
             throw new IllegalArgumentException("Both SSL key and certificate files are required to override the default Hoverfly SSL.");
         }
 
+
         if (hoverflyConfig.isRemoteInstance()) {
             if (!isKeyBlank && !isCertBlank) {
                 throw new IllegalArgumentException("Attempt to configure SSL on remote instance is prohibited.");
             }
 
+            // Validate remote instance hostname
             if (hoverflyConfig.getHost() != null && hoverflyConfig.getHost().startsWith("http")) {
                 try {
                     URI uri = new URI(hoverflyConfig.getHost());
@@ -46,14 +49,25 @@ class HoverflyConfigValidator {
             }
         }
 
+        // Validate proxy port
         if (hoverflyConfig.getProxyPort() == 0) {
             hoverflyConfig.proxyPort(hoverflyConfig.isRemoteInstance() ? DEFAULT_PROXY_PORT : findUnusedPort());
         }
 
+        // Validate admin port
         if (hoverflyConfig.getAdminPort() == 0) {
-            hoverflyConfig.adminPort(hoverflyConfig.isRemoteInstance() ? DEFAULT_ADMIN_PORT : findUnusedPort());
-        }
 
+            int adminPort = DEFAULT_ADMIN_PORT;
+
+            if (hoverflyConfig.isRemoteInstance()) {
+                if (hoverflyConfig.getScheme().equals("https")) {
+                    adminPort = DEFAULT_HTTPS_ADMIN_PORT;
+                }
+            } else {
+                adminPort = findUnusedPort();
+            }
+            hoverflyConfig.adminPort(adminPort);
+        }
 
 
         // TODO validate supported SSL file format
