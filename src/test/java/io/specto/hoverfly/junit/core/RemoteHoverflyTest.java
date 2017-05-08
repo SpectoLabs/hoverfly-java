@@ -25,7 +25,7 @@ public class RemoteHoverflyTest {
 
         remoteHoverflyStub.importSimulation(dsl(
                 service("http://hoverfly-cloud:8888")
-                        .get("/api/stats")
+                        .get("/api/health")
                         .willReturn(success())
         ));
     }

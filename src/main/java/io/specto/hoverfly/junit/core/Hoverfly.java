@@ -48,7 +48,7 @@ public class Hoverfly implements AutoCloseable {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final int BOOT_TIMEOUT_SECONDS = 10;
     private static final int RETRY_BACKOFF_INTERVAL_MS = 100;
-    private static final String HEALTH_CHECK_PATH = "/api/stats";
+    private static final String HEALTH_CHECK_PATH = "/api/health";
     private static final String SIMULATION_PATH = "/api/v2/simulation";
     private static final String INFO_PATH = "/api/v2/hoverfly";
     private static final String DESTINATION_PATH = "/api/v2/hoverfly/destination";
