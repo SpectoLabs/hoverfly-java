@@ -220,7 +220,7 @@ public class HoverflyTest {
         hoverfly.start();
 
         // Then
-        verify(sslConfigurer).setTrustStore();
+        verify(sslConfigurer).setDefaultSslContext();
     }
 
     @Test
@@ -236,7 +236,7 @@ public class HoverflyTest {
         hoverfly.start();
 
         // Then
-        verify(sslConfigurer, never()).setTrustStore();
+        verify(sslConfigurer, never()).setDefaultSslContext();
     }
 
     @Test

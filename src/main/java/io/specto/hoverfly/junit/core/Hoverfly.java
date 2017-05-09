@@ -107,12 +107,13 @@ public class Hoverfly implements AutoCloseable {
             setDestination(hoverflyConfig.getDestination());
         }
 
+        // TODO always set mode
         if (hoverflyMode == HoverflyMode.CAPTURE) {
             setMode(hoverflyMode);
         }
 
         if (useDefaultSslCert) {
-            sslConfigurer.setTrustStore();
+            sslConfigurer.setDefaultSslContext();
         }
 
         proxyConfigurer.setProxySystemProperties();

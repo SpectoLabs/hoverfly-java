@@ -8,7 +8,7 @@
           "encodedBody": false,
           "headers": {
             "Location": [
-              "http://localhost/api/bookings/1"
+              "https://www.my-test.com/api/bookings/1"
             ]
           }
         },
@@ -17,7 +17,7 @@
           "path": "/api/bookings",
           "method": "POST",
           "destination": "www.my-test.com",
-          "scheme": "",
+          "scheme": "https",
           "query": "",
           "body": "{\"flightId\": \"1\"}",
           "headers": {
@@ -43,7 +43,7 @@
           "path": "/api/bookings/1",
           "method": "GET",
           "destination": "www.my-test.com",
-          "scheme": "",
+          "scheme": "https",
           "query": "",
           "body": "",
           "headers": {

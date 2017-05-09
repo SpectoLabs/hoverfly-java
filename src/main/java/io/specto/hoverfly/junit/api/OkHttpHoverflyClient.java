@@ -31,8 +31,9 @@ public class OkHttpHoverflyClient implements HoverflyClient {
     public OkHttpHoverflyClient(HoverflyConfig hoverflyConfig) {
 
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-        if (hoverflyConfig.getAuthenticationConfig() != null && hoverflyConfig.getAuthenticationConfig().getAuthToken() != null) {
-            clientBuilder.addInterceptor(new AuthHeaderInterceptor(hoverflyConfig.getAuthenticationConfig().getAuthToken()));
+        HoverflyConfig.AuthenticationConfig authConfig = hoverflyConfig.getAuthenticationConfig();
+        if (authConfig != null && authConfig.getAuthToken() != null) {
+            clientBuilder.addInterceptor(new AuthHeaderInterceptor(authConfig.getAuthToken()));
         }
         this.client = clientBuilder.build();
         this.baseUrl = new HttpUrl.Builder()

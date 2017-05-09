@@ -12,3 +12,4 @@ classes/
 src/test/resources/hoverfly/first-multi-capture**
 src/test/resources/hoverfly/third-multi-capture/**
 src/test/resources/hoverfly/second-multi-capture-scenario.json
+/src/test/resources/hfc-self-signed.pem

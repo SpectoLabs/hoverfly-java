@@ -207,7 +207,7 @@ public class HoverflyConfig {
 
     public static class AuthenticationConfig {
         private String authToken;
-        private String sslCert;
+        private String sslCert; // file name relative to test resources folder
         private boolean isHttps;
 
         public AuthenticationConfig withHttps(String sslCert) {

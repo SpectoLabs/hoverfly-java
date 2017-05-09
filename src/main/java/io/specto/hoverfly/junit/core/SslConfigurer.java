@@ -4,13 +4,14 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.*;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
@@ -22,29 +23,36 @@ import static io.specto.hoverfly.junit.core.HoverflyUtils.findResourceOnClasspat
  */
 class SslConfigurer {
 
-    private static final String HOVERFLY_TRUST_STORE = "hoverfly.jks";
-    private static final String HOVERFLY_TRUST_STORE_PASS = "hoverfly";
     private static final String TLS_PROTOCOL = "TLSv1.2";
 
+    void setDefaultSslContext() {
+        setDefaultSslContext(Paths.get(findResourceOnClasspath("cert.pem").getPath()));
+    }
     /**
      * Sets the JVM trust store so Hoverfly's SSL certificate is trusted
      */
-    void setTrustStore() {
-        try {
-            KeyStore hoverflyTrustStore = createHoverflyTrustStore();
-            TrustManager[] trustManagers = createTrustManagers(hoverflyTrustStore);
-            // initialize an ssl context to use these managers and set as default
+    void setDefaultSslContext(Path pemFile) {
+        try (InputStream pemInputStream = new FileInputStream(pemFile.toFile())) {
+
+            KeyStore trustStore = createTrustStore(pemInputStream);
+            TrustManager[] trustManagers = createTrustManagers(trustStore);
+
             SSLContext sslContext = createSslContext(trustManagers);
             SSLContext.setDefault(sslContext);
         } catch (Exception e) {
-            throw new IllegalStateException("Unable to set Hoverfly trust store", e);
+            throw new IllegalStateException("Failed to set SSLContext from hoverfly certificate " + pemFile.toString(), e);
         }
     }
 
-    private KeyStore createHoverflyTrustStore() throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException {
-        InputStream trustStream = findResourceOnClasspath(HOVERFLY_TRUST_STORE).openStream();
-        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        trustStore.load(trustStream, HOVERFLY_TRUST_STORE_PASS.toCharArray());
+    private static KeyStore createTrustStore(InputStream pemInputStream) throws IOException, CertificateException, KeyStoreException, NoSuchAlgorithmException {
+        CertificateFactory certFactory = CertificateFactory.getInstance("X509");
+        X509Certificate cert = (X509Certificate) certFactory.generateCertificate(pemInputStream);
+
+        KeyStore trustStore = KeyStore.getInstance("JKS");
+        trustStore.load(null);
+
+        String alias = cert.getSubjectX500Principal().getName();
+        trustStore.setCertificateEntry(alias, cert);
         return trustStore;
     }
 
