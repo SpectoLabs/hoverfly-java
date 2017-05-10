@@ -26,19 +26,21 @@ public class HoverflyRuleRemoteInstanceTest {
 
     private RestTemplate restTemplate = new RestTemplate();
 
+    private static final String authToken = "token";
     @ClassRule
     public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(classpath("test-service-https.json"),
             configs()
                     .useRemoteInstance(REMOTE_HOST,
                         authenticationConfigs()
                                 .withHttps("hfc-self-signed.pem")
-                                .withAuthHeader("token")));
+                                .withAuthHeader(authToken)));
 
     @Test
     public void shouldBeAbleToMakeABookingUsingHoverfly() throws URISyntaxException {
         // Given
         final RequestEntity<String> bookFlightRequest = RequestEntity.post(new URI("https://www.my-test.com/api/bookings"))
                 .contentType(APPLICATION_JSON)
+                .header("Proxy-Authorization", "Bearer " + authToken)
                 .body("{\"flightId\": \"1\"}");
 
         // When
