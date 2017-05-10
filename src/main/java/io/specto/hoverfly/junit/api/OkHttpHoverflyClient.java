@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class OkHttpHoverflyClient implements HoverflyClient {
 
@@ -22,7 +23,9 @@ public class OkHttpHoverflyClient implements HoverflyClient {
     private static final String MODE_PATH = "api/v2/hoverfly/mode";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    // TODO do we need charset in the content type header?
+//    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final MediaType JSON = MediaType.parse("application/json");
 
     private OkHttpClient client;
 
@@ -31,9 +34,9 @@ public class OkHttpHoverflyClient implements HoverflyClient {
     public OkHttpHoverflyClient(HoverflyConfig hoverflyConfig) {
 
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-        HoverflyConfig.AuthenticationConfig authConfig = hoverflyConfig.getAuthenticationConfig();
-        if (authConfig != null && authConfig.getAuthToken() != null) {
-            clientBuilder.addInterceptor(new AuthHeaderInterceptor(authConfig.getAuthToken()));
+        Optional<HoverflyConfig.AuthenticationConfig> authConfig = hoverflyConfig.getAuthenticationConfig();
+        if (authConfig.isPresent() && authConfig.get().getAuthToken() != null) {
+            clientBuilder.addInterceptor(new AuthHeaderInterceptor(authConfig.get().getAuthToken()));
         }
         this.client = clientBuilder.build();
         this.baseUrl = new HttpUrl.Builder()

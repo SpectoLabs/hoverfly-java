@@ -1,5 +1,7 @@
 package io.specto.hoverfly.junit.core;
 
+import io.specto.hoverfly.junit.core.model.HoverflyInfo;
+import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +28,10 @@ public class RemoteHoverflyTest {
         remoteHoverflyStub.importSimulation(dsl(
                 service("http://hoverfly-cloud:8888")
                         .get("/api/health")
+                        .willReturn(success())
+
+                        .put("/api/v2/hoverfly/mode")
+                        .body(HttpBodyConverter.json(new HoverflyInfo(null, HoverflyMode.SIMULATE.name().toLowerCase(), null, null)))
                         .willReturn(success())
         ));
     }

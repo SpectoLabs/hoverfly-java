@@ -13,6 +13,9 @@
 package io.specto.hoverfly.junit.core;
 
 
+import java.nio.file.Path;
+import java.util.Optional;
+
 /**
  * Config used to change the settings for {@link Hoverfly}
  */
@@ -25,6 +28,7 @@ public class HoverflyConfig {
     private boolean proxyLocalHost;
     private boolean remote;
     private String host = LOCALHOST;
+    // TODO should be combined field?
     private String sslCertificatePath;
     private String sslKeyPath;
     private String destination;
@@ -193,8 +197,8 @@ public class HoverflyConfig {
         return this;
     }
 
-    public AuthenticationConfig getAuthenticationConfig() {
-        return authenticationConfig;
+    public Optional<AuthenticationConfig> getAuthenticationConfig() {
+        return Optional.ofNullable(authenticationConfig);
     }
 
     public static AuthenticationConfig authenticationConfigs() {

@@ -26,11 +26,16 @@ class SslConfigurer {
     private static final String TLS_PROTOCOL = "TLSv1.2";
 
     void setDefaultSslContext() {
-        setDefaultSslContext(Paths.get(findResourceOnClasspath("cert.pem").getPath()));
+        setDefaultSslContext("cert.pem");
     }
     /**
      * Sets the JVM trust store so Hoverfly's SSL certificate is trusted
      */
+
+    void setDefaultSslContext(String pemFilename) {
+        setDefaultSslContext(Paths.get(findResourceOnClasspath(pemFilename).getPath()));
+    }
+
     void setDefaultSslContext(Path pemFile) {
         try (InputStream pemInputStream = new FileInputStream(pemFile.toFile())) {
 

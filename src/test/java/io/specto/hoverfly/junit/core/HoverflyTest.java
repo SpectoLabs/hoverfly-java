@@ -4,6 +4,7 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import io.specto.hoverfly.junit.api.HoverflyClient;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -11,10 +12,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
 import org.powermock.reflect.Whitebox;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -22,7 +21,9 @@ import org.zeroturnaround.exec.StartedProcess;
 
 import javax.net.ssl.SSLContext;
 import java.net.URL;
+import java.nio.file.Paths;
 
+import static io.specto.hoverfly.junit.core.HoverflyConfig.authenticationConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
@@ -237,6 +238,27 @@ public class HoverflyTest {
 
         // Then
         verify(sslConfigurer, never()).setDefaultSslContext();
+    }
+
+    @Test
+    public void shouldSetSslCertForRemoteInstance() throws Exception {
+
+        hoverfly = new Hoverfly(configs()
+                .useRemoteInstance("remotehost", authenticationConfigs().withHttps("hfc-self-signed.pem")), SIMULATE);
+
+        SslConfigurer sslConfigurer = mock(SslConfigurer.class);
+        Whitebox.setInternalState(hoverfly, "sslConfigurer", sslConfigurer);
+
+        HoverflyClient hoverflyClient = mock(HoverflyClient.class);
+        Whitebox.setInternalState(hoverfly, "hoverflyClient", hoverflyClient);
+
+        when(hoverflyClient.getHealth()).thenReturn(true);
+
+        // When
+        hoverfly.start();
+
+        // Then
+        verify(sslConfigurer).setDefaultSslContext("hfc-self-signed.pem");
     }
 
     @Test

@@ -40,6 +40,7 @@ import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
 /**
  * A wrapper class for the Hoverfly binary.  Manage the lifecycle of the processes, and then manage Hoverfly itself by using it's API endpoints.
  */
+// TODO extract interface and create LocalHoverfly and RemoteHoverfly
 public class Hoverfly implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hoverfly.class);
@@ -107,12 +108,11 @@ public class Hoverfly implements AutoCloseable {
             setDestination(hoverflyConfig.getDestination());
         }
 
-        // TODO always set mode
-        if (hoverflyMode == HoverflyMode.CAPTURE) {
-            setMode(hoverflyMode);
-        }
+        setMode(hoverflyMode);
 
-        if (useDefaultSslCert) {
+        if (hoverflyConfig.getAuthenticationConfig().isPresent() && hoverflyConfig.getAuthenticationConfig().get().getSslCert() != null) {
+          sslConfigurer.setDefaultSslContext(hoverflyConfig.getAuthenticationConfig().get().getSslCert());
+        } else if (useDefaultSslCert) {
             sslConfigurer.setDefaultSslContext();
         }
 
