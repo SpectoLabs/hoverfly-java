@@ -15,10 +15,11 @@ package io.specto.hoverfly.junit.core.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HoverflyMetaData {
-    private static final String schemaVersion = "v1";
+    private static final String schemaVersion = "v2";
 
     public String getSchemaVersion() {
         return schemaVersion;
@@ -32,5 +33,10 @@ public class HoverflyMetaData {
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

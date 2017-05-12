@@ -255,7 +255,7 @@ public class Hoverfly implements AutoCloseable {
      * @return hoverfly mode
      */
     public HoverflyMode getMode() {
-        return hoverflyMode;
+        return HoverflyMode.valueOf(hoverflyClient.getConfigInfo().getMode().toUpperCase());
     }
 
     private void persistSimulation(Path path, Simulation simulation) throws IOException {

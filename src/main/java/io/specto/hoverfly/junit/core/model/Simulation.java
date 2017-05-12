@@ -13,12 +13,15 @@
 package io.specto.hoverfly.junit.core.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Simulation {
     @JsonProperty("data")
     private final HoverflyData hoverflyData;
@@ -53,11 +56,7 @@ public class Simulation {
 
     @Override
     public String toString() {
-        try {
-            return new ObjectMapper().writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to convert object to string: ", e);
-        }
+        return ToStringBuilder.reflectionToString(this);
     }
 
 

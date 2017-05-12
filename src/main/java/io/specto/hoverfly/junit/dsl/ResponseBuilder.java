@@ -12,7 +12,6 @@
  */
 package io.specto.hoverfly.junit.dsl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.specto.hoverfly.junit.core.model.Response;
 
 import java.util.HashMap;
@@ -28,8 +27,6 @@ import static java.util.Collections.singletonList;
  * @see ResponseCreators
  */
 public class ResponseBuilder {
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Map<String, List<String>> headers = new HashMap<>();
     private String body = "";

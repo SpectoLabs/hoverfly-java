@@ -1,5 +1,6 @@
 package io.specto.hoverfly.junit.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
 import io.specto.hoverfly.junit.core.HoverflyMode;
@@ -49,15 +50,17 @@ public class OkHttpHoverflyClient implements HoverflyClient {
     public void setSimulation(Simulation simulation) {
         try {
 
-            final byte[] jsonContent = OBJECT_MAPPER.writeValueAsBytes(simulation);
-            RequestBody body = RequestBody.create(JSON, jsonContent);
+            RequestBody body = createRequestBody(simulation);
 
             final Request.Builder builder = createRequestBuilderWithUrl(SIMULATION_PATH);
             final Request request = builder.put(body).build();
 
             final Call call = client.newCall(request);
             try (final Response response = call.execute()) {
-                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                if (!response.isSuccessful()) {
+                    LOGGER.warn("Response body: {}", response.body().string());
+                    throw new IOException("Unexpected code " + response);
+                }
             }
         } catch (IOException e) {
             LOGGER.error("Failed to import simulation data", e);
@@ -98,8 +101,7 @@ public class OkHttpHoverflyClient implements HoverflyClient {
     public void setDestination(String destination) {
         try {
             HoverflyInfo hoverflyInfo = new HoverflyInfo(destination, null, null, null);
-            final byte[] jsonContent = OBJECT_MAPPER.writeValueAsBytes(hoverflyInfo);
-            RequestBody body = RequestBody.create(JSON, jsonContent);
+            RequestBody body = createRequestBody(hoverflyInfo);
             final Request.Builder builder = createRequestBuilderWithUrl(DESTINATION_PATH);
             final Request request = builder.put(body).build();
 
@@ -116,8 +118,7 @@ public class OkHttpHoverflyClient implements HoverflyClient {
     public void setMode(HoverflyMode mode) {
         try {
             HoverflyInfo hoverflyInfo = new HoverflyInfo(null, mode.name().toLowerCase(), null, null);
-            final byte[] jsonContent = OBJECT_MAPPER.writeValueAsBytes(hoverflyInfo);
-            RequestBody body = RequestBody.create(JSON, jsonContent);
+            RequestBody body = createRequestBody(hoverflyInfo);
             final Request.Builder builder = createRequestBuilderWithUrl(MODE_PATH);
             final Request request = builder.put(body).build();
 
@@ -150,10 +151,15 @@ public class OkHttpHoverflyClient implements HoverflyClient {
         return false;
     }
 
-
     private Request.Builder createRequestBuilderWithUrl(String path) {
         return new Request.Builder()
                 .url(baseUrl.newBuilder().addPathSegments(path).build());
+    }
+
+
+    private RequestBody createRequestBody(Object simulation) throws JsonProcessingException {
+        String content = OBJECT_MAPPER.writeValueAsString(simulation);
+        return RequestBody.create(JSON, content);
     }
 
 
@@ -164,6 +170,8 @@ public class OkHttpHoverflyClient implements HoverflyClient {
             return OBJECT_MAPPER.readValue(response.body().charStream(), Simulation.class);
         }
     }
+
+
 
     private class HoverflyClientException extends RuntimeException {
     }

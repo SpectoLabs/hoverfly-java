@@ -1,66 +1,78 @@
 {
-  "data": {
-    "pairs": [
-      {
-        "response": {
-          "status": 201,
-          "body": "",
-          "encodedBody": false,
-          "headers": {
-            "Location": [
-              "http://localhost/api/bookings/1"
-            ]
-          }
-        },
-        "request": {
-          "requestType": "recording",
-          "path": "/api/bookings",
-          "method": "POST",
-          "destination": "www.my-test.com",
-          "scheme": "",
-          "query": "",
-          "body": "{\"flightId\": \"1\"}",
-          "headers": {
-            "Content-Type": [
-              "application/json"
-            ]
-          }
-        }
-      },
-      {
-        "response": {
-          "status": 200,
-          "body": "{\"bookingId\":\"1\",\"origin\":\"London\",\"destination\":\"Singapore\",\"time\":\"2011-09-01T12:30\",\"_links\":{\"self\":{\"href\":\"http://localhost/api/bookings/1\"}}}",
-          "encodedBody": false,
-          "headers": {
-            "Content-Type": [
-              "application/json"
-            ]
-          }
-        },
-        "request": {
-          "requestType": "recording",
-          "path": "/api/bookings/1",
-          "method": "GET",
-          "destination": "www.my-test.com",
-          "scheme": "",
-          "query": "",
-          "body": "",
-          "headers": {
-            "Content-Type": [
-              "text/plain; charset=utf-8"
-            ]
-          }
-        }
-      }
-    ],
-    "globalActions": {
-      "delays": []
-    }
-  },
-  "meta": {
-    "schemaVersion": "v1",
-    "hoverflyVersion": "v0.9.0",
-    "timeExported": "2016-12-01T12:16:56Z"
-  }
+	"data": {
+		"pairs": [
+			{
+				"response": {
+					"status": 201,
+					"body": "",
+					"encodedBody": false,
+					"headers": {
+						"Location": [
+							"http://localhost/api/bookings/1"
+						]
+					}
+				},
+				"request": {
+					"path": {
+						"exactMatch": "/api/bookings"
+					},
+					"method": {
+						"exactMatch": "POST"
+					},
+					"destination": {
+						"exactMatch": "www.my-test.com"
+					},
+					"scheme": {
+						"exactMatch": ""
+					},
+					"query": {
+						"exactMatch": ""
+					},
+					"body": {
+						"exactMatch": "{\"flightId\": \"1\"}"
+					}
+				}
+			},
+			{
+				"response": {
+					"status": 200,
+					"body": "{\"bookingId\":\"1\",\"origin\":\"London\",\"destination\":\"Singapore\",\"time\":\"2011-09-01T12:30\",\"_links\":{\"self\":{\"href\":\"http://localhost/api/bookings/1\"}}}",
+					"encodedBody": false,
+					"headers": {
+						"Content-Type": [
+							"application/json"
+						]
+					}
+				},
+				"request": {
+					"path": {
+						"exactMatch": "/api/bookings/1"
+					},
+					"method": {
+						"exactMatch": "GET"
+					},
+					"destination": {
+						"exactMatch": "www.my-test.com"
+					},
+					"scheme": {
+						"exactMatch": ""
+					},
+					"query": {
+						"exactMatch": ""
+					},
+					"body": {
+						"exactMatch": ""
+					}
+				}
+			}
+		],
+		"globalActions": {
+			"delays": []
+		}
+	},
+	"meta": {
+		"schemaVersion": "v2",
+		"hoverflyVersion": "v0.11.2",
+		"timeExported": "2017-05-12T00:18:41+01:00"
+	}
 }

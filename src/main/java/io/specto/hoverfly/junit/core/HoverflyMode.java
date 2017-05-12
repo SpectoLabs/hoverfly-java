@@ -16,5 +16,6 @@ package io.specto.hoverfly.junit.core;
  * Enums denoting the possible modes for {@link Hoverfly}
  */
 public enum HoverflyMode {
-    SIMULATE, CAPTURE
+    SIMULATE,
+    CAPTURE
 }

@@ -13,32 +13,63 @@
 package io.specto.hoverfly.junit.core.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.List;
 import java.util.Map;
 
+import static io.specto.hoverfly.junit.core.model.FieldMatcher.fromExactMatchString;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class RequestMatcher {
-    private final String requestType;
-    private final String path;
-    private final String method;
-    private final String destination;
-    private final String scheme;
-    private final String query;
-    private final String body;
+
+    @JsonDeserialize(using = FieldMatcherDeserializer.class)
+    private final FieldMatcher path;
+    @JsonDeserialize(using = FieldMatcherDeserializer.class)
+    private final FieldMatcher method;
+    @JsonDeserialize(using = FieldMatcherDeserializer.class)
+    private final FieldMatcher destination;
+    @JsonDeserialize(using = FieldMatcherDeserializer.class)
+    private final FieldMatcher scheme;
+    @JsonDeserialize(using = FieldMatcherDeserializer.class)
+    private final FieldMatcher query;
+    @JsonDeserialize(using = FieldMatcherDeserializer.class)
+    private final FieldMatcher body;
     private final Map<String, List<String>> headers;
 
+    @Deprecated
+    public RequestMatcher(String path,
+                          String method,
+                          String destination,
+                          String scheme,
+                          String query,
+                          String body,
+                          Map<String, List<String>> headers) {
+        this.path = fromExactMatchString(path);
+        this.method = fromExactMatchString(method);
+        this.destination = fromExactMatchString(destination);
+        this.scheme = fromExactMatchString(scheme);
+        this.query = fromExactMatchString(query);
+        this.body = fromExactMatchString(body);
+        this.headers = headers;
+    }
+
+
     @JsonCreator
-    public RequestMatcher(@JsonProperty("path") String path,
-                          @JsonProperty("method") String method,
-                          @JsonProperty("destination") String destination,
-                          @JsonProperty("scheme") String scheme,
-                          @JsonProperty("query") String query,
-                          @JsonProperty("body") String body,
-                          @JsonProperty("headers") Map<String, List<String>> headers,
-                          @JsonProperty("requestType") String requestType) {
+    public RequestMatcher(@JsonProperty("path") FieldMatcher path,
+                          @JsonProperty("method") FieldMatcher method,
+                          @JsonProperty("destination") FieldMatcher destination,
+                          @JsonProperty("scheme") FieldMatcher scheme,
+                          @JsonProperty("query") FieldMatcher query,
+                          @JsonProperty("body") FieldMatcher body,
+                          @JsonProperty("headers") Map<String, List<String>> headers) {
         this.path = path;
         this.method = method;
         this.destination = destination;
@@ -46,39 +77,84 @@ public class RequestMatcher {
         this.query = query;
         this.body = body;
         this.headers = headers;
-        this.requestType = requestType;
     }
 
-    public String getRequestType() {
-        return requestType;
-    }
-
-    public String getPath() {
+    public FieldMatcher getPath() {
         return path;
     }
 
-    public String getMethod() {
+    public FieldMatcher getMethod() {
         return method;
     }
 
-    public String getDestination() {
+    public FieldMatcher getDestination() {
         return destination;
     }
 
-    public String getScheme() {
+    public FieldMatcher getScheme() {
         return scheme;
     }
 
-    public String getQuery() {
+    public FieldMatcher getQuery() {
         return query;
     }
 
-    public String getBody() {
+    public FieldMatcher getBody() {
         return body;
     }
 
     public Map<String, List<String>> getHeaders() {
         return headers;
+    }
+
+    static class Builder {
+
+        private FieldMatcher path;
+        private FieldMatcher method;
+        private FieldMatcher destination;
+        private FieldMatcher scheme;
+        private FieldMatcher query;
+        private FieldMatcher body;
+        private Map<String, List<String>> headers;
+
+        Builder path(FieldMatcher path) {
+            this.path = path;
+            return this;
+        }
+
+        Builder method(FieldMatcher method) {
+            this.method = method;
+            return this;
+        }
+
+        Builder destination(FieldMatcher destination) {
+            this.destination = destination;
+            return this;
+        }
+
+        Builder scheme(FieldMatcher scheme) {
+            this.scheme = scheme;
+            return this;
+        }
+
+        Builder query(FieldMatcher query) {
+            this.query = query;
+            return this;
+        }
+
+        Builder body(FieldMatcher body) {
+            this.body = body;
+            return this;
+        }
+
+        Builder headers(Map<String, List<String>> headers) {
+            this.headers = headers;
+            return this;
+        }
+
+        RequestMatcher build() {
+            return new RequestMatcher(path, method, destination, scheme, query, body, headers);
+        }
     }
 
     @Override
@@ -89,5 +165,10 @@ public class RequestMatcher {
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

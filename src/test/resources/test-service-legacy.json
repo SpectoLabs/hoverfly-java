@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "request": {
+        "path": "/api/bookings",
+        "method": "POST",
+        "destination": "www.my-test.com",
+        "query": null,
+        "body": "{\"flightId\": \"1\"}"
+      },
+      "response": {
+        "status": 201,
+        "body": "",
+        "headers": {
+          "Location": [
+            "http://localhost/api/bookings/1"
+          ]
+        }
+      }
+    },
+    {
+      "request": {
+        "path": "/api/bookings/1",
+        "method": "GET",
+        "destination": "www.my-test.com",
+        "query": null,
+        "body": ""
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"bookingId\":\"1\",\"origin\":\"London\",\"destination\":\"Singapore\",\"time\":\"2011-09-01T12:30\",\"_links\":{\"self\":{\"href\":\"http://localhost/api/bookings/1\"}}}",
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        }
+      }
+    }
+  ]
+}

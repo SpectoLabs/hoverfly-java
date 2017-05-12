@@ -13,6 +13,7 @@
 package io.specto.hoverfly.junit.dsl;
 
 import io.specto.hoverfly.junit.core.model.DelaySettings;
+import io.specto.hoverfly.junit.core.model.GlobalActions;
 import io.specto.hoverfly.junit.core.model.RequestMatcher;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 
@@ -153,7 +154,7 @@ public class StubServiceBuilder {
     }
 
     /**
-     * Used to initialize {@link io.specto.hoverfly.junit.core.model.GlobalActions}.
+     * Used to initialize {@link GlobalActions}.
      *
      * @return list of {@link DelaySettings}
      */

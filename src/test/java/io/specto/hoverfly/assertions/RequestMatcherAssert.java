@@ -18,7 +18,7 @@ public class RequestMatcherAssert extends AbstractAssert<RequestMatcherAssert, R
     public RequestMatcherAssert hasNoBody() {
         isNotNull();
 
-        assertThat(actual.getBody()).isEmpty();
+        assertThat(actual.getBody().getExactMatch()).isEmpty();
 
         return this;
     }
@@ -26,7 +26,7 @@ public class RequestMatcherAssert extends AbstractAssert<RequestMatcherAssert, R
     public RequestMatcherAssert hasBody(final String body) {
         isNotNull();
 
-        assertThat(actual.getBody()).isEqualTo(body);
+        assertThat(actual.getBody().getExactMatch()).isEqualTo(body);
 
         return this;
     }

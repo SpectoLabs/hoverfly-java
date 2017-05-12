@@ -32,8 +32,6 @@ import static org.apache.commons.lang3.CharEncoding.UTF_8;
  */
 public class RequestMatcherBuilder {
 
-    private static final String TEMPLATE = "template";
-
     private final StubServiceBuilder invoker;
     private final String method;
     private final String scheme;
@@ -118,7 +116,7 @@ public class RequestMatcherBuilder {
         String query = queryParams.entrySet().stream()
                 .flatMap(e -> e.getValue().stream().map(v -> encodeUrl(e.getKey()) + "=" + encodeUrl(v)))
                 .collect(Collectors.joining("&"));
-        return new RequestMatcher(path, method, destination, scheme, query, body, headers, TEMPLATE);
+        return new RequestMatcher(path, method, destination, scheme, query, body, headers);
     }
 
     private String encodeUrl(String str) {
