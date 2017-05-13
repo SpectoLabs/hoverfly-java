@@ -105,8 +105,8 @@ public class SimulationSourceTest {
         Set<RequestResponsePair> pairs = actual.getHoverflyData().getPairs();
         assertThat(pairs).hasSize(1);
         RequestResponsePair pair = pairs.iterator().next();
-        assertThat(pair.getRequest().getDestination()).isEqualTo("www.test-service.com");
-        assertThat(pair.getRequest().getPath()).isEqualTo("/foo");
+        assertThat(pair.getRequest().getDestination().getExactMatch()).isEqualTo("www.test-service.com");
+        assertThat(pair.getRequest().getPath().getExactMatch()).isEqualTo("/foo");
         assertThat(pair.getResponse().getStatus()).isEqualTo(200);
 
     }

@@ -61,7 +61,7 @@ public class OkHttpHoverflyClientTest {
 
     @Test
     public void shouldBeAbleToSetV1Simulation() throws Exception {
-        URL resource = Resources.getResource("test-service-v1.json");
+        URL resource = Resources.getResource("simulations/v1-simulation.json");
         Simulation simulation = objectMapper.readValue(resource, Simulation.class);
         client.setSimulation(simulation);
 

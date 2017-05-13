@@ -1,49 +1,50 @@
 {
-  "data": {
-    "pairs": [
-      {
-        "response": {
-          "status": 200,
-          "body": "\u003ch1\u003eHello Other World\u003c/h1\u003e\n",
-          "encodedBody": false,
-          "headers": {
-            "Content-Length": [
-              "27"
-            ],
-            "Content-Type": [
-              "text/html;charset=utf-8"
-            ],
-            "Hoverfly": [
-              "Was-Here"
-            ],
-            "Server": [
-              "Jetty(9.3.11.v20160721)"
-            ]
-          }
-        },
-        "request": {
-          "requestType": "recording",
-          "path": "/other",
-          "method": "GET",
-          "scheme": "http",
-          "query": "",
-          "body": "",
-          "headers": {
-            "Accept": [
-              "text/plain, application/json, application/*+json, */*"
-            ],
-            "Proxy-Connection": [
-              "keep-alive"
-            ]
-          }
-        }
-      }
-    ],
-    "globalActions": {
-      "delays": []
-    }
-  },
-  "meta": {
-    "schemaVersion": "v1"
-  }
+	"data": {
+		"pairs": [
+			{
+				"response": {
+					"status": 200,
+					"body": "\u003ch1\u003eHello Other World\u003c/h1\u003e\n",
+					"encodedBody": false,
+					"headers": {
+						"Content-Length": [
+							"27"
+						],
+						"Content-Type": [
+							"text/html;charset=utf-8"
+						],
+						"Hoverfly": [
+							"Was-Here"
+						],
+						"Server": [
+							"Jetty(9.3.11.v20160721)"
+						]
+					}
+				},
+				"request": {
+					"path": {
+						"exactMatch": "/other"
+					},
+					"method": {
+						"exactMatch": "GET"
+					},
+					"scheme": {
+						"exactMatch": "http"
+					},
+					"query": {
+						"exactMatch": ""
+					},
+					"body": {
+						"exactMatch": ""
+					}
+				}
+			}
+		],
+		"globalActions": {
+			"delays": []
+		}
+	},
+	"meta": {
+		"schemaVersion": "v2"
+	}
 }

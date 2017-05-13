@@ -12,14 +12,25 @@
  */
 package io.specto.hoverfly.junit.core.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HoverflyMetaData {
-    private static final String schemaVersion = "v2";
+    private final String schemaVersion;
+
+    public HoverflyMetaData() {
+        schemaVersion = "v2";
+    }
+
+    @JsonCreator
+    public HoverflyMetaData(@JsonProperty("schemaVersion") String schemaVersion) {
+        this();
+    }
 
     public String getSchemaVersion() {
         return schemaVersion;

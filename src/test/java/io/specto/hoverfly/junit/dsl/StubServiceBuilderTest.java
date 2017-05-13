@@ -29,8 +29,8 @@ public class StubServiceBuilderTest {
 
         assertThat(pairs).hasSize(1);
         RequestResponsePair pair = pairs.iterator().next();
-        assertThat(pair.getRequest().getDestination()).isEqualTo("www.my-test.com");
-        assertThat(pair.getRequest().getScheme()).isEqualTo("https");
+        assertThat(pair.getRequest().getDestination().getExactMatch()).isEqualTo("www.my-test.com");
+        assertThat(pair.getRequest().getScheme().getExactMatch()).isEqualTo("https");
     }
 
     @Test
@@ -39,8 +39,8 @@ public class StubServiceBuilderTest {
 
         assertThat(pairs).hasSize(1);
         RequestResponsePair pair = pairs.iterator().next();
-        assertThat(pair.getRequest().getDestination()).isEqualTo("www.my-test.com");
-        assertThat(pair.getRequest().getScheme()).isEqualTo("http");
+        assertThat(pair.getRequest().getDestination().getExactMatch()).isEqualTo("www.my-test.com");
+        assertThat(pair.getRequest().getScheme().getExactMatch()).isEqualTo("http");
 
     }
 
@@ -50,8 +50,8 @@ public class StubServiceBuilderTest {
 
         assertThat(pairs).hasSize(1);
         RequestResponsePair pair = pairs.iterator().next();
-        assertThat(pair.getRequest().getDestination()).isEqualTo("www.my-test.com");
-        assertThat(pair.getRequest().getScheme()).isEqualTo("http");
+        assertThat(pair.getRequest().getDestination().getExactMatch()).isEqualTo("www.my-test.com");
+        assertThat(pair.getRequest().getScheme().getExactMatch()).isEqualTo("http");
     }
 
     @Test
@@ -63,7 +63,7 @@ public class StubServiceBuilderTest {
 
         // Then
         assertThat(pairs).hasSize(1);
-        assertThat(Iterables.getLast(pairs).getRequest().getMethod()).isEqualTo("GET");
+        assertThat(Iterables.getLast(pairs).getRequest().getMethod().getExactMatch()).isEqualTo("GET");
     }
 
     @Test
@@ -75,7 +75,7 @@ public class StubServiceBuilderTest {
 
         // Then
         assertThat(pairs).hasSize(1);
-        assertThat(Iterables.getLast(pairs).getRequest().getMethod()).isEqualTo("POST");
+        assertThat(Iterables.getLast(pairs).getRequest().getMethod().getExactMatch()).isEqualTo("POST");
     }
 
     @Test
@@ -87,7 +87,7 @@ public class StubServiceBuilderTest {
 
         // Then
         assertThat(pairs).hasSize(1);
-        assertThat(Iterables.getLast(pairs).getRequest().getMethod()).isEqualTo("PUT");
+        assertThat(Iterables.getLast(pairs).getRequest().getMethod().getExactMatch()).isEqualTo("PUT");
     }
 
     @Test
@@ -99,7 +99,7 @@ public class StubServiceBuilderTest {
 
         // Then
         assertThat(pairs).hasSize(1);
-        assertThat(Iterables.getLast(pairs).getRequest().getMethod()).isEqualTo("PATCH");
+        assertThat(Iterables.getLast(pairs).getRequest().getMethod().getExactMatch()).isEqualTo("PATCH");
     }
 
     @Test
@@ -111,7 +111,7 @@ public class StubServiceBuilderTest {
 
         // Then
         assertThat(pairs).hasSize(1);
-        assertThat(Iterables.getLast(pairs).getRequest().getMethod()).isEqualTo("DELETE");
+        assertThat(Iterables.getLast(pairs).getRequest().getMethod().getExactMatch()).isEqualTo("DELETE");
     }
 
     @Test
