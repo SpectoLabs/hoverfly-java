@@ -13,7 +13,6 @@
 package io.specto.hoverfly.junit.core;
 
 
-import java.nio.file.Path;
 import java.util.Optional;
 
 /**

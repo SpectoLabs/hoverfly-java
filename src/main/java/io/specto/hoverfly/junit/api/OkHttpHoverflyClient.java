@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public class OkHttpHoverflyClient implements HoverflyClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OkHttpHoverflyClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HoverflyClient.class);
 
     private static final String HEALTH_CHECK_PATH = "api/health";
     private static final String SIMULATION_PATH = "api/v2/simulation";
@@ -49,22 +49,14 @@ public class OkHttpHoverflyClient implements HoverflyClient {
     @Override
     public void setSimulation(Simulation simulation) {
         try {
-
-            RequestBody body = createRequestBody(simulation);
-
             final Request.Builder builder = createRequestBuilderWithUrl(SIMULATION_PATH);
+            final RequestBody body = createRequestBody(simulation);
             final Request request = builder.put(body).build();
 
-            final Call call = client.newCall(request);
-            try (final Response response = call.execute()) {
-                if (!response.isSuccessful()) {
-                    LOGGER.warn("Response body: {}", response.body().string());
-                    throw new IOException("Unexpected code " + response);
-                }
-            }
-        } catch (IOException e) {
-            LOGGER.error("Failed to import simulation data", e);
-            throw new IllegalArgumentException(e);
+            exchange(request);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to set simulation: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to set simulation: " + e.getMessage());
         }
     }
 
@@ -74,60 +66,50 @@ public class OkHttpHoverflyClient implements HoverflyClient {
             final Request.Builder builder = createRequestBuilderWithUrl(SIMULATION_PATH);
             final Request request = builder.get().build();
 
-            final Call call = client.newCall(request);
-            return readSimulation(call);
+            return exchange(request, Simulation.class);
         } catch (Exception e) {
-            LOGGER.error("Failed to export simulation data", e);
-            throw new HoverflyClientException();
+            LOGGER.warn("Failed to get simulation: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to get simulation: " + e.getMessage());
         }
     }
 
     @Override
     public HoverflyInfo getConfigInfo() {
-        final Request.Builder builder = createRequestBuilderWithUrl(INFO_PATH);
-        final Request request = builder.get().build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-            return OBJECT_MAPPER.readValue(response.body().charStream(), HoverflyInfo.class);
-        } catch (IOException e) {
-            LOGGER.error("Failed to get Hoverfly info", e);
-            throw new IllegalArgumentException(e);
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(INFO_PATH);
+            final Request request = builder.get().build();
+            return exchange(request, HoverflyInfo.class);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to get config information: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to get config information: " + e.getMessage());
         }
     }
 
     @Override
     public void setDestination(String destination) {
         try {
-            HoverflyInfo hoverflyInfo = new HoverflyInfo(destination, null, null, null);
-            RequestBody body = createRequestBody(hoverflyInfo);
             final Request.Builder builder = createRequestBuilderWithUrl(DESTINATION_PATH);
+            final RequestBody body = createRequestBody(new HoverflyInfo(destination, null, null, null));
             final Request request = builder.put(body).build();
 
-            try (Response response = client.newCall(request).execute()) {
-                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-            }
-        } catch (IOException e) {
-            LOGGER.error("Failed to get Hoverfly info", e);
-            throw new IllegalArgumentException(e);
+            exchange(request);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to set destination: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to set destination: " + e.getMessage());
         }
     }
 
     @Override
     public void setMode(HoverflyMode mode) {
         try {
-            HoverflyInfo hoverflyInfo = new HoverflyInfo(null, mode.name().toLowerCase(), null, null);
-            RequestBody body = createRequestBody(hoverflyInfo);
+            final RequestBody body = createRequestBody(new HoverflyInfo(null, mode.name().toLowerCase(), null, null));
             final Request.Builder builder = createRequestBuilderWithUrl(MODE_PATH);
             final Request request = builder.put(body).build();
 
-            try (Response response = client.newCall(request).execute()) {
-                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-            }
+            exchange(request);
         } catch (IOException e) {
-            LOGGER.error("Failed to get Hoverfly info", e);
-            throw new IllegalArgumentException(e);
+            LOGGER.warn("Failed to set mode: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to set mode: " + e.getMessage());
         }
     }
 
@@ -136,19 +118,16 @@ public class OkHttpHoverflyClient implements HoverflyClient {
      */
     @Override
     public boolean getHealth() {
-        final Request.Builder builder = createRequestBuilderWithUrl(HEALTH_CHECK_PATH);
-        final Request request = builder.get().build();
-
+        boolean isHealthy = false;
         try {
-            final Call call = client.newCall(request);
-            try (final Response response = call.execute()) {
-                LOGGER.debug("Hoverfly health check status code is: {}", response.code());
-                return response.isSuccessful();
-            }
+            final Request.Builder builder = createRequestBuilderWithUrl(HEALTH_CHECK_PATH);
+            final Request request = builder.get().build();
+            exchange(request);
+            isHealthy = true;
         } catch (Exception e) {
-            LOGGER.info("Hoverfly health check failed.", e);
+            LOGGER.debug("Hoverfly healthcheck failed: " + e.getMessage());
         }
-        return false;
+        return isHealthy;
     }
 
     private Request.Builder createRequestBuilderWithUrl(String path) {
@@ -157,22 +136,32 @@ public class OkHttpHoverflyClient implements HoverflyClient {
     }
 
 
-    private RequestBody createRequestBody(Object simulation) throws JsonProcessingException {
-        String content = OBJECT_MAPPER.writeValueAsString(simulation);
+    private RequestBody createRequestBody(Object data) throws JsonProcessingException {
+        String content = OBJECT_MAPPER.writeValueAsString(data);
         return RequestBody.create(JSON, content);
     }
 
 
-    private Simulation readSimulation(Call call) throws IOException {
-        try (Response response = call.execute()) {
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+    // Deserialize response body on success
+    private <T> T exchange(Request request, Class<T> clazz) throws IOException {
+        try (Response response = client.newCall(request).execute()) {
+            onFailure(response);
+            return OBJECT_MAPPER.readValue(response.body().string(), clazz);
+        }
 
-            return OBJECT_MAPPER.readValue(response.body().charStream(), Simulation.class);
+    }
+
+    // Does nothing on success
+    private void exchange(Request request) throws IOException {
+        try (Response response = client.newCall(request).execute()) {
+            onFailure(response);
         }
     }
 
-
-
-    private class HoverflyClientException extends RuntimeException {
+    private void onFailure(Response response) throws IOException {
+        if (!response.isSuccessful()) {
+            String errorResponse = String.format("Unexpected response (code=%d, message=%s)", response.code(), response.body().string());
+            throw new IOException(errorResponse);
+        }
     }
 }

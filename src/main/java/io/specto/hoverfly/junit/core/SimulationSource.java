@@ -9,11 +9,7 @@ import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static io.specto.hoverfly.junit.core.HoverflyUtils.findResourceOnClasspath;
 import static java.util.stream.Collectors.toList;
@@ -149,7 +145,7 @@ public interface SimulationSource {
      * @return an empty simulation
      */
     static SimulationSource empty() {
-        return () -> new Simulation(new HoverflyData(new HashSet<>(), new GlobalActions(new ArrayList<>())), new HoverflyMetaData());
+        return () -> new Simulation(new HoverflyData(Collections.emptySet(), new GlobalActions(Collections.emptyList())), new HoverflyMetaData());
     }
 
 

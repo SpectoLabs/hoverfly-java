@@ -144,12 +144,12 @@ public class SimulationSourceTest {
     public void shouldThrowExceptionWhenSimulationDataFormatIsNotRecognized() throws Exception {
 
         // When
-        Throwable throwable = catchThrowable(() -> SimulationSource.classpath("test-service-legacy.json").getSimulation());
+        Throwable throwable = catchThrowable(() -> SimulationSource.classpath("simulations/legacy-simulation.json").getSimulation());
 
         // Then
         assertThat(throwable)
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Cannot load classpath resource: 'test-service-legacy.json'");
+                .hasMessageContaining("Cannot load classpath resource: 'simulations/legacy-simulation.json'");
 
     }
 
