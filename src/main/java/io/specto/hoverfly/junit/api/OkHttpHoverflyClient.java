@@ -24,8 +24,6 @@ public class OkHttpHoverflyClient implements HoverflyClient {
     private static final String MODE_PATH = "api/v2/hoverfly/mode";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    // TODO do we need charset in the content type header?
-//    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static final MediaType JSON = MediaType.parse("application/json");
 
     private OkHttpClient client;

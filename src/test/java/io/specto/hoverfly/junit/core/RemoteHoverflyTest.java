@@ -31,8 +31,7 @@ public class RemoteHoverflyTest {
                         .willReturn(success())
 
                         .put("/api/v2/hoverfly/mode")
-                        // TODO bug in hoverfly 0.11.3 , the headers instead of the body are used for matching
-//                        .body(HttpBodyConverter.json(new HoverflyInfo(null, HoverflyMode.SIMULATE.name().toLowerCase(), null, null)))
+                        .body(HttpBodyConverter.json(new HoverflyInfo(null, HoverflyMode.SIMULATE.name().toLowerCase(), null, null)))
                         .willReturn(success())
         ));
     }

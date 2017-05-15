@@ -128,11 +128,9 @@ public class StubServiceBuilderTest {
 
         // Then
         assertThat(requestResponsePair.getRequest())
-                .hasExactHeaders(header("Content-Type", "application/json"))
                 .hasBody("{\"firstField\":\"requestFieldOne\",\"secondField\":\"requestFieldTwo\"}");
 
         assertThat(requestResponsePair.getResponse())
-                .hasExactHeaders(header("Content-Type", "application/json"))
                 .hasBody("{\"firstField\":\"responseFieldOne\",\"secondField\":\"responseFieldTwo\"}");
     }
 
@@ -152,7 +150,6 @@ public class StubServiceBuilderTest {
 
         // Then
         assertThat(requestResponsePair.getRequest())
-                .hasExactHeaders(header("Content-Type", "application/json"))
                 .hasBody("{\"firstField\":\"requestFieldOne\",\"secondField\":\"requestFieldTwo\"}");
 
         verify(objectMapper).writeValueAsString(new SomeJson("requestFieldOne", "requestFieldTwo"));

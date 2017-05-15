@@ -73,7 +73,6 @@ public class RequestMatcherBuilder {
      */
     public RequestMatcherBuilder body(HttpBodyConverter httpBodyConverter) {
         this.body = fromExactMatchString(httpBodyConverter.body());
-        header("Content-Type", httpBodyConverter.contentType());
         return this;
     }
 
