@@ -6,6 +6,11 @@ public class HoverflyConstants {
     public static final int DEFAULT_ADMIN_PORT = 8888;
     public static final int DEFAULT_HTTPS_ADMIN_PORT = 443;
 
+    public static final String X_HOVERFLY_AUTHORIZATION = "X-HOVERFLY-AUTHORIZATION";
+
+    public static final String HOVERFLY_AUTH_TOKEN = "HOVERFLY_AUTH_TOKEN";
+    public static final String HOVERFLY_PROXY_CA_CERT = "HOVERFLY_PROXY_CA_CERT";
+
     static final String LOCALHOST = "localhost";
     static final String HTTP = "http";
     static final String HTTPS = "https";

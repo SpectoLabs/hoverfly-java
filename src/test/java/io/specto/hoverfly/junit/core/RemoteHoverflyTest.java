@@ -1,97 +1,65 @@
 package io.specto.hoverfly.junit.core;
 
-import io.specto.hoverfly.junit.core.model.HoverflyInfo;
-import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.powermock.reflect.Whitebox;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
-import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
-import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
-import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
+import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class RemoteHoverflyTest {
 
-    private Hoverfly remoteHoverflyStub;
+    private Hoverfly remoteHoverfly = new Hoverfly(SIMULATE);
+    private Hoverfly localHoverflyDelegate;
+
+
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Before
     public void setUp() throws Exception {
-        remoteHoverflyStub = new Hoverfly(SIMULATE);
-        remoteHoverflyStub.start();
-
-        remoteHoverflyStub.importSimulation(dsl(
-                service("http://hoverfly-cloud:8888")
-                        .get("/api/health")
-                        .willReturn(success())
-
-                        .put("/api/v2/hoverfly/mode")
-                        .body(HttpBodyConverter.json(new HoverflyInfo(null, HoverflyMode.SIMULATE.name().toLowerCase(), null, null)))
-                        .willReturn(success())
-        ));
+        remoteHoverfly.start();
+        HoverflyConfiguration remoteConfigs = remoteHoverfly.getHoverflyConfig();
+        localHoverflyDelegate = new Hoverfly(configs()
+                .remote()
+                .adminPort(remoteConfigs.getAdminPort())
+                .proxyPort(remoteConfigs.getProxyPort()), SIMULATE);
+        localHoverflyDelegate.start();
+        localHoverflyDelegate.importSimulation(classpath("test-service-https.json"));
     }
 
     @Test
-    public void shouldSetSystemPropertiesForRemoteHoverflyInstance() throws Exception {
-
+    public void shouldBeAbleToMakeABookingUsingRemoteHoverfly() throws URISyntaxException {
         // Given
-        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().remote().host("hoverfly-cloud"), SIMULATE)) {
+        final RequestEntity<String> bookFlightRequest = RequestEntity.post(new URI("https://www.my-test.com/api/bookings"))
+                .contentType(APPLICATION_JSON)
+                .body("{\"flightId\": \"1\"}");
 
-            // When
-            hoverflyUnderTest.start();
+        // When
+        final ResponseEntity<String> bookFlightResponse = restTemplate.exchange(bookFlightRequest, String.class);
 
-            // Then
-            assertThat(System.getProperty("http.proxyHost")).isEqualTo("hoverfly-cloud");
-            assertThat(System.getProperty("https.proxyHost")).isEqualTo("hoverfly-cloud");
-
-            assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(hoverflyUnderTest.getHoverflyConfig().getProxyPort()));
-            assertThat(System.getProperty("https.proxyPort")).isEqualTo(String.valueOf(hoverflyUnderTest.getHoverflyConfig().getProxyPort()));
-
-            assertThat(System.getProperty("http.nonProxyHosts")).isEqualTo("local|*.local|169.254/16|*.169.254/16|hoverfly-cloud");
-        }
-    }
-
-    @Test
-    public void shouldSetNonProxyHostsWhenUsingBothRemoteHoverflyInstanceAndProxyLocalHost() throws Exception {
-
-        // Given
-        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().remote().host("hoverfly-cloud").proxyLocalHost(true), SIMULATE)) {
-
-            // When
-            hoverflyUnderTest.start();
-
-            // Then
-            assertThat(System.getProperty("http.nonProxyHosts")).isEqualTo("hoverfly-cloud");
-        }
-    }
-
-    @Test
-    public void shouldNotInvokeTempFileManagerWhenUsingRemoteHoverfly() throws Exception {
-
-        // Given
-        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().remote().host("hoverfly-cloud"), SIMULATE)) {
-            TempFileManager tempFileManager = mock(TempFileManager.class);
-            Whitebox.setInternalState(hoverflyUnderTest, "tempFileManager", tempFileManager);
-
-            // When
-            hoverflyUnderTest.start();
-
-            // Then
-            verifyZeroInteractions(tempFileManager);
-        }
+        // Then
+        assertThat(bookFlightResponse.getStatusCode()).isEqualTo(CREATED);
+        assertThat(bookFlightResponse.getHeaders().getLocation()).isEqualTo(new URI("https://www.my-test.com/api/bookings/1"));
     }
 
     @After
     public void tearDown() throws Exception {
-
-        if(remoteHoverflyStub != null) {
-            remoteHoverflyStub.close();
+        if (remoteHoverfly != null) {
+            remoteHoverfly.close();
         }
 
+        if (localHoverflyDelegate != null) {
+            localHoverflyDelegate.close();
+        }
     }
 }

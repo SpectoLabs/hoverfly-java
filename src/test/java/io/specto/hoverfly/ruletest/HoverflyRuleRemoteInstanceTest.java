@@ -1,5 +1,6 @@
 package io.specto.hoverfly.ruletest;
 
+import io.specto.hoverfly.junit.core.HoverflyConstants;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -21,7 +22,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class HoverflyRuleRemoteInstanceTest {
 
     // Use a working remote hoverfly instance host
-    private static final String REMOTE_HOST = "junior-tennis-tommysitu.hoverfly.io";
+    private static final String REMOTE_HOST = "solid-terminal-tommysitu.hoverfly.io";
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -40,7 +41,7 @@ public class HoverflyRuleRemoteInstanceTest {
         // Given
         final RequestEntity<String> bookFlightRequest = RequestEntity.post(new URI("https://www.my-test.com/api/bookings"))
                 .contentType(APPLICATION_JSON)
-                .header("Proxy-Authorization", "Bearer " + authToken)
+                .header(HoverflyConstants.X_HOVERFLY_AUTHORIZATION, "Bearer " + authToken)
                 .body("{\"flightId\": \"1\"}");
 
         // When
