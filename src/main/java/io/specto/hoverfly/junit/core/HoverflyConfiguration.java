@@ -19,6 +19,7 @@ public class HoverflyConfiguration {
     private boolean isRemoteInstance;
     private String adminCertificate;
     private String proxyCaCertificate;
+    private String authHeaderValue;
 
 
     HoverflyConfiguration(String scheme, String host, int proxyPort, int adminPort, boolean proxyLocalHost, String destination, String proxyCaCertificate, String authToken, String adminCertificate) {

@@ -1,6 +1,8 @@
 package io.specto.hoverfly.junit.core;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,6 +10,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class HoverflyConfigTest {
 
+    @Rule
+    public EnvironmentVariables envVars = new EnvironmentVariables();
 
     @Test
     public void shouldHaveDefaultSettings() throws Exception {
@@ -79,5 +83,23 @@ public class HoverflyConfigTest {
         assertThat(configs.getScheme()).isEqualTo("https");
         assertThat(configs.getAdminPort()).isEqualTo(443);
         assertThat(configs.getAdminCertificate()).isNull();
+    }
+
+    @Test
+    public void shouldSetAuthTokenFromEnvironmentVariable() throws Exception {
+
+        envVars.set(HoverflyConstants.HOVERFLY_AUTH_TOKEN, "token-from-env");
+        HoverflyConfiguration configs = configs().remote().withAuthHeader().build();
+
+        assertThat(configs.getAuthToken()).isPresent();
+        configs.getAuthToken().ifPresent(token -> assertThat(token).isEqualTo("token-from-env"));
+    }
+
+    @Test
+    public void shouldSetAuthTokenDirectly() throws Exception {
+        HoverflyConfiguration configs = configs().remote().withAuthHeader("some-token").build();
+
+        assertThat(configs.getAuthToken()).isPresent();
+        configs.getAuthToken().ifPresent(token -> assertThat(token).isEqualTo("some-token"));
     }
 }

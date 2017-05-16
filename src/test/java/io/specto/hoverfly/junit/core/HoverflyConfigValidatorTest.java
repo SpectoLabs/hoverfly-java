@@ -86,4 +86,12 @@ public class HoverflyConfigValidatorTest {
 
         assertThat(validated.getAdminPort()).isEqualTo(8443);
     }
+
+    @Test
+    public void shouldThrowExceptionIfProxyCaCertDoesNotExist() throws Exception {
+
+        assertThatThrownBy(() -> configs().remote().proxyCaCert("some-cert.pem").build())
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Resource not found with name: some-cert.pem");
+    }
 }

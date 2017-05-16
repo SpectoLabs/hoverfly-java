@@ -12,10 +12,7 @@
  */
 package io.specto.hoverfly.junit.rule;
 
-import io.specto.hoverfly.junit.core.Hoverfly;
-import io.specto.hoverfly.junit.core.HoverflyConfig;
-import io.specto.hoverfly.junit.core.HoverflyMode;
-import io.specto.hoverfly.junit.core.SimulationSource;
+import io.specto.hoverfly.junit.core.*;
 import io.specto.hoverfly.junit.dsl.HoverflyDsl;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -28,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
@@ -80,6 +78,7 @@ public class HoverflyRule extends ExternalResource {
     private final HoverflyMode hoverflyMode;
     private Path capturePath;
     private SimulationSource simulationSource;
+    private String authHeaderValue;
 
     private HoverflyRule(final SimulationSource simulationSource, final HoverflyConfig hoverflyConfig) {
         this.hoverflyMode = SIMULATE;
@@ -228,7 +227,7 @@ public class HoverflyRule extends ExternalResource {
      * @return the proxy port
      */
     public int getProxyPort() {
-        return hoverfly.getHoverflyConfig().getProxyPort();
+        return hoverfly.getHoverflyConfiguration().getProxyPort();
     }
 
     /**
@@ -281,5 +280,14 @@ public class HoverflyRule extends ExternalResource {
 
     public static HoverflyRule inCaptureMode(HoverflyConfig hoverflyConfig) {
         return new HoverflyRule(hoverflyConfig);
+    }
+
+    public String getAuthHeaderName() {
+        return HoverflyConstants.X_HOVERFLY_AUTHORIZATION;
+    }
+
+    public String getAuthHeaderValue() {
+        Optional<String> authToken = hoverfly.getHoverflyConfiguration().getAuthToken();
+        return authToken.map(s -> "Bearer " + s).orElse(null);
     }
 }

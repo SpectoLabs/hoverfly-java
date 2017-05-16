@@ -15,6 +15,7 @@ public class RemoteHoverflyConfigBuilder implements RemoteHoverflyConfig {
 
     @Override
     public RemoteHoverflyConfig withAuthHeader() {
+        this.authToken = System.getenv(HoverflyConstants.HOVERFLY_AUTH_TOKEN);
         return this;
     }
 

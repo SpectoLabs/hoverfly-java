@@ -4,16 +4,13 @@ package io.specto.hoverfly.junit.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.core.Hoverfly;
-import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.SimulationSource;
 import io.specto.hoverfly.junit.core.model.*;
-import org.assertj.core.util.Lists;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.net.URL;
-import java.util.Collections;
 
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
@@ -30,7 +27,7 @@ public class OkHttpHoverflyClientTest {
     @Before
     public void setUp() throws Exception {
         startDefaultHoverfly();
-        client = new OkHttpHoverflyClient(hoverfly.getHoverflyConfig());
+        client = new OkHttpHoverflyClient(hoverfly.getHoverflyConfiguration());
     }
 
     @Test

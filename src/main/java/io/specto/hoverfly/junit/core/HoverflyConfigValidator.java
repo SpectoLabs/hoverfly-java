@@ -6,12 +6,17 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 /**
  * Validate user-input {@link HoverflyConfig} before it is used by {@link Hoverfly}
  */
 class HoverflyConfigValidator {
+
 
     /**
      * Sanity checking hoverfly configs and assign port number if necessary
@@ -22,12 +27,12 @@ class HoverflyConfigValidator {
             throw new IllegalArgumentException("HoverflyConfig cannot be null.");
         }
 
+        // Validate custom ca cert and key
         boolean isKeyBlank = StringUtils.isBlank(hoverflyConfig.getSslKeyPath());
         boolean isCertBlank = StringUtils.isBlank(hoverflyConfig.getSslCertificatePath());
         if (isKeyBlank && !isCertBlank || !isKeyBlank && isCertBlank) {
             throw new IllegalArgumentException("Both SSL key and certificate files are required to override the default Hoverfly SSL.");
         }
-
 
         if (hoverflyConfig.isRemoteInstance()) {
             // Validate remote instance hostname
@@ -39,6 +44,10 @@ class HoverflyConfigValidator {
                     throw new IllegalArgumentException("Remote hoverfly hostname is not valid: " + hoverflyConfig.getHost());
                 }
             }
+        }
+
+        if (hoverflyConfig.getProxyCaCertificate().isPresent()) {
+            HoverflyUtils.findResourceOnClasspath(hoverflyConfig.getProxyCaCertificate().get());
         }
 
         // Validate proxy port
