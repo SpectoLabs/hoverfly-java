@@ -13,14 +13,10 @@ import java.net.URISyntaxException;
  */
 class HoverflyConfigValidator {
 
-    private static final int DEFAULT_PROXY_PORT = 8500;
-    private static final int DEFAULT_ADMIN_PORT = 8888;
-    private static final int DEFAULT_HTTPS_ADMIN_PORT = 443;
-
     /**
      * Sanity checking hoverfly configs and assign port number if necessary
      */
-    HoverflyConfig validate(HoverflyConfig hoverflyConfig) {
+    HoverflyConfiguration validate(HoverflyConfiguration hoverflyConfig) {
 
         if (hoverflyConfig == null) {
             throw new IllegalArgumentException("HoverflyConfig cannot be null.");
@@ -34,15 +30,11 @@ class HoverflyConfigValidator {
 
 
         if (hoverflyConfig.isRemoteInstance()) {
-            if (!isKeyBlank && !isCertBlank) {
-                throw new IllegalArgumentException("Attempt to configure SSL on remote instance is prohibited.");
-            }
-
             // Validate remote instance hostname
             if (hoverflyConfig.getHost() != null && hoverflyConfig.getHost().startsWith("http")) {
                 try {
                     URI uri = new URI(hoverflyConfig.getHost());
-                    hoverflyConfig.useRemoteInstance(uri.getHost());
+                    hoverflyConfig.setHost(uri.getHost());
                 } catch (URISyntaxException e) {
                     throw new IllegalArgumentException("Remote hoverfly hostname is not valid: " + hoverflyConfig.getHost());
                 }
@@ -51,22 +43,12 @@ class HoverflyConfigValidator {
 
         // Validate proxy port
         if (hoverflyConfig.getProxyPort() == 0) {
-            hoverflyConfig.proxyPort(hoverflyConfig.isRemoteInstance() ? DEFAULT_PROXY_PORT : findUnusedPort());
+            hoverflyConfig.setProxyPort(findUnusedPort());
         }
 
         // Validate admin port
         if (hoverflyConfig.getAdminPort() == 0) {
-
-            int adminPort = DEFAULT_ADMIN_PORT;
-
-            if (hoverflyConfig.isRemoteInstance()) {
-                if (hoverflyConfig.getScheme().equals("https")) {
-                    adminPort = DEFAULT_HTTPS_ADMIN_PORT;
-                }
-            } else {
-                adminPort = findUnusedPort();
-            }
-            hoverflyConfig.adminPort(adminPort);
+            hoverflyConfig.setAdminPort(findUnusedPort());
         }
 
 

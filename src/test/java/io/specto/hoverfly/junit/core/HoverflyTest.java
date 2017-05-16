@@ -15,17 +15,12 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 import org.zeroturnaround.exec.StartedProcess;
 
 import javax.net.ssl.SSLContext;
 import java.net.URL;
-import java.nio.file.Paths;
 
-import static io.specto.hoverfly.junit.core.HoverflyConfig.authenticationConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
-import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -200,8 +195,7 @@ public class HoverflyTest {
     @Test
     public void shouldSetSslCertForRemoteInstance() throws Exception {
 
-        hoverfly = new Hoverfly(configs()
-                .useRemoteInstance("remotehost", authenticationConfigs().withHttps("hfc-self-signed.pem")), SIMULATE);
+        hoverfly = new Hoverfly(configs().remote().host("remotehost").withHttps("hfc-self-signed.pem"), SIMULATE);
 
         SslConfigurer sslConfigurer = mock(SslConfigurer.class);
         Whitebox.setInternalState(hoverfly, "sslConfigurer", sslConfigurer);

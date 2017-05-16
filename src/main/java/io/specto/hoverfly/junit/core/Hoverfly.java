@@ -50,7 +50,7 @@ public class Hoverfly implements AutoCloseable {
     private static final int RETRY_BACKOFF_INTERVAL_MS = 100;
 
 
-    private final HoverflyConfig hoverflyConfig;
+    private final HoverflyConfiguration hoverflyConfig;
     private final HoverflyMode hoverflyMode;
     private final ProxyConfigurer proxyConfigurer;
     private final SslConfigurer sslConfigurer = new SslConfigurer();
@@ -63,11 +63,11 @@ public class Hoverfly implements AutoCloseable {
     /**
      * Instantiates {@link Hoverfly}
      *
-     * @param hoverflyConfig the config
+     * @param hoverflyConfigBuilder the config
      * @param hoverflyMode   the mode
      */
-    public Hoverfly(HoverflyConfig hoverflyConfig, HoverflyMode hoverflyMode) {
-        this.hoverflyConfig = new HoverflyConfigValidator().validate(hoverflyConfig);
+    public Hoverfly(HoverflyConfig hoverflyConfigBuilder, HoverflyMode hoverflyMode) {
+        hoverflyConfig = hoverflyConfigBuilder.build();
         this.proxyConfigurer = new ProxyConfigurer(hoverflyConfig);
         this.hoverflyClient = new OkHttpHoverflyClient(hoverflyConfig);
         this.hoverflyMode = hoverflyMode;
@@ -110,8 +110,8 @@ public class Hoverfly implements AutoCloseable {
 
         setMode(hoverflyMode);
 
-        if (hoverflyConfig.getAuthenticationConfig().isPresent() && hoverflyConfig.getAuthenticationConfig().get().getSslCert() != null) {
-          sslConfigurer.setDefaultSslContext(hoverflyConfig.getAuthenticationConfig().get().getSslCert());
+        if (hoverflyConfig.getSslCert().isPresent()) {
+          sslConfigurer.setDefaultSslContext(hoverflyConfig.getSslCert().get());
         } else if (useDefaultSslCert) {
             sslConfigurer.setDefaultSslContext();
         }
@@ -246,7 +246,7 @@ public class Hoverfly implements AutoCloseable {
      * Gets the validated {@link HoverflyConfig} object used by the current Hoverfly instance
      * @return the current Hoverfly configurations
      */
-    public HoverflyConfig getHoverflyConfig() {
+    public HoverflyConfiguration getHoverflyConfig() {
         return hoverflyConfig;
     }
 

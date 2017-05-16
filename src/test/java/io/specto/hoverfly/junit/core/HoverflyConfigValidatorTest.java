@@ -4,11 +4,11 @@ package io.specto.hoverfly.junit.core;
 import org.junit.Before;
 import org.junit.Test;
 
-import static io.specto.hoverfly.junit.core.HoverflyConfig.authenticationConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+// TODO some of these tests should be in HoverflyConfigTest
 public class HoverflyConfigValidatorTest {
 
     private HoverflyConfigValidator validator;
@@ -21,9 +21,7 @@ public class HoverflyConfigValidatorTest {
     @Test
     public void shouldProvideDefaultPortForRemoteHoverflyInstanceIfNotConfigured() throws Exception {
 
-        HoverflyConfig configs = configs().useRemoteInstance();
-
-        HoverflyConfig validated = validator.validate(configs);
+        HoverflyConfiguration validated = configs().remote().build();
 
 
         assertThat(validated.getProxyPort()).isEqualTo(8500);
@@ -32,9 +30,8 @@ public class HoverflyConfigValidatorTest {
 
     @Test
     public void shouldAssignPortForLocalHoverflyInstanceIfNotConfigured() throws Exception {
-        HoverflyConfig configs = configs();
 
-        HoverflyConfig validated = validator.validate(configs);
+        HoverflyConfiguration validated = configs().build();
 
 
         assertThat(validated.getProxyPort()).isNotZero();
@@ -43,44 +40,25 @@ public class HoverflyConfigValidatorTest {
 
     @Test
     public void shouldThrowExceptionIfOnlySslKeyIsConfigured() throws Exception {
-        HoverflyConfig configs = configs().sslKeyPath("ssl/ca.key");
 
-        Throwable thrown = catchThrowable(() -> validator.validate(configs));
-
-        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> configs().sslKeyPath("ssl/ca.key").build())
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Both SSL key and certificate files are required to override the default Hoverfly SSL");
     }
 
     @Test
     public void shouldThrowExceptionIfOnlySslCertIsConfigured() throws Exception {
-        HoverflyConfig configs = configs().sslCertificatePath("ssl/ca.crt");
 
-        Throwable thrown = catchThrowable(() -> validator.validate(configs));
-
-        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> configs().sslCertificatePath("ssl/ca.crt").build())
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Both SSL key and certificate files are required to override the default Hoverfly SSL");
-
-    }
-
-    @Test
-    public void shouldThrowExceptionIfSslConfigNotEmptyWhenUsingRemoteInstance() throws Exception {
-        HoverflyConfig configs = configs().useRemoteInstance()
-                .sslCertificatePath("ssl/ca.crt")
-                .sslKeyPath("ssl/ca.key");
-
-        Throwable thrown = catchThrowable(() -> validator.validate(configs));
-
-        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Attempt to configure SSL on remote instance is prohibited");
 
     }
 
     @Test
     public void shouldRemoveHttpSchemaFromRemoteInstanceHostName() throws Exception {
 
-        HoverflyConfig configs = configs().useRemoteInstance("http://100.100.100.1");
-
-        HoverflyConfig validated = validator.validate(configs);
+        HoverflyConfiguration validated = configs().remote().host("http://100.100.100.1").build();
 
         assertThat(validated.getHost()).isEqualTo("100.100.100.1");
     }
@@ -88,9 +66,8 @@ public class HoverflyConfigValidatorTest {
     @Test
     public void shouldThrowExceptionWhenHoverflyConfigIsNull() throws Exception {
 
-        Throwable thrown = catchThrowable(() -> validator.validate(null));
-
-        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> validator.validate(null))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("HoverflyConfig cannot be null.");
 
     }
@@ -98,14 +75,14 @@ public class HoverflyConfigValidatorTest {
     @Test
     public void shouldSetDefaultHttpsAdminPortTo443() throws Exception {
 
-        HoverflyConfig validated = validator.validate(configs().useRemoteInstance("remote-host.hoverfly.io", authenticationConfigs().withHttps("ca.cert")));
+        HoverflyConfiguration validated = configs().remote().host("remote-host.hoverfly.io").withHttps("ca.cert").build();
 
         assertThat(validated.getAdminPort()).isEqualTo(443);
     }
 
     @Test
     public void shouldNotChangeUserDefinedHttpsAdminPort() throws Exception {
-        HoverflyConfig validated = validator.validate(configs().useRemoteInstance("remote-host.hoverfly.io", authenticationConfigs().withHttps("ca.cert")).adminPort(8443));
+        HoverflyConfiguration validated = configs().remote().host("remote-host.hoverfly.io").withHttps("ca.cert").adminPort(8443).build();
 
         assertThat(validated.getAdminPort()).isEqualTo(8443);
     }

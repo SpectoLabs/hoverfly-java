@@ -40,7 +40,7 @@ public class RemoteHoverflyTest {
     public void shouldSetSystemPropertiesForRemoteHoverflyInstance() throws Exception {
 
         // Given
-        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().useRemoteInstance("hoverfly-cloud"), SIMULATE)) {
+        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().remote().host("hoverfly-cloud"), SIMULATE)) {
 
             // When
             hoverflyUnderTest.start();
@@ -60,7 +60,7 @@ public class RemoteHoverflyTest {
     public void shouldSetNonProxyHostsWhenUsingBothRemoteHoverflyInstanceAndProxyLocalHost() throws Exception {
 
         // Given
-        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().useRemoteInstance("hoverfly-cloud").proxyLocalHost(true), SIMULATE)) {
+        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().remote().host("hoverfly-cloud").proxyLocalHost(true), SIMULATE)) {
 
             // When
             hoverflyUnderTest.start();
@@ -74,7 +74,7 @@ public class RemoteHoverflyTest {
     public void shouldNotInvokeTempFileManagerWhenUsingRemoteHoverfly() throws Exception {
 
         // Given
-        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().useRemoteInstance("hoverfly-cloud"), SIMULATE)) {
+        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().remote().host("hoverfly-cloud"), SIMULATE)) {
             TempFileManager tempFileManager = mock(TempFileManager.class);
             Whitebox.setInternalState(hoverflyUnderTest, "tempFileManager", tempFileManager);
 

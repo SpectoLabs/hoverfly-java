@@ -17,10 +17,10 @@ class ProxyConfigurer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProxyConfigurer.class);
 
-    private final HoverflyConfig hoverflyConfig;
+    private final HoverflyConfiguration hoverflyConfig;
     private final Map<String, String> originalProxyProperties = new HashMap<>();
 
-    ProxyConfigurer(HoverflyConfig hoverflyConfig) {
+    ProxyConfigurer(HoverflyConfiguration hoverflyConfig) {
         this.hoverflyConfig = hoverflyConfig;
     }
 

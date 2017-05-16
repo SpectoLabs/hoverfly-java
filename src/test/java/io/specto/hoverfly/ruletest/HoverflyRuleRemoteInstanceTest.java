@@ -11,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static io.specto.hoverfly.junit.core.HoverflyConfig.authenticationConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,10 +29,10 @@ public class HoverflyRuleRemoteInstanceTest {
     @ClassRule
     public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(classpath("test-service-https.json"),
             configs()
-                    .useRemoteInstance(REMOTE_HOST,
-                        authenticationConfigs()
-                                .withHttps("hfc-self-signed.pem")
-                                .withAuthHeader(authToken)));
+                    .remote()
+                    .host(REMOTE_HOST)
+                    .withHttps("hfc-self-signed.pem")
+                    .withAuthHeader(authToken));
 
     @Test
     public void shouldBeAbleToMakeABookingUsingHoverfly() throws URISyntaxException {

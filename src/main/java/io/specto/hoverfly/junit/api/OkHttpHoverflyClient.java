@@ -3,6 +3,7 @@ package io.specto.hoverfly.junit.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
+import io.specto.hoverfly.junit.core.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.HoverflyInfo;
 import io.specto.hoverfly.junit.core.model.Simulation;
@@ -30,18 +31,16 @@ public class OkHttpHoverflyClient implements HoverflyClient {
 
     private HttpUrl baseUrl;
 
-    public OkHttpHoverflyClient(HoverflyConfig hoverflyConfig) {
+    public OkHttpHoverflyClient(HoverflyConfiguration config) {
 
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-        Optional<HoverflyConfig.AuthenticationConfig> authConfig = hoverflyConfig.getAuthenticationConfig();
-        if (authConfig.isPresent() && authConfig.get().getAuthToken() != null) {
-            clientBuilder.addInterceptor(new AuthHeaderInterceptor(authConfig.get().getAuthToken()));
-        }
+        config.getAuthToken().ifPresent(token ->
+                clientBuilder.addInterceptor(new AuthHeaderInterceptor(token)));
         this.client = clientBuilder.build();
         this.baseUrl = new HttpUrl.Builder()
-                .scheme(hoverflyConfig.getScheme())
-                .host(hoverflyConfig.getHost())
-                .port(hoverflyConfig.getAdminPort()).build();
+                .scheme(config.getScheme())
+                .host(config.getHost())
+                .port(config.getAdminPort()).build();
     }
 
     @Override
