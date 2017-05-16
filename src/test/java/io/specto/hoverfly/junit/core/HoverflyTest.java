@@ -195,7 +195,7 @@ public class HoverflyTest {
     @Test
     public void shouldSetSslCertForRemoteInstance() throws Exception {
 
-        hoverfly = new Hoverfly(configs().remote().host("remotehost").withHttps("hfc-self-signed.pem"), SIMULATE);
+        hoverfly = new Hoverfly(configs().remote().host("remotehost").proxyCaCert("hfc-self-signed.pem"), SIMULATE);
 
         SslConfigurer sslConfigurer = mock(SslConfigurer.class);
         Whitebox.setInternalState(hoverfly, "sslConfigurer", sslConfigurer);

@@ -2,10 +2,10 @@ package io.specto.hoverfly.junit.core;
 
 import java.util.Optional;
 
-public class HoverflyConfiguration {
+import static io.specto.hoverfly.junit.core.HoverflyConstants.HTTP;
+import static io.specto.hoverfly.junit.core.HoverflyConstants.LOCALHOST;
 
-    private static final String LOCALHOST = "localhost";
-    private static final String HTTP = "http";
+public class HoverflyConfiguration {
 
     private String scheme = HTTP;
     private String host = LOCALHOST;
@@ -16,24 +16,26 @@ public class HoverflyConfiguration {
     private String sslCertificatePath;
     private String sslKeyPath;
     private String authToken;
-    private String sslCert;
     private boolean isRemoteInstance;
+    private String adminCertificate;
+    private String proxyCaCertificate;
 
 
-    HoverflyConfiguration(String scheme, String host, int proxyPort, int adminPort, boolean proxyLocalHost, String destination, String authToken, String sslCert) {
-        this(proxyPort, adminPort, proxyLocalHost, destination, null, null);
+    HoverflyConfiguration(String scheme, String host, int proxyPort, int adminPort, boolean proxyLocalHost, String destination, String proxyCaCertificate, String authToken, String adminCertificate) {
+        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, null, null);
         setScheme(scheme);
         setHost(host);
         this.authToken = authToken;
-        this.sslCert = sslCert;
+        this.adminCertificate = adminCertificate;
         this.isRemoteInstance = true;
     }
 
-    HoverflyConfiguration(int proxyPort, int adminPort, boolean proxyLocalHost, String destination, String sslCertificatePath, String sslKeyPath) {
+    HoverflyConfiguration(int proxyPort, int adminPort, boolean proxyLocalHost, String destination, String proxyCaCertificate, String sslCertificatePath, String sslKeyPath) {
         this.proxyPort = proxyPort;
         this.adminPort = adminPort;
         this.proxyLocalHost = proxyLocalHost;
         this.destination = destination;
+        this.proxyCaCertificate = proxyCaCertificate;
         this.sslCertificatePath = sslCertificatePath;
         this.sslKeyPath = sslKeyPath;
     }
@@ -99,8 +101,12 @@ public class HoverflyConfiguration {
         return isRemoteInstance;
     }
 
-    public Optional<String> getSslCert() {
-        return Optional.ofNullable(sslCert);
+    public Optional<String> getProxyCaCertificate() {
+        return Optional.ofNullable(proxyCaCertificate);
+    }
+
+    public String getAdminCertificate() {
+        return adminCertificate;
     }
 
     void setHost(String host) {
@@ -122,4 +128,5 @@ public class HoverflyConfiguration {
     void setAdminPort(int adminPort) {
         this.adminPort = adminPort;
     }
+
 }

@@ -75,14 +75,14 @@ public class HoverflyConfigValidatorTest {
     @Test
     public void shouldSetDefaultHttpsAdminPortTo443() throws Exception {
 
-        HoverflyConfiguration validated = configs().remote().host("remote-host.hoverfly.io").withHttps("ca.cert").build();
+        HoverflyConfiguration validated = configs().remote().host("remote-host.hoverfly.io").withHttpsAdminEndpoint().build();
 
         assertThat(validated.getAdminPort()).isEqualTo(443);
     }
 
     @Test
     public void shouldNotChangeUserDefinedHttpsAdminPort() throws Exception {
-        HoverflyConfiguration validated = configs().remote().host("remote-host.hoverfly.io").withHttps("ca.cert").adminPort(8443).build();
+        HoverflyConfiguration validated = configs().remote().host("remote-host.hoverfly.io").withHttpsAdminEndpoint().adminPort(8443).build();
 
         assertThat(validated.getAdminPort()).isEqualTo(8443);
     }

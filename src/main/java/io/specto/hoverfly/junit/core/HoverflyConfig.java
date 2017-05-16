@@ -34,21 +34,26 @@ public interface HoverflyConfig {
     HoverflyConfig destination(String destination);
 
     @Deprecated
-    HoverflyConfig proxyLocalHost(boolean proxyLocalHost);
+    default HoverflyConfig proxyLocalHost(boolean proxyLocalHost) {
+        if (proxyLocalHost) {
+            return proxyLocalHost();
+        }
+        return this;
+    }
 
+    /**
+     * Invoke to enable proxying of localhost requests
+     * By default it is false
+     * @return a config
+     */
+    HoverflyConfig proxyLocalHost();
 
-//    /**
-//     * Invoke to enable proxying of localhost requests
-//     * By default it is false
-//     * @return a config
-//     */
-//    default HoverflyConfig proxyLocalHost() {
-//
-//    };
 
     default RemoteHoverflyConfig remote() {
         return new RemoteHoverflyConfigBuilder();
     }
 
     HoverflyConfiguration build();
+
+    HoverflyConfig proxyCaCert(String proxyCaCert);
 }

@@ -110,8 +110,8 @@ public class Hoverfly implements AutoCloseable {
 
         setMode(hoverflyMode);
 
-        if (hoverflyConfig.getSslCert().isPresent()) {
-          sslConfigurer.setDefaultSslContext(hoverflyConfig.getSslCert().get());
+        if (hoverflyConfig.getProxyCaCertificate().isPresent()) {
+          sslConfigurer.setDefaultSslContext(hoverflyConfig.getProxyCaCertificate().get());
         } else if (useDefaultSslCert) {
             sslConfigurer.setDefaultSslContext();
         }

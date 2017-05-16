@@ -42,7 +42,11 @@ public class HoverflyConfigTest {
     @Test
     public void shouldBeAbleToOverrideHostNameByUseRemoteInstance() throws Exception {
 
-        HoverflyConfiguration configs = configs().remote().host("cloud-hoverfly.com").build();
+        HoverflyConfiguration configs = configs()
+                .remote()
+                .host("cloud-hoverfly.com")
+                .build();
+
         assertThat(configs.getHost()).isEqualTo("cloud-hoverfly.com");
 
         assertThat(configs.isRemoteInstance()).isTrue();
@@ -59,5 +63,21 @@ public class HoverflyConfigTest {
         assertThat(configs.getSslCertificatePath()).isNull();
         assertThat(configs.getSslKeyPath()).isNull();
 
+    }
+
+    @Test
+    public void shouldSetProxyLocalHost() throws Exception {
+        HoverflyConfiguration configs = configs().proxyLocalHost().build();
+
+        assertThat(configs.isProxyLocalHost()).isTrue();
+    }
+
+    @Test
+    public void shouldSetHttpsAdminEndpoint() throws Exception {
+        HoverflyConfiguration configs = configs().remote().withHttpsAdminEndpoint().build();
+
+        assertThat(configs.getScheme()).isEqualTo("https");
+        assertThat(configs.getAdminPort()).isEqualTo(443);
+        assertThat(configs.getAdminCertificate()).isNull();
     }
 }

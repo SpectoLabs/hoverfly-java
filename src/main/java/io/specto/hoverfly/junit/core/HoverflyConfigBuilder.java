@@ -25,6 +25,7 @@ public class HoverflyConfigBuilder implements LocalHoverflyConfig {
     private String sslCertificatePath;
     private String sslKeyPath;
     private String destination;
+    private String proxyCaCert;
 
 
     /**
@@ -53,12 +54,11 @@ public class HoverflyConfigBuilder implements LocalHoverflyConfig {
 
     /**
      * Controls whether we want to proxy localhost.  If false then any request to localhost will not be proxied through {@link Hoverfly}.
-     * @param proxyLocalHost whether to proxy localhost, default to false
      * @return the {@link HoverflyConfigBuilder} for further customizations
      */
     @Override
-    public HoverflyConfig proxyLocalHost(boolean proxyLocalHost) {
-        this.proxyLocalHost = proxyLocalHost;
+    public HoverflyConfig proxyLocalHost() {
+        this.proxyLocalHost = true;
         return this;
     }
 
@@ -89,6 +89,12 @@ public class HoverflyConfigBuilder implements LocalHoverflyConfig {
 
 
     @Override
+    public HoverflyConfig proxyCaCert(String proxyCaCert) {
+        this.proxyCaCert = proxyCaCert;
+        return this;
+    }
+
+    @Override
     public HoverflyConfig destination(String destination) {
         this.destination = destination;
         return this;
@@ -96,7 +102,7 @@ public class HoverflyConfigBuilder implements LocalHoverflyConfig {
 
     @Override
     public HoverflyConfiguration build() {
-        HoverflyConfiguration configs = new HoverflyConfiguration(proxyPort, adminPort, proxyLocalHost, destination, sslCertificatePath, sslKeyPath);
+        HoverflyConfiguration configs = new HoverflyConfiguration(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCert, sslCertificatePath, sslKeyPath);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }

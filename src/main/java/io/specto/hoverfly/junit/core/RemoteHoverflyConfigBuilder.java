@@ -2,24 +2,16 @@ package io.specto.hoverfly.junit.core;
 
 public class RemoteHoverflyConfigBuilder implements RemoteHoverflyConfig {
 
-    private static final int DEFAULT_PROXY_PORT = 8500;
-    private static final int DEFAULT_ADMIN_PORT = 8888;
-    private static final int DEFAULT_HTTPS_ADMIN_PORT = 443;
-
     private String host;
     private String scheme;
     private String authToken;
-    private int adminPort = DEFAULT_ADMIN_PORT;
-    private int proxyPort = DEFAULT_PROXY_PORT;
-    private String sslCert; // file name relative to test resources folder
+    private int adminPort = HoverflyConstants.DEFAULT_ADMIN_PORT;
+    private int proxyPort = HoverflyConstants.DEFAULT_PROXY_PORT;
+    private String adminCertificate; // file name relative to test resources folder
+    private String proxyCaCertificate;
     private String destination;
     private boolean proxyLocalHost;
 
-
-    @Override
-    public RemoteHoverflyConfig withHttps() {
-        return this;
-    }
 
     @Override
     public RemoteHoverflyConfig withAuthHeader() {
@@ -33,16 +25,15 @@ public class RemoteHoverflyConfigBuilder implements RemoteHoverflyConfig {
     }
 
     @Override
-    public RemoteHoverflyConfig withHttps(String sslCert) {
-        this.sslCert = sslCert;
-        this.scheme = "HTTPS";
-        this.adminPort = DEFAULT_HTTPS_ADMIN_PORT;
+    public RemoteHoverflyConfig withAuthHeader(String authToken) {
+        this.authToken = authToken;
         return this;
     }
 
     @Override
-    public RemoteHoverflyConfig withAuthHeader(String authToken) {
-        this.authToken = authToken;
+    public RemoteHoverflyConfig withHttpsAdminEndpoint() {
+        this.scheme = HoverflyConstants.HTTPS;
+        this.adminPort = HoverflyConstants.DEFAULT_HTTPS_ADMIN_PORT;
         return this;
     }
 
@@ -65,15 +56,22 @@ public class RemoteHoverflyConfigBuilder implements RemoteHoverflyConfig {
     }
 
     @Override
-    public HoverflyConfig proxyLocalHost(boolean proxyLocalHost) {
-        this.proxyLocalHost = proxyLocalHost;
+    public HoverflyConfig proxyLocalHost() {
+        this.proxyLocalHost = true;
+        return this;
+    }
+
+    @Override
+    public HoverflyConfig proxyCaCert(String proxyCaCert) {
+        this.proxyCaCertificate = proxyCaCert;
         return this;
     }
 
     @Override
     public HoverflyConfiguration build() {
-        HoverflyConfiguration configs = new HoverflyConfiguration(scheme, host, proxyPort, adminPort, proxyLocalHost, destination, authToken, sslCert);
+        HoverflyConfiguration configs = new HoverflyConfiguration(scheme, host, proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, authToken, adminCertificate);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }
+
 }

@@ -31,8 +31,9 @@ public class HoverflyRuleRemoteInstanceTest {
             configs()
                     .remote()
                     .host(REMOTE_HOST)
-                    .withHttps("hfc-self-signed.pem")
-                    .withAuthHeader(authToken));
+                    .withHttpsAdminEndpoint()
+                    .withAuthHeader(authToken)
+                    .proxyCaCert("hfc-self-signed.pem"));
 
     @Test
     public void shouldBeAbleToMakeABookingUsingHoverfly() throws URISyntaxException {
