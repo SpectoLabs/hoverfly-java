@@ -27,6 +27,7 @@ public class SimulationTest {
     private URL v2Resource = Resources.getResource("simulations/v2-simulation.json");
     private URL v2ResourceWithUnknownFields = Resources.getResource("simulations/v2-simulation-with-unknown-fields.json");
     private URL v1ResourceWithLooseMatching = Resources.getResource("simulations/v1-simulation-with-loose-matching.json");
+    private URL v1ResourceWithRecording = Resources.getResource("simulations/v1-simulation-with-recording.json");
 
     @Test
     public void shouldDeserializeAndUpgradeV1Simulation() throws Exception {
@@ -89,6 +90,20 @@ public class SimulationTest {
         assertThat(path.getExactMatch()).isNull();
         assertThat(path.getGlobMatch()).isEqualTo("/api/bookings/*");
     }
+
+    @Test
+    public void shouldIgnoreHeadersWhenV1SimulationRequestTypeIsRecording() throws Exception {
+        Simulation actual = objectMapper.readValue(v1ResourceWithRecording, Simulation.class);
+
+        Set<RequestResponsePair> pairs = actual.getHoverflyData().getPairs();
+
+        assertThat(pairs).hasSize(1);
+        RequestMatcher request = pairs.iterator().next().getRequest();
+        assertThat(request.getRequestType()).isEqualTo(RequestMatcher.RequestType.RECORDING);
+        assertThat(request.getHeaders()).isEmpty();
+
+    }
+
 
     private Simulation getV2Simulation() {
         HoverflyData data = getTestHoverflyData();

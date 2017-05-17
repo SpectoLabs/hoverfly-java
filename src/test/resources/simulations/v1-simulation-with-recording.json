@@ -13,8 +13,8 @@
           }
         },
         "request": {
-          "requestType": "template",
-          "path": "/api/bookings/1",
+          "requestType": "recording",
+          "path": "/api/bookings/*",
           "method": "GET",
           "destination": "www.my-test.com",
           "scheme": "http",

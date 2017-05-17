@@ -13,7 +13,7 @@
           }
         },
         "request": {
-          "requestType": "recording",
+          "requestType": "template",
           "path": "/api/bookings/*",
           "method": "GET",
           "destination": "www.my-test.com",

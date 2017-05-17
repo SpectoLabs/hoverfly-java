@@ -21,6 +21,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,8 @@ public class RequestMatcher {
     @JsonDeserialize(using = FieldMatcherDeserializer.class)
     private final FieldMatcher body;
     private final Map<String, List<String>> headers;
+
+    private RequestType requestType;
 
     @Deprecated
     public RequestMatcher(String path,
@@ -104,7 +107,16 @@ public class RequestMatcher {
     }
 
     public Map<String, List<String>> getHeaders() {
-        return headers;
+        return requestType == RequestType.RECORDING ? Collections.emptyMap() : headers;
+    }
+
+
+    public RequestType getRequestType() {
+        return requestType;
+    }
+
+    public void setRequestType(RequestType requestType) {
+        this.requestType = requestType;
     }
 
     static class Builder {
@@ -159,16 +171,23 @@ public class RequestMatcher {
 
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+        return EqualsBuilder.reflectionEquals(this, obj, "requestType");
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return HashCodeBuilder.reflectionHashCode(this, "requestType");
     }
 
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    enum RequestType {
+        @JsonProperty("template")
+        TEMPLATE,
+        @JsonProperty("recording")
+        RECORDING
     }
 }
