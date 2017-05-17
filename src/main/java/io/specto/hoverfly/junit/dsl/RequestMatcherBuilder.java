@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static io.specto.hoverfly.junit.core.model.FieldMatcher.fromExactMatchString;
+import static io.specto.hoverfly.junit.core.model.FieldMatcher.fromString;
 import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
 /**
@@ -45,10 +45,10 @@ public class RequestMatcherBuilder {
 
     private RequestMatcherBuilder(final StubServiceBuilder invoker, final String method, final String scheme, final String destination, final String path) {
         this.invoker = invoker;
-        this.method = fromExactMatchString(method);
-        this.scheme = fromExactMatchString(scheme);
-        this.destination = fromExactMatchString(destination);
-        this.path = fromExactMatchString(path);
+        this.method = fromString(method);
+        this.scheme = fromString(scheme);
+        this.destination = fromString(destination);
+        this.path = fromString(path);
     }
 
     static RequestMatcherBuilder requestMatcherBuilder(final StubServiceBuilder invoker, final String method, final String scheme, final String destination, final String path) {
@@ -62,7 +62,7 @@ public class RequestMatcherBuilder {
      * @return the {@link RequestMatcherBuilder} for further customizations
      */
     public RequestMatcherBuilder body(final String body) {
-        this.body = fromExactMatchString(body);
+        this.body = fromString(body);
         return this;
     }
 
@@ -72,7 +72,7 @@ public class RequestMatcherBuilder {
      * @return the {@link RequestMatcherBuilder} for further customizations
      */
     public RequestMatcherBuilder body(HttpBodyConverter httpBodyConverter) {
-        this.body = fromExactMatchString(httpBodyConverter.body());
+        this.body = fromString(httpBodyConverter.body());
         return this;
     }
 
@@ -117,7 +117,7 @@ public class RequestMatcherBuilder {
         String query = queryParams.entrySet().stream()
                 .flatMap(e -> e.getValue().stream().map(v -> encodeUrl(e.getKey()) + "=" + encodeUrl(v)))
                 .collect(Collectors.joining("&"));
-        return new RequestMatcher(path, method, destination, scheme, fromExactMatchString(query), body, headers);
+        return new RequestMatcher(path, method, destination, scheme, fromString(query), body, headers);
     }
 
     private String encodeUrl(String str) {

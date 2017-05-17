@@ -16,7 +16,7 @@ package io.specto.hoverfly.junit.core;
 /**
  * Config used to change the settings for {@link Hoverfly}
  */
-public class HoverflyConfigBuilder implements LocalHoverflyConfig {
+class HoverflyConfigBuilder implements LocalHoverflyConfig {
 
     private int proxyPort;
     private int adminPort;

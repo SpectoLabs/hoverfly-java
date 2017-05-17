@@ -24,7 +24,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.List;
 import java.util.Map;
 
-import static io.specto.hoverfly.junit.core.model.FieldMatcher.fromExactMatchString;
+import static io.specto.hoverfly.junit.core.model.FieldMatcher.fromString;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -52,12 +52,12 @@ public class RequestMatcher {
                           String query,
                           String body,
                           Map<String, List<String>> headers) {
-        this.path = fromExactMatchString(path);
-        this.method = fromExactMatchString(method);
-        this.destination = fromExactMatchString(destination);
-        this.scheme = fromExactMatchString(scheme);
-        this.query = fromExactMatchString(query);
-        this.body = fromExactMatchString(body);
+        this.path = fromString(path);
+        this.method = fromString(method);
+        this.destination = fromString(destination);
+        this.scheme = fromString(scheme);
+        this.query = fromString(query);
+        this.body = fromString(body);
         this.headers = headers;
     }
 

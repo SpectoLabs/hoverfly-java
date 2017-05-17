@@ -1,0 +1,38 @@
+{
+  "data": {
+    "pairs": [
+      {
+        "response": {
+          "status": 200,
+          "body": "{\"bookingId\":\"1\"}",
+          "encodedBody": false,
+          "headers": {
+            "Content-Type": [
+              "application/json"
+            ]
+          }
+        },
+        "request": {
+          "requestType": "recording",
+          "path": "/api/bookings/*",
+          "method": "GET",
+          "destination": "www.my-test.com",
+          "scheme": "http",
+          "query": "",
+          "body": "",
+          "headers": {
+            "Content-Type": [
+              "text/plain; charset=utf-8"
+            ]
+          }
+        }
+      }
+    ],
+    "globalActions": {
+      "delays": []
+    }
+  },
+  "meta": {
+    "schemaVersion": "v1"
+  }
+}

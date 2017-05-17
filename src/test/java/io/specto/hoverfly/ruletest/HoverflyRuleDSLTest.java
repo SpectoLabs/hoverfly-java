@@ -48,7 +48,7 @@ public class HoverflyRuleDSLTest {
                         .put("/api/bookings/1").body("{\"flightId\": \"1\", \"class\": \"PREMIUM\"}")
                         .willReturn(success())
 
-                        .delete("/api/bookings/1")
+                        .delete("/api/bookings/*") // loose matching should be converted to glob matcher
                         .willReturn(noContent())
 
                         .get("/api/bookings")

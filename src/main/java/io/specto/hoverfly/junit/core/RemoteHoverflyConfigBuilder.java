@@ -1,6 +1,6 @@
 package io.specto.hoverfly.junit.core;
 
-public class RemoteHoverflyConfigBuilder implements RemoteHoverflyConfig {
+class RemoteHoverflyConfigBuilder implements RemoteHoverflyConfig {
 
     private String host;
     private String scheme;

@@ -13,8 +13,9 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.Set;
 
-import static io.specto.hoverfly.junit.core.model.FieldMatcher.fromExactMatchString;
+import static io.specto.hoverfly.junit.core.model.FieldMatcher.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SimulationTest {
@@ -25,6 +26,7 @@ public class SimulationTest {
     private URL v1Resource = Resources.getResource("simulations/v1-simulation.json");
     private URL v2Resource = Resources.getResource("simulations/v2-simulation.json");
     private URL v2ResourceWithUnknownFields = Resources.getResource("simulations/v2-simulation-with-unknown-fields.json");
+    private URL v1ResourceWithLooseMatching = Resources.getResource("simulations/v1-simulation-with-loose-matching.json");
 
     @Test
     public void shouldDeserializeAndUpgradeV1Simulation() throws Exception {
@@ -74,6 +76,19 @@ public class SimulationTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldBeAbleToConvertV1LooseMatchingToGlobMatcher() throws Exception {
+
+        Simulation actual = objectMapper.readValue(v1ResourceWithLooseMatching, Simulation.class);
+
+        Set<RequestResponsePair> pairs = actual.getHoverflyData().getPairs();
+
+        assertThat(pairs).hasSize(1);
+
+        FieldMatcher path = pairs.iterator().next().getRequest().getPath();
+        assertThat(path.getExactMatch()).isNull();
+        assertThat(path.getGlobMatch()).isEqualTo("/api/bookings/*");
+    }
 
     private Simulation getV2Simulation() {
         HoverflyData data = getTestHoverflyData();
@@ -84,12 +99,12 @@ public class SimulationTest {
 
     private HoverflyData getTestHoverflyData() {
         RequestMatcher request = new RequestMatcher.Builder()
-                .path(fromExactMatchString("/api/bookings/1"))
-                .method(fromExactMatchString("GET"))
-                .destination(fromExactMatchString("www.my-test.com"))
-                .scheme(fromExactMatchString("http"))
-                .body(fromExactMatchString(""))
-                .query(fromExactMatchString(""))
+                .path(fromString("/api/bookings/1"))
+                .method(fromString("GET"))
+                .destination(fromString("www.my-test.com"))
+                .scheme(fromString("http"))
+                .body(fromString(""))
+                .query(fromString(""))
                 .headers(ImmutableMap.of("Content-Type", Lists.newArrayList("text/plain; charset=utf-8")))
                 .build();
         Response response = new Response.Builder()
