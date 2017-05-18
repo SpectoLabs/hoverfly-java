@@ -34,7 +34,7 @@ You can provide a custom CA certificate for the proxy.
         .remote()
         .proxyCaCert("ca.pem") // the name of the file relative to classpath
 
-You can configure Hovefly to use an HTTPS admin endpoint
+You can configure Hoverfly to use an HTTPS admin endpoint.
 
 .. code-block:: java
 
@@ -42,7 +42,8 @@ You can configure Hovefly to use an HTTPS admin endpoint
         .remote()
         .withHttpsAdminEndpoint()
 
-You can provide the token for proxy authorization
+You can provide the token for the custom Hoverfly authorization header, this will be used for both proxy and admin
+endpoint authentication without the need for username and password.
 
 .. code-block:: java
 
