@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import io.specto.hoverfly.junit.core.model.HoverflyInfo;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import io.specto.hoverfly.junit.api.HoverflyClient;
-import io.specto.hoverfly.junit.api.OkHttpHoverflyClient;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +68,7 @@ public class Hoverfly implements AutoCloseable {
     public Hoverfly(HoverflyConfig hoverflyConfigBuilder, HoverflyMode hoverflyMode) {
         hoverflyConfig = hoverflyConfigBuilder.build();
         this.proxyConfigurer = new ProxyConfigurer(hoverflyConfig);
-        this.hoverflyClient = new OkHttpHoverflyClient(hoverflyConfig);
+        this.hoverflyClient = HoverflyClient.newInstance(hoverflyConfig);
         this.hoverflyMode = hoverflyMode;
     }
 

@@ -4,6 +4,7 @@ package io.specto.hoverfly.junit.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.core.Hoverfly;
+import io.specto.hoverfly.junit.core.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.SimulationSource;
 import io.specto.hoverfly.junit.core.model.*;
 import org.junit.After;
@@ -61,6 +62,7 @@ public class OkHttpHoverflyClientTest {
 
     @Test
     public void shouldBeAbleToSetV1Simulation() throws Exception {
+
         URL resource = Resources.getResource("simulations/v1-simulation.json");
         Simulation simulation = objectMapper.readValue(resource, Simulation.class);
         client.setSimulation(simulation);

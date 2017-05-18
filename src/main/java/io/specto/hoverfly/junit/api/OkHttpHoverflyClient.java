@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Optional;
 
-public class OkHttpHoverflyClient implements HoverflyClient {
+class OkHttpHoverflyClient implements HoverflyClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HoverflyClient.class);
 
@@ -31,7 +31,7 @@ public class OkHttpHoverflyClient implements HoverflyClient {
 
     private HttpUrl baseUrl;
 
-    public OkHttpHoverflyClient(HoverflyConfiguration config) {
+    OkHttpHoverflyClient(HoverflyConfiguration config) {
 
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         config.getAuthToken().ifPresent(token ->
