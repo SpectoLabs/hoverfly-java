@@ -289,7 +289,6 @@ public class HoverflyTest {
             assertThat(startedProcess.getProcess().isAlive()).isFalse();
         }
 
-configs().remote().withHttpsAdminEndpoint().withAuthHeader()
     }
 
     @After

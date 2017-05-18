@@ -11,12 +11,6 @@ You can also set fixed port:
 
     configs().proxyPort(8080)
 
-You can also configure Hoverfly to use a remote instance which is already running
-
-.. code-block:: java
-
-    configs().useRemoteInstance() // localhost
-    configs().useRemoteInstance("1.2.3.4") // other host name or address
 
 You can configure Hoverfly to process requests to certain destinations / hostnames
 
@@ -24,3 +18,10 @@ You can configure Hoverfly to process requests to certain destinations / hostnam
 
     configs().destination("www.test.com") // only process requests to www.test.com
     configs().destination("api") // matches destination that contains api, eg. api.test.com
+
+You can configure Hoverfly to proxy localhost requests. This is useful if the target server you are trying to simulate is running on localhost.
+
+.. code-block:: java
+
+    configs().proxyLocalHost()
+
