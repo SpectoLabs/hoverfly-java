@@ -15,3 +15,4 @@ This section describes the core functionality of Hoverfly Java.
     conversion
     configuration
     ssl
+    remotehoverfly

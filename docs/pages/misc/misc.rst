@@ -43,6 +43,19 @@ If you have recorded data in the legacy schema generated before hoverfly-junit v
     $ hoverctl export path-to-my-json/file.json
     $ hoverctl stop
 
+V1 to V2 Schema Migration
+-------------------------
+
+Starting from Hoverfly-java v0.5.0, the simulation schema is upgraded to v2 which supports matchers. Although it is backward compatible with v1, upgrading to v2 is recommended:
+
+.. code-block:: bash
+
+    $ hoverctl start
+    $ hoverctl delete simulations
+    $ hoverctl import path-to-my-json/file.json
+    $ hoverctl export path-to-my-json/file.json
+    $ hoverctl stop
+
 Using Snapshot Version
 ----------------------
 
