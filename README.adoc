@@ -10,7 +10,7 @@ for this is https://en.wikipedia.org/wiki/Service_virtualization[Service Virtual
 
 == Features
 
-- Simulation of http services
+- Simulation of http/https services
 - Strict or loose http request matching based on URL, method, body and header combinations
 - Fluent and expressive DSL for easy generation of simulated services
 - Automatic marshalling of objects into JSON during request / response body generation
@@ -18,7 +18,8 @@ for this is https://en.wikipedia.org/wiki/Service_virtualization[Service Virtual
 - Hoverfly is a proxy, so you don't need to alter the host that you make requests to
 - Multiple hosts / services per single instance of Hoverfly
 - Https automatically supported, no extra configuration required
-- Interoperable with standard Hoverfly json, making it easy to re-use data between Java and other bindings.
+- Interoperable with standard Hoverfly JSON, making it easy to re-use data between Java and other native language bindings.
+- Use externally managed Hoverfly cluster for API simulations
 
 == Documentation
 
@@ -30,7 +31,7 @@ Full documentation is available http://hoverfly-java.readthedocs.io/[here^]
 <dependency>
     <groupId>io.specto</groupId>
     <artifactId>hoverfly-java</artifactId>
-    <version>0.4.3</version>
+    <version>0.5.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -45,7 +46,7 @@ public static HoverflyRule hoverflyRule = HoverflyRule.inCaptureMode("simulation
 
 // After the capturing, switch to inSimulationMode to spin up a stub server
 @ClassRule
-public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(classpath("simulation.json"));
+public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(defaultPath("simulation.json"));
 
 // Or you can use both approaches at once. If json file not present in capture mode, if present in simulation mode
 @ClassRule

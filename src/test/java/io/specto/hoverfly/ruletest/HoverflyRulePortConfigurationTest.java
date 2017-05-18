@@ -8,6 +8,7 @@ import org.springframework.web.client.RestTemplate;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
+import static io.specto.hoverfly.junit.core.SimulationSource.defaultPath;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
