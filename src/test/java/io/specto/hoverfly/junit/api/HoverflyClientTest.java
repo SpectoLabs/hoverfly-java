@@ -1,15 +1,15 @@
 package io.specto.hoverfly.junit.api;
 
 
-import io.specto.hoverfly.junit.core.Hoverfly;
-import io.specto.hoverfly.junit.core.HoverflyConfiguration;
-import io.specto.hoverfly.junit.core.HoverflyMode;
-import io.specto.hoverfly.junit.core.SimulationSource;
+import io.specto.hoverfly.junit.core.*;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyConstants.HTTPS;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +19,9 @@ public class HoverflyClientTest {
 
     private Hoverfly hoverfly;
     private HoverflyConfiguration configuration;
+
+    @Rule
+    public EnvironmentVariables envVars = new EnvironmentVariables();
 
     @Before
     public void setUp() throws Exception {
@@ -39,13 +42,19 @@ public class HoverflyClientTest {
     }
 
     @Test
-    public void shouldSupportDefaultConfigs() throws Exception {
+    public void shouldBeAbleToCreateHoverflyClientWithAuthToken() throws Exception {
+        envVars.set("HOVERFLY_AUTH_TOKEN", "some-token");
         hoverfly.importSimulation(SimulationSource.dsl(
-                service("http://localhost:8888")
+                service("http://remote.host:12345")
                     .get("/api/health")
+                        .header("Authorization", "Bearer some-token")
                     .willReturn(success())
         ));
-        HoverflyClient hoverflyClient = HoverflyClient.newInstance().build();
+        HoverflyClient hoverflyClient = HoverflyClient.newInstance()
+                .host("remote.host")
+                .port(12345)
+                .withAuthToken()
+                .build();
 
         assertThat(hoverflyClient.getHealth()).isTrue();
     }
