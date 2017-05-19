@@ -13,9 +13,9 @@ public class HoverflyConstants {
     public static final String HOVERFLY_AUTH_TOKEN = "HOVERFLY_AUTH_TOKEN";
     public static final String HOVERFLY_PROXY_CA_CERT = "HOVERFLY_PROXY_CA_CERT";
 
-    static final String LOCALHOST = "localhost";
-    static final String HTTP = "http";
-    static final String HTTPS = "https";
+    public static final String LOCALHOST = "localhost";
+    public static final String HTTP = "http";
+    public static final String HTTPS = "https";
 
     private HoverflyConstants() {
     }

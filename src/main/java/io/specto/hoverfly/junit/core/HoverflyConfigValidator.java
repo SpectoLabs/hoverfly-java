@@ -27,13 +27,7 @@ class HoverflyConfigValidator {
             throw new IllegalArgumentException("HoverflyConfig cannot be null.");
         }
 
-        // Validate custom ca cert and key
-        boolean isKeyBlank = StringUtils.isBlank(hoverflyConfig.getSslKeyPath());
-        boolean isCertBlank = StringUtils.isBlank(hoverflyConfig.getSslCertificatePath());
-        if (isKeyBlank && !isCertBlank || !isKeyBlank && isCertBlank) {
-            throw new IllegalArgumentException("Both SSL key and certificate files are required to override the default Hoverfly SSL.");
-        }
-
+        // Validate remote config
         if (hoverflyConfig.isRemoteInstance()) {
             // Validate remote instance hostname
             if (hoverflyConfig.getHost() != null && hoverflyConfig.getHost().startsWith("http")) {
@@ -45,23 +39,30 @@ class HoverflyConfigValidator {
                 }
             }
         }
+        // Validate local config
+        else {
 
+            // Validate custom ca cert and key
+            boolean isKeyBlank = StringUtils.isBlank(hoverflyConfig.getSslKeyPath());
+            boolean isCertBlank = StringUtils.isBlank(hoverflyConfig.getSslCertificatePath());
+            if (isKeyBlank && !isCertBlank || !isKeyBlank && isCertBlank) {
+                throw new IllegalArgumentException("Both SSL key and certificate files are required to override the default Hoverfly SSL.");
+            }
+            // Validate proxy port
+            if (hoverflyConfig.getProxyPort() == 0) {
+                hoverflyConfig.setProxyPort(findUnusedPort());
+            }
+
+            // Validate admin port
+            if (hoverflyConfig.getAdminPort() == 0) {
+                hoverflyConfig.setAdminPort(findUnusedPort());
+            }
+        }
+
+        // Check proxy CA cert exists
         if (hoverflyConfig.getProxyCaCertificate().isPresent()) {
             HoverflyUtils.findResourceOnClasspath(hoverflyConfig.getProxyCaCertificate().get());
         }
-
-        // Validate proxy port
-        if (hoverflyConfig.getProxyPort() == 0) {
-            hoverflyConfig.setProxyPort(findUnusedPort());
-        }
-
-        // Validate admin port
-        if (hoverflyConfig.getAdminPort() == 0) {
-            hoverflyConfig.setAdminPort(findUnusedPort());
-        }
-
-
-        // TODO validate supported SSL file format
 
         return hoverflyConfig;
     }

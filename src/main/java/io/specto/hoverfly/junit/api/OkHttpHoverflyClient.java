@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
 import io.specto.hoverfly.junit.core.HoverflyConfiguration;
+import io.specto.hoverfly.junit.core.HoverflyConstants;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.HoverflyInfo;
 import io.specto.hoverfly.junit.core.model.Simulation;
@@ -31,16 +32,17 @@ class OkHttpHoverflyClient implements HoverflyClient {
 
     private HttpUrl baseUrl;
 
-    OkHttpHoverflyClient(HoverflyConfiguration config) {
-
+    OkHttpHoverflyClient(String scheme, String host, int port, String authToken) {
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-        config.getAuthToken().ifPresent(token ->
-                clientBuilder.addInterceptor(new AuthHeaderInterceptor(token)));
+        if (authToken != null ) {
+            clientBuilder.addInterceptor(new AuthHeaderInterceptor(authToken));
+        }
         this.client = clientBuilder.build();
         this.baseUrl = new HttpUrl.Builder()
-                .scheme(config.getScheme())
-                .host(config.getHost())
-                .port(config.getAdminPort()).build();
+                .scheme(scheme)
+                .host(host)
+                .port(port)
+                .build();
     }
 
     @Override

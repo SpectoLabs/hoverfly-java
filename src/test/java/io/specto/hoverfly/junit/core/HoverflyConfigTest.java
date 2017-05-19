@@ -19,6 +19,7 @@ public class HoverflyConfigTest {
         HoverflyConfiguration configs = configs().build();
 
         assertThat(configs.getHost()).isEqualTo("localhost");
+        assertThat(configs.getScheme()).isEqualTo("http");
         assertThat(configs.getAdminPort()).isGreaterThan(0);
         assertThat(configs.getProxyPort()).isGreaterThan(0);
         assertThat(configs.getSslCertificatePath()).isNull();
@@ -34,6 +35,7 @@ public class HoverflyConfigTest {
         HoverflyConfiguration configs = HoverflyConfig.configs().remote().build();
 
         assertThat(configs.getHost()).isEqualTo("localhost");
+        assertThat(configs.getScheme()).isEqualTo("http");
         assertThat(configs.getAdminPort()).isEqualTo(8888);
         assertThat(configs.getProxyPort()).isEqualTo(8500);
         assertThat(configs.getSslCertificatePath()).isNull();

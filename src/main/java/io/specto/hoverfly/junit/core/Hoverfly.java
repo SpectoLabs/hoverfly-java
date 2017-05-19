@@ -68,7 +68,12 @@ public class Hoverfly implements AutoCloseable {
     public Hoverfly(HoverflyConfig hoverflyConfigBuilder, HoverflyMode hoverflyMode) {
         hoverflyConfig = hoverflyConfigBuilder.build();
         this.proxyConfigurer = new ProxyConfigurer(hoverflyConfig);
-        this.hoverflyClient = HoverflyClient.newInstance(hoverflyConfig);
+        this.hoverflyClient = HoverflyClient.newInstance()
+                .scheme(hoverflyConfig.getScheme())
+                .host(hoverflyConfig.getHost())
+                .port(hoverflyConfig.getAdminPort())
+                .withAuthToken()
+                .build();
         this.hoverflyMode = hoverflyMode;
     }
 

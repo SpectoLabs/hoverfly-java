@@ -1,7 +1,5 @@
 package io.specto.hoverfly.junit.api;
 
-import io.specto.hoverfly.junit.core.HoverflyConfig;
-import io.specto.hoverfly.junit.core.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.HoverflyInfo;
 import io.specto.hoverfly.junit.core.model.Simulation;
@@ -29,20 +27,11 @@ public interface HoverflyClient {
     boolean getHealth();
 
     /**
-     * Static factory method for creating a Hoverfly client from a HoverflyConfig object
-     * @param hoverflyConfigBuilder hoverfly config fluent builder
-     * @return a http client for Hoverfly admin API
+     * Static factory method for creating a Hoverfly client builder
+     * @return a builder for Hoverfly Client
      */
-    static HoverflyClient newInstance(HoverflyConfig hoverflyConfigBuilder) {
-        return new OkHttpHoverflyClient(hoverflyConfigBuilder.build());
+    static HoverflyClientBuilder newInstance() {
+        return new HoverflyClientBuilder();
     }
 
-    /**
-     * Static factory method for creating a Hoverfly client from a HoverflyConfiguration object
-     * @param hoverflyConfiguration a validated Hoverfly configuration object
-     * @return a http client for Hoverfly admin API
-     */
-    static HoverflyClient newInstance(HoverflyConfiguration hoverflyConfiguration) {
-        return new OkHttpHoverflyClient(hoverflyConfiguration);
-    }
 }
