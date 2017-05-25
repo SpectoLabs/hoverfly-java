@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static io.specto.hoverfly.junit.dsl.matchers.ExactMatcher.exactlyMatches;
+import static io.specto.hoverfly.junit.core.model.FieldMatcher.exactlyMatches;
 
 
 /**

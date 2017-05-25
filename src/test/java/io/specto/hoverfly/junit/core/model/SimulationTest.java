@@ -15,7 +15,7 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Set;
 
-import static io.specto.hoverfly.junit.dsl.matchers.ExactMatcher.exactlyMatches;
+import static io.specto.hoverfly.junit.core.model.FieldMatcher.exactlyMatches;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SimulationTest {

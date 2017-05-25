@@ -17,12 +17,4 @@ public class ExactMatcherTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
-    public void shouldExactlyMatchesReturnFieldMatcher() throws Exception {
-        FieldMatcher expected = new FieldMatcher.Builder().exactMatch("match.me").build();
-
-        FieldMatcher actual = ExactMatcher.exactlyMatches("match.me");
-
-        assertThat(actual).isEqualTo(expected);
-    }
 }
