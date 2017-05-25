@@ -38,6 +38,10 @@ public class FieldMatcher {
         this.xpathMatch = xpathMatch;
     }
 
+    public static FieldMatcher blankMatcher() {
+        return new Builder().exactMatch("").build();
+    }
+
     public static FieldMatcher exactlyMatches(String value) {
         return new Builder().exactMatch(value).build();
     }
