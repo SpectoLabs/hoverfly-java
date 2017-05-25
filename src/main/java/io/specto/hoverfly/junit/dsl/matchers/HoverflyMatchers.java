@@ -11,7 +11,11 @@ public class HoverflyMatchers {
     }
 
     public static RequestMatcher equalsToJson(String value) {
-        return new JsonMatcher();
+        return JsonMatcher.createFromString(value);
+    }
+
+    public static <T> RequestMatcher equalsToJson(T value) {
+        return JsonMatcher.createFromObject(value);
     }
 
     public static PlainTextMatcher endsWith(String value) {
