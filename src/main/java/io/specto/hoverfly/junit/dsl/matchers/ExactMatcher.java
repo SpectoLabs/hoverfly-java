@@ -9,16 +9,12 @@ public class ExactMatcher implements PlainTextMatcher {
 
     private ExactMatcher(String pattern) {
         this.pattern = pattern;
-        this.fieldMatcher = exactlyMatches(pattern);
+        this.fieldMatcher = FieldMatcher.exactlyMatches(pattern);
     }
 
 
     public static ExactMatcher newInstance(String value) {
         return new ExactMatcher(value);
-    }
-
-    public static FieldMatcher exactlyMatches(String value) {
-        return new FieldMatcher.Builder().exactMatch(value).build();
     }
 
     @Override

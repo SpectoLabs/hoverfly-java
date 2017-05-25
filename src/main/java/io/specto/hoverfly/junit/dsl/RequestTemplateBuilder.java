@@ -15,18 +15,17 @@ package io.specto.hoverfly.junit.dsl;
 import io.specto.hoverfly.junit.core.model.FieldMatcher;
 import io.specto.hoverfly.junit.core.model.Request;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
+import io.specto.hoverfly.junit.dsl.matchers.ExactMatcher;
+import io.specto.hoverfly.junit.dsl.matchers.PlainTextMatcher;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.specto.hoverfly.junit.dsl.matchers.ExactMatcher.exactlyMatches;
+import static io.specto.hoverfly.junit.core.model.FieldMatcher.exactlyMatches;
+import static io.specto.hoverfly.junit.core.model.FieldMatcher.wildCardMatches;
 import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
 /**
@@ -39,9 +38,10 @@ public class RequestTemplateBuilder {
     private final FieldMatcher scheme;
     private final FieldMatcher destination;
     private final FieldMatcher path;
-    private final MultivaluedHashMap<String, String> queryParams = new MultivaluedHashMap<>();
+    private final MultivaluedHashMap<PlainTextMatcher, PlainTextMatcher> queryPatterns = new MultivaluedHashMap<>();
     private final Map<String, List<String>> headers = new HashMap<>();
     private FieldMatcher body;
+    private boolean isFuzzyMatchQuery;
 
     RequestTemplateBuilder(final StubServiceBuilder invoker, final FieldMatcher method, final FieldMatcher scheme, final FieldMatcher destination, final FieldMatcher path) {
         this.invoker = invoker;
@@ -90,10 +90,26 @@ public class RequestTemplateBuilder {
      */
     public RequestTemplateBuilder queryParam(final String key, final Object... values) {
         for(Object value : values) {
-            queryParams.add(key, value.toString());
+            queryPatterns.add(ExactMatcher.newInstance(key),ExactMatcher.newInstance(value.toString()));
         }
         return this;
     }
+
+    public RequestTemplateBuilder queryParam(final String key, final PlainTextMatcher value) {
+        return queryParam(ExactMatcher.newInstance(key), value);
+    }
+
+    public RequestTemplateBuilder queryParam(final PlainTextMatcher key, final String value) {
+        return queryParam(key, ExactMatcher.newInstance(value));
+    }
+
+    public RequestTemplateBuilder queryParam(final PlainTextMatcher key, final PlainTextMatcher value) {
+        isFuzzyMatchQuery = true;
+        queryPatterns.add(key, value);
+        return this;
+    }
+
+
 
     /**
      * Sets the expected response
@@ -109,10 +125,13 @@ public class RequestTemplateBuilder {
     }
 
     private Request build() {
-        String query = queryParams.entrySet().stream()
-                .flatMap(e -> e.getValue().stream().map(v -> encodeUrl(e.getKey()) + "=" + encodeUrl(v)))
+
+        String queryPatterns = this.queryPatterns.entrySet().stream()
+                .flatMap(e -> e.getValue().stream().map(v -> encodeUrl(e.getKey().getPattern()) + "=" + encodeUrl(v.getPattern())))
                 .collect(Collectors.joining("&"));
-        return new Request(path, method, destination, scheme, exactlyMatches(query), body, headers);
+
+        FieldMatcher queryMatcher = isFuzzyMatchQuery ? wildCardMatches(queryPatterns) : exactlyMatches(queryPatterns);
+        return new Request(path, method, destination, scheme, queryMatcher, body, headers);
     }
 
     private String encodeUrl(String str) {
@@ -124,7 +143,7 @@ public class RequestTemplateBuilder {
     }
 
     private static class MultivaluedHashMap<K, V> {
-        private Map<K, List<V>> elements = new HashMap<>();
+        private Map<K, List<V>> elements = new LinkedHashMap<>();
 
         private void add(K key, V value) {
             List<V> values;

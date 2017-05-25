@@ -38,6 +38,14 @@ public class FieldMatcher {
         this.xpathMatch = xpathMatch;
     }
 
+    public static FieldMatcher exactlyMatches(String value) {
+        return new Builder().exactMatch(value).build();
+    }
+
+    public static FieldMatcher wildCardMatches(String pattern) {
+        return new Builder().globMatch(pattern).build();
+    }
+
 
     public String getExactMatch() {
         return exactMatch;

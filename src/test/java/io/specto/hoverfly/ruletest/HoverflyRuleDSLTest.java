@@ -1,6 +1,5 @@
 package io.specto.hoverfly.ruletest;
 
-import io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.ClassRule;

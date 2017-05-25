@@ -10,7 +10,7 @@ class GlobMatcher implements PlainTextMatcher {
 
     private GlobMatcher(String pattern) {
         this.pattern = pattern;
-        this.fieldMatcher = new FieldMatcher.Builder().globMatch(pattern).build();
+        this.fieldMatcher = FieldMatcher.wildCardMatches(pattern);
     }
 
     static GlobMatcher createFromPattern(String pattern) {

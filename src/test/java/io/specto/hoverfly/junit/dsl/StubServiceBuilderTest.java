@@ -3,6 +3,7 @@ package io.specto.hoverfly.junit.dsl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Iterables;
+import io.specto.hoverfly.junit.core.model.FieldMatcher;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 import io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -18,6 +19,8 @@ import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.HttpBodyConverter.json;
 import static io.specto.hoverfly.junit.dsl.ResponseBuilder.response;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
+import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
+import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.endsWith;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.matches;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -182,6 +185,126 @@ public class StubServiceBuilderTest {
         // Then
         assertThat(pairs).hasSize(1);
         assertThat(Iterables.getLast(pairs).getRequest().getPath().getGlobMatch()).isEqualTo("/api/*/booking");
+    }
+
+    @Test
+    public void shouldBuildExactQueryMatcher() throws Exception {
+        // When
+        final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/").queryParam("foo", "bar")
+                .willReturn(response()).getRequestResponsePairs();
+
+        // Then
+        assertThat(pairs).hasSize(1);
+        FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
+        assertThat(query.getExactMatch()).isEqualTo("foo=bar");
+        assertThat(query.getGlobMatch()).isNull();
+    }
+
+    @Test
+    public void shouldBuildQueryMatcherWithFuzzyKey() throws Exception {
+        // When
+        final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/").queryParam(any(), "bar")
+                .willReturn(response()).getRequestResponsePairs();
+
+        // Then
+        assertThat(pairs).hasSize(1);
+        FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
+        assertThat(query.getGlobMatch()).isEqualTo("*=bar");
+        assertThat(query.getExactMatch()).isNull();
+    }
+
+    @Test
+    public void shouldBuildQueryMatcherWithFuzzyValue() throws Exception {
+        // When
+        final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/").queryParam("foo", matches("b*r"))
+                .willReturn(response()).getRequestResponsePairs();
+
+        // Then
+        assertThat(pairs).hasSize(1);
+        FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
+        assertThat(query.getGlobMatch()).isEqualTo("foo=b*r");
+        assertThat(query.getExactMatch()).isNull();
+    }
+
+    @Test
+    public void shouldBuildQueryMatcherWithFuzzyKeyAndValue() throws Exception {
+        // When
+        final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/").queryParam(endsWith("token"), any())
+                .willReturn(response()).getRequestResponsePairs();
+
+        // Then
+        assertThat(pairs).hasSize(1);
+        FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
+        assertThat(query.getGlobMatch()).isEqualTo("*token=*");
+        assertThat(query.getExactMatch()).isNull();
+    }
+
+    @Test
+    public void shouldBuildExactQueryWithMultipleKeyValuePairs() throws Exception {
+        // When
+        final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
+                .queryParam("page", 1)
+                .queryParam("size", 10)
+                .willReturn(response()).getRequestResponsePairs();
+
+        // Then
+        assertThat(pairs).hasSize(1);
+        FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
+        assertThat(query.getExactMatch()).isEqualTo("page=1&size=10");
+    }
+
+    @Test
+    public void shouldBuildExactQueryForKeyWithMultipleValues() throws Exception {
+        // When
+        final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
+                .queryParam("category", "food", "drink")
+                .willReturn(response()).getRequestResponsePairs();
+
+        // Then
+        assertThat(pairs).hasSize(1);
+        FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
+        assertThat(query.getExactMatch()).isEqualTo("category=food&category=drink");
+    }
+
+    @Test
+    public void shouldBuildQueryWithMultipleFuzzyMatchers() throws Exception {
+        // When
+        final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
+                .queryParam("page", any())
+                .queryParam("size", any())
+                .willReturn(response()).getRequestResponsePairs();
+
+        // Then
+        assertThat(pairs).hasSize(1);
+        FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
+        assertThat(query.getGlobMatch()).isEqualTo("page=*&size=*");
+    }
+
+    @Test
+    public void shouldBuildQueryWithBothExactAndFuzzyMatchers() throws Exception {
+// When
+        final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
+                .queryParam("page", any())
+                .queryParam("category", "food")
+                .willReturn(response()).getRequestResponsePairs();
+
+        // Then
+        assertThat(pairs).hasSize(1);
+        FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
+        assertThat(query.getGlobMatch()).isEqualTo("page=*&category=food");
+    }
+
+    @Test
+    public void shouldEncodeSpacesInQueryParams() throws Exception {
+        // When
+        final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
+                .queryParam("destination", "New York")
+                .willReturn(response()).getRequestResponsePairs();
+
+        // Then
+        assertThat(pairs).hasSize(1);
+        FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
+        assertThat(query.getExactMatch()).isEqualTo("destination=New%20York");
     }
 
     @Test

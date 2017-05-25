@@ -1,6 +1,5 @@
 package io.specto.hoverfly.ruletest;
 
-import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
 import io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import io.specto.hoverfly.models.SimpleBooking;
@@ -17,8 +16,10 @@ import java.time.LocalDate;
 
 import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
+import static io.specto.hoverfly.junit.dsl.HttpBodyConverter.json;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.serverError;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
+import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.startsWith;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -37,17 +38,24 @@ public class HoverflyRuleDslMatcherTest {
             // Glob Matcher for url
             service(HoverflyMatchers.matches("www.*-test.com"))
                     .get("/api/bookings/1")
-                    .willReturn(success(HttpBodyConverter.json(booking))), 
+                    .willReturn(success(json(booking)))
+
+                    .get("/api/bookings")
+                    .queryParam("page", any())
+//                    .queryParam("airline", startsWith("Pacific"))
+//                    .queryParam("airline", contains("pacific")) // not working
+                    .willReturn(success(json(booking))),
             
             // Match any path
             service("www.always-success.com")
-                .get(HoverflyMatchers.any())
+                .get(any())
                 .willReturn(success()),
 
             // Match any method
             service("www.booking-is-down.com")
                 .anyMethod(startsWith("/api/bookings/"))
                 .willReturn(serverError().body("booking is down"))
+
     ));
 
 
@@ -64,7 +72,6 @@ public class HoverflyRuleDslMatcherTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isEqualTo(booking);
-
     }
 
     @Test
@@ -94,5 +101,24 @@ public class HoverflyRuleDslMatcherTest {
         // Then
         assertThat(exception.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
         assertThat(exception.getResponseBodyAsString()).isEqualTo("booking is down");
+    }
+
+
+    @Test
+    public void shouldQueryBookingWithFuzzyQueryParameters() throws Exception {
+
+        // When
+        URI uri = UriComponentsBuilder.fromHttpUrl("http://www.my-test.com")
+                .path("/api/bookings")
+                .queryParam("page", 1)
+                .queryParam("size", 10)
+//                .queryParam("airline", "Pacific Air")
+                .build()
+                .toUri();
+        final ResponseEntity<SimpleBooking> response = restTemplate.getForEntity(uri, SimpleBooking.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isEqualTo(booking);
     }
 }
