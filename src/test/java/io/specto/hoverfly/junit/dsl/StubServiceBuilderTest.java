@@ -282,7 +282,7 @@ public class StubServiceBuilderTest {
 
     @Test
     public void shouldBuildQueryWithBothExactAndFuzzyMatchers() throws Exception {
-// When
+        // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
                 .queryParam("page", any())
                 .queryParam("category", "food")
@@ -292,6 +292,31 @@ public class StubServiceBuilderTest {
         assertThat(pairs).hasSize(1);
         FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
         assertThat(query.getGlobMatch()).isEqualTo("page=*&category=food");
+    }
+
+    @Test
+    public void shouldBuildAnyQueryMatcher() throws Exception {
+        // When
+        final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
+                .anyQueryParams()
+                .willReturn(response()).getRequestResponsePairs();
+
+        // Then
+        assertThat(pairs).hasSize(1);
+        FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
+        assertThat(query).isNull();
+    }
+
+    @Test
+    public void shouldBuildEmptyQueryMatcherWhenQueryParamIsNotSet() throws Exception {
+        // When
+        final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
+                .willReturn(response()).getRequestResponsePairs();
+
+        // Then
+        assertThat(pairs).hasSize(1);
+        FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
+        assertThat(query.getExactMatch()).isEqualTo("");
     }
 
     @Test

@@ -23,6 +23,7 @@ import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.startsWith;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -40,12 +41,17 @@ public class HoverflyRuleDslMatcherTest {
                     .get("/api/bookings/1")
                     .willReturn(success(json(booking)))
 
+                    // Query matcher
                     .get("/api/bookings")
                     .queryParam("page", any())
 //                    .queryParam("airline", startsWith("Pacific"))
 //                    .queryParam("airline", contains("pacific")) // not working
+                    .willReturn(success(json(booking)))
+
+                    .get("/api/bookings/online")
+                    .anyQueryParams()
                     .willReturn(success(json(booking))),
-            
+
             // Match any path
             service("www.always-success.com")
                 .get(any())
@@ -55,6 +61,7 @@ public class HoverflyRuleDslMatcherTest {
             service("www.booking-is-down.com")
                 .anyMethod(startsWith("/api/bookings/"))
                 .willReturn(serverError().body("booking is down"))
+
 
     ));
 
@@ -67,6 +74,41 @@ public class HoverflyRuleDslMatcherTest {
                 .path("/api/bookings/1")
                 .build()
                 .toUri();
+        final ResponseEntity<SimpleBooking> response = restTemplate.getForEntity(uri, SimpleBooking.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isEqualTo(booking);
+    }
+
+    @Test
+    public void shouldFailToQueryBookingsIfUnexpectedQueryParamIsPresent() throws Exception {
+        // When
+        URI uri = UriComponentsBuilder.fromHttpUrl("http://www.my-test.com")
+                .path("/api/bookings/1")
+                .queryParam("page", 1)
+                .build()
+                .toUri();
+        Throwable throwable = catchThrowable(() -> restTemplate.getForEntity(uri, SimpleBooking.class));
+
+        // Then
+        assertThat(throwable).isInstanceOf(HttpServerErrorException.class);
+
+        HttpServerErrorException exception = (HttpServerErrorException) throwable;
+
+        assertThat(exception.getStatusCode()).isEqualTo(BAD_GATEWAY);
+        assertThat(exception.getResponseBodyAsString()).containsIgnoringCase("Hoverfly error");
+    }
+
+    @Test
+    public void shouldQueryBookingWithAnyQueryParams() throws Exception {
+        // When
+        URI uri = UriComponentsBuilder.fromHttpUrl("http://www.my-test.com")
+                .path("/api/bookings/online")
+                .queryParam("class", "economy")
+                .build()
+                .toUri();
+
         final ResponseEntity<SimpleBooking> response = restTemplate.getForEntity(uri, SimpleBooking.class);
 
         // Then
