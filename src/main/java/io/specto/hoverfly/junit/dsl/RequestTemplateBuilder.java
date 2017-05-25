@@ -17,6 +17,7 @@ import io.specto.hoverfly.junit.core.model.Request;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 import io.specto.hoverfly.junit.dsl.matchers.ExactMatcher;
 import io.specto.hoverfly.junit.dsl.matchers.PlainTextMatcher;
+import io.specto.hoverfly.junit.dsl.matchers.RequestMatcher;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -54,7 +55,7 @@ public class RequestTemplateBuilder {
 
     /**
      * Sets the request body
-     * @param body the request body to match on
+     * @param body the request body to match on exactly
      * @return the {@link RequestTemplateBuilder} for further customizations
      */
     public RequestTemplateBuilder body(final String body) {
@@ -63,12 +64,18 @@ public class RequestTemplateBuilder {
     }
 
     /**
-     * Sets the request body and the matching content-type header using {@link HttpBodyConverter}
+     * Sets the request body using {@link HttpBodyConverter} to match on exactly
      * @param httpBodyConverter custom http body converter
      * @return the {@link RequestTemplateBuilder} for further customizations
      */
+    @Deprecated
     public RequestTemplateBuilder body(HttpBodyConverter httpBodyConverter) {
         this.body = exactlyMatches(httpBodyConverter.body());
+        return this;
+    }
+
+    public RequestTemplateBuilder body(RequestMatcher matcher) {
+        this.body = matcher.getFieldMatcher();
         return this;
     }
 
