@@ -14,6 +14,10 @@ public class HoverflyMatchers {
         return JsonMatcher.createFromString(value);
     }
 
+    public static RequestMatcher matchesJsonPath(String expression) {
+        return JsonPathMatcher.createFromExpression(expression);
+    }
+
     public static <T> RequestMatcher equalsToJson(T value) {
         return JsonMatcher.createFromObject(value);
     }

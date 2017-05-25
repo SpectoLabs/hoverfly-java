@@ -20,16 +20,13 @@ import java.time.LocalDate;
 import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.HttpBodyConverter.json;
+import static io.specto.hoverfly.junit.dsl.ResponseCreators.created;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.serverError;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
-import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
-import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.equalsToJson;
-import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.startsWith;
+import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.springframework.http.HttpStatus.BAD_GATEWAY;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class HoverflyRuleDslMatcherTest {
@@ -61,7 +58,13 @@ public class HoverflyRuleDslMatcherTest {
                     // Match json body
                     .put("/api/bookings/1")
                     .body(equalsToJson("{\"flightId\":\"1\",\"class\":\"PREMIUM\"}"))
-                    .willReturn(success()),
+                    .willReturn(success())
+
+                    // Jsonpath Matcher
+                    .post("/api/bookings")
+//                    .body(matchesJsonPath("?($.flightId == \"1\")")) // not working
+                    .body(matchesJsonPath("$.flightId"))
+                    .willReturn(created("http://localhost/api/bookings/1")),
 
             // Match any path
             service("www.always-success.com")
@@ -179,7 +182,7 @@ public class HoverflyRuleDslMatcherTest {
     @Test
     public void shouldBeAbleToMatchBodyByJsonEquality() throws URISyntaxException {
         // Given
-        final RequestEntity<String> bookFlightRequest = RequestEntity.put(new URI("http://www.other-test.com/api/bookings/1"))
+        final RequestEntity<String> bookFlightRequest = RequestEntity.put(new URI("http://www.my-test.com/api/bookings/1"))
                 .contentType(APPLICATION_JSON)
                 .body("{\"flightId\": \"1\",\"class\": \"PREMIUM\"}");
 
@@ -188,5 +191,20 @@ public class HoverflyRuleDslMatcherTest {
 
         // Then
         assertThat(bookFlightResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldBeAbleToMatchBodyByJsonPath() throws URISyntaxException {
+        // Given
+        final RequestEntity<String> bookFlightRequest = RequestEntity.post(new URI("http://www.my-test.com/api/bookings"))
+                .contentType(APPLICATION_JSON)
+                .body("{\"flightId\": \"1\"}");
+
+        // When
+        final ResponseEntity<String> bookFlightResponse = restTemplate.exchange(bookFlightRequest, String.class);
+
+        // Then
+        assertThat(bookFlightResponse.getStatusCode()).isEqualTo(CREATED);
+        assertThat(bookFlightResponse.getHeaders().getLocation()).isEqualTo(new URI("http://localhost/api/bookings/1"));
     }
 }
