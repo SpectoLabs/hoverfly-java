@@ -5,16 +5,12 @@ import io.specto.hoverfly.junit.rule.HoverflyRule;
 import io.specto.hoverfly.models.SimpleBooking;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 
 import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
@@ -28,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_XML;
 
 public class HoverflyRuleDslMatcherTest {
 
@@ -60,11 +57,23 @@ public class HoverflyRuleDslMatcherTest {
                     .body(equalsToJson("{\"flightId\":\"1\",\"class\":\"PREMIUM\"}"))
                     .willReturn(success())
 
-                    // Jsonpath Matcher
+                    // JsonPath Matcher
+                    .post("/api/bookings")
+//                    .body(matchesJsonPath("$[?(@.flightId == 1)]")) // not working
+                    .body(matchesJsonPath("$.flightId"))
+                    .willReturn(created("http://localhost/api/bookings/1"))
+
+                    // Match xml body
+                    .put("/api/bookings/1")
+                    .body(equalsToXml("<?xml version=\"1.0\" encoding=\"UTF-8\" ?> <flightId>1</flightId> <class>PREMIUM</class>"))
+                    .willReturn(success())
+
+                    // XmlPath Matcher
                     .post("/api/bookings")
 //                    .body(matchesJsonPath("?($.flightId == \"1\")")) // not working
-                    .body(matchesJsonPath("$.flightId"))
+                    .body(matchesXPath("/flightId"))
                     .willReturn(created("http://localhost/api/bookings/1")),
+
 
             // Match any path
             service("www.always-success.com")
@@ -78,8 +87,6 @@ public class HoverflyRuleDslMatcherTest {
 
 
     ));
-
-
 
     @Test
     public void shouldBeAbleToQueryBookingsUsingHoverfly() throws Exception {
@@ -180,7 +187,7 @@ public class HoverflyRuleDslMatcherTest {
 
 
     @Test
-    public void shouldBeAbleToMatchBodyByJsonEquality() throws URISyntaxException {
+    public void shouldBeAbleToMatchBodyByJsonEquality() throws Exception {
         // Given
         final RequestEntity<String> bookFlightRequest = RequestEntity.put(new URI("http://www.my-test.com/api/bookings/1"))
                 .contentType(APPLICATION_JSON)
@@ -194,11 +201,40 @@ public class HoverflyRuleDslMatcherTest {
     }
 
     @Test
-    public void shouldBeAbleToMatchBodyByJsonPath() throws URISyntaxException {
+    public void shouldBeAbleToMatchBodyByJsonPath() throws Exception {
         // Given
         final RequestEntity<String> bookFlightRequest = RequestEntity.post(new URI("http://www.my-test.com/api/bookings"))
                 .contentType(APPLICATION_JSON)
-                .body("{\"flightId\": \"1\"}");
+                .body("{\"flightId\": 1}");
+
+        // When
+        final ResponseEntity<String> bookFlightResponse = restTemplate.exchange(bookFlightRequest, String.class);
+
+        // Then
+        assertThat(bookFlightResponse.getStatusCode()).isEqualTo(CREATED);
+        assertThat(bookFlightResponse.getHeaders().getLocation()).isEqualTo(new URI("http://localhost/api/bookings/1"));
+    }
+
+    @Test
+    public void shouldBeAbleToMatchBodyByXmlEquality() throws Exception {
+        // Given
+        final RequestEntity<String> bookFlightRequest = RequestEntity.put(new URI("http://www.my-test.com/api/bookings/1"))
+                .contentType(APPLICATION_XML)
+                .body("<?xml version=\"1.0\" encoding=\"UTF-8\" ?> <flightId>1</flightId> <class>PREMIUM</class>");
+
+        // When
+        final ResponseEntity<String> bookFlightResponse = restTemplate.exchange(bookFlightRequest, String.class);
+
+        // Then
+        assertThat(bookFlightResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldBeAbleToMatchBodyByXPath() throws Exception {
+        // Given
+        final RequestEntity<String> bookFlightRequest = RequestEntity.post(new URI("http://www.my-test.com/api/bookings"))
+                .contentType(APPLICATION_JSON)
+                .body("<?xml version=\"1.0\" encoding=\"UTF-8\" ?> <flightId>1</flightId>");
 
         // When
         final ResponseEntity<String> bookFlightResponse = restTemplate.exchange(bookFlightRequest, String.class);
