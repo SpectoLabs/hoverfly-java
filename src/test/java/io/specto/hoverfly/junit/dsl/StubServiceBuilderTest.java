@@ -332,6 +332,32 @@ public class StubServiceBuilderTest {
         assertThat(query.getExactMatch()).isEqualTo("destination=New%20York");
     }
 
+
+    @Test
+    public void shouldBuildAnyBodyMatcher() throws Exception {
+        // When
+        final Set<RequestResponsePair> pairs = service("www.base-url.com").post("/")
+                .anyBody()
+                .willReturn(response()).getRequestResponsePairs();
+
+        // Then
+        assertThat(pairs).hasSize(1);
+        FieldMatcher body = Iterables.getLast(pairs).getRequest().getBody();
+        assertThat(body).isNull();
+    }
+
+    @Test
+    public void shouldBuildEmptyBodyMatcherWhenBodyIsNotSet() throws Exception {
+        // When
+        final Set<RequestResponsePair> pairs = service("www.base-url.com").post("/")
+                .willReturn(response()).getRequestResponsePairs();
+
+        // Then
+        assertThat(pairs).hasSize(1);
+        FieldMatcher body = Iterables.getLast(pairs).getRequest().getBody();
+        assertThat(body.getExactMatch()).isEqualTo("");
+    }
+
     @Test
     public void shouldAutomaticallyMarshallJson() {
         // When

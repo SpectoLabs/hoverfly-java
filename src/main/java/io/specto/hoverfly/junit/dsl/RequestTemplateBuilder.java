@@ -42,7 +42,7 @@ public class RequestTemplateBuilder {
     private final MultivaluedHashMap<PlainTextMatcher, PlainTextMatcher> queryPatterns = new MultivaluedHashMap<>();
     private final Map<String, List<String>> headers = new HashMap<>();
     private FieldMatcher query = blankMatcher();
-    private FieldMatcher body;
+    private FieldMatcher body = blankMatcher();
     private boolean isFuzzyMatchedQuery;
 
     RequestTemplateBuilder(final StubServiceBuilder invoker, final FieldMatcher method, final FieldMatcher scheme, final FieldMatcher destination, final FieldMatcher path) {
@@ -76,6 +76,11 @@ public class RequestTemplateBuilder {
 
     public RequestTemplateBuilder body(RequestMatcher matcher) {
         this.body = matcher.getFieldMatcher();
+        return this;
+    }
+
+    public RequestTemplateBuilder anyBody() {
+        this.body = null;
         return this;
     }
 
