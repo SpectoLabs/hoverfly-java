@@ -42,6 +42,10 @@ public class ResponseCreators {
                 .header("Location", locationHeaderValue);
     }
 
+    public static ResponseBuilder created() {
+        return response().status(CREATED);
+    }
+
     /**
      * Builds a 200 response with the following content
      * @param body the body sent in the response

@@ -83,8 +83,13 @@ public class HoverflyRuleDslMatcherTest {
             // Match any method
             service("www.booking-is-down.com")
                 .anyMethod(startsWith("/api/bookings/"))
-                .willReturn(serverError().body("booking is down"))
+                .willReturn(serverError().body("booking is down")),
 
+            // Match any body
+            service("www.cloud-service.com")
+                .post("/api/v1/containers")
+                .body(any())
+                .willReturn(created())
 
     ));
 
@@ -150,7 +155,7 @@ public class HoverflyRuleDslMatcherTest {
     }
 
     @Test
-    public void shouldFailOnAnyMethodToBookingIsDownService() throws Exception {
+    public void shouldReturn500WhenSendingRequestWithAnyMethodToTheBookingIsDownService() throws Exception {
         URI uri = UriComponentsBuilder.fromHttpUrl("http://www.booking-is-down.com")
                 .path("/api/bookings/12345")
                 .build()
@@ -242,5 +247,20 @@ public class HoverflyRuleDslMatcherTest {
         // Then
         assertThat(bookFlightResponse.getStatusCode()).isEqualTo(CREATED);
         assertThat(bookFlightResponse.getHeaders().getLocation()).isEqualTo(new URI("http://localhost/api/bookings/1"));
+    }
+
+
+    @Test
+    public void shouldBeAbleToMatchAnyBody() throws Exception {
+        // Given
+        final RequestEntity<String> bookFlightRequest = RequestEntity.post(new URI("http://www.cloud-service.com/api/v1/containers"))
+                .contentType(APPLICATION_JSON)
+                .body("{ \"Hostname\": \"\", \"Domainname\": \"\", \"User\": \"\"}");
+
+        // When
+        final ResponseEntity<String> bookFlightResponse = restTemplate.exchange(bookFlightRequest, String.class);
+
+        // Then
+        assertThat(bookFlightResponse.getStatusCode()).isEqualTo(CREATED);
     }
 }
