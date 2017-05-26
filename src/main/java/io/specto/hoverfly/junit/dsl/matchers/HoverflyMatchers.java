@@ -14,12 +14,24 @@ public class HoverflyMatchers {
         return JsonMatcher.createFromString(value);
     }
 
+    public static RequestMatcher equalsToJson(Object value) {
+        return JsonMatcher.createFromObject(value);
+    }
+
     public static RequestMatcher matchesJsonPath(String expression) {
         return JsonPathMatcher.createFromExpression(expression);
     }
 
-    public static <T> RequestMatcher equalsToJson(T value) {
-        return JsonMatcher.createFromObject(value);
+    public static RequestMatcher equalsToXml(String value) {
+        return XmlMatcher.createFromString(value);
+    }
+
+    public static RequestMatcher equalsToXml(Object value) {
+        return XmlMatcher.createFromObject(value);
+    }
+
+    public static RequestMatcher matchesXPath(String expression) {
+        return XPathMatcher.createFromExpression(expression);
     }
 
     public static PlainTextMatcher endsWith(String value) {
