@@ -43,19 +43,17 @@ import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
 public class Hoverfly implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hoverfly.class);
-
-
+    private static final ObjectWriter JSON_PRETTY_PRINTER = new ObjectMapper().writerWithDefaultPrettyPrinter();
     private static final int BOOT_TIMEOUT_SECONDS = 10;
     private static final int RETRY_BACKOFF_INTERVAL_MS = 100;
-
 
     private final HoverflyConfiguration hoverflyConfig;
     private final HoverflyMode hoverflyMode;
     private final ProxyConfigurer proxyConfigurer;
     private final SslConfigurer sslConfigurer = new SslConfigurer();
     private final HoverflyClient hoverflyClient;
-    private final TempFileManager tempFileManager = new TempFileManager();
 
+    private final TempFileManager tempFileManager = new TempFileManager();
     private StartedProcess startedProcess;
     private boolean useDefaultSslCert = true;
 
@@ -263,9 +261,8 @@ public class Hoverfly implements AutoCloseable {
     }
 
     private void persistSimulation(Path path, Simulation simulation) throws IOException {
-        final ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
         Files.createDirectories(path.getParent());
-        objectWriter.writeValue(path.toFile(), simulation);
+        JSON_PRETTY_PRINTER.writeValue(path.toFile(), simulation);
     }
 
 

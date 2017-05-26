@@ -69,7 +69,7 @@ public class HoverflyRuleDSLTest {
             service("www.not-so-slow-service.com")
                     .get("/api/bookings")
                     .willReturn(success().withDelay(1, TimeUnit.SECONDS))
-    ));
+    )).printSimulationData();
 
     private final RestTemplate restTemplate = new RestTemplate();
 

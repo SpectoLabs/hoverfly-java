@@ -91,7 +91,7 @@ public class HoverflyRuleDslMatcherTest {
                 .body(any())
                 .willReturn(created())
 
-    ));
+    )).printSimulationData();
 
     @Test
     public void shouldBeAbleToQueryBookingsUsingHoverfly() throws Exception {
