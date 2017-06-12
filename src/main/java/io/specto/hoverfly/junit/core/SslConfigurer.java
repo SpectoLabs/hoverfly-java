@@ -4,17 +4,18 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.*;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static io.specto.hoverfly.junit.core.HoverflyUtils.findResourceOnClasspath;
 
@@ -22,17 +23,43 @@ import static io.specto.hoverfly.junit.core.HoverflyUtils.findResourceOnClasspat
 /**
  * A component for configuring SSL context to enable HTTPS connection to hoverfly instance
  */
-class SslConfigurer {
+public class SslConfigurer {
 
     private static final String TLS_PROTOCOL = "TLSv1.2";
+    private static final URL DEFAULT_HOVERFLY_CUSTOM_CA_CERT = findResourceOnClasspath("cert.pem");
+
+    private SSLContext sslContext;
+    private TrustManager[] trustManagers;
+
+    SslConfigurer() {
+    }
+
+    public SSLContext getSslContext() {
+        return Optional.ofNullable(sslContext)
+                .orElseThrow(() -> new IllegalStateException("SSL context for Hoverfly custom CA cert has not been set."));
+    }
+
+    public X509TrustManager getTrustManager() {
+        X509TrustManager trustManager = null;
+        if (trustManagers.length > 0) {
+            if (trustManagers[0] instanceof X509TrustManager) {
+                trustManager = (X509TrustManager) trustManagers[0];
+            }
+        }
+
+        if (trustManager == null) {
+            throw  new IllegalStateException("Trust manager for Hoverfly custom CA cert has not been set.");
+        }
+        return trustManager;
+    }
 
     void setDefaultSslContext() {
-        setDefaultSslContext("cert.pem");
+        setDefaultSslContext(DEFAULT_HOVERFLY_CUSTOM_CA_CERT);
     }
+
     /**
      * Sets the JVM trust store so Hoverfly's SSL certificate is trusted
      */
-
     void setDefaultSslContext(String pemFilename) {
         setDefaultSslContext(findResourceOnClasspath(pemFilename));
     }
@@ -41,9 +68,10 @@ class SslConfigurer {
         try (InputStream pemInputStream = pemFile.openStream()) {
 
             KeyStore trustStore = createTrustStore(pemInputStream);
-            TrustManager[] trustManagers = createTrustManagers(trustStore);
+            trustManagers = createTrustManagers(trustStore);
 
-            SSLContext sslContext = createSslContext(trustManagers);
+            sslContext = createSslContext(trustManagers);
+
             SSLContext.setDefault(sslContext);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to set SSLContext from hoverfly certificate " + pemFile.toString(), e);

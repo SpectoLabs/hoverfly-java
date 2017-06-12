@@ -25,6 +25,7 @@ import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -246,6 +247,9 @@ public class HoverflyRule extends ExternalResource {
         return hoverfly.getHoverflyConfig().getProxyPort();
     }
 
+    public SslConfigurer getSslConfigurer() {
+        return hoverfly.getSslConfigurer();
+    }
     /**
      * Gets started Hoverfly mode
      *
