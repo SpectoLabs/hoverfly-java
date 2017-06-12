@@ -30,6 +30,18 @@ There are several options to achieve this:
 * If using ``@Rule`` is inevitable, you should initialize the HttpClient inside your ``@Before`` setUp method which will be executed after ``@Rule``
 * As a last resort, you may want to manually configured Apache HttpClient to use custom proxy or SSL context, please check out `HttpClient examples <https://hc.apache.org/httpcomponents-client-ga/examples.html>`_
 
+OkHttpClient
+------------
+If you are using `OkHttpClient <http://square.github.io/okhttp/>`_ to make HTTPS requests, you will need to configure it to use the custom ``SSLContext`` and ``TrustManager`` that supports Hoverfly CA cert:
+
+.. code-block:: java
+
+    SslConfigurer sslConfigurer = hoverflyRule.getSslConfigurer();
+    OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .sslSocketFactory(sslConfigurer.getSslContext().getSocketFactory(), sslConfigurer.getTrustManager())
+            .build();
+
+
 Legacy Schema Migration
 -----------------------
 
