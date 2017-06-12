@@ -4,12 +4,8 @@ public class SingleQuoteHttpBodyConverter implements HttpBodyConverter {
 
     private String convertedBody;
 
-    private SingleQuoteHttpBodyConverter(String json) {
+    public SingleQuoteHttpBodyConverter(String json) {
         this.convertedBody = convert(json);
-    }
-
-    public static SingleQuoteHttpBodyConverter jsonWithSingleQuotes(String body) {
-        return new SingleQuoteHttpBodyConverter(body);
     }
 
     @Override

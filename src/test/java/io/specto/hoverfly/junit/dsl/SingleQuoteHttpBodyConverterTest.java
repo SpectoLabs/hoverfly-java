@@ -9,7 +9,7 @@ public class SingleQuoteHttpBodyConverterTest {
     @Test
     public void shouldConvertSingleQuotes() {
         final SingleQuoteHttpBodyConverter singleQuoteHttpBodyConverter =
-            SingleQuoteHttpBodyConverter.jsonWithSingleQuotes("{'bookingId':'1'}");
+            HttpBodyConverter.jsonWithSingleQuotes("{'bookingId':'1'}");
 
         assertThat(singleQuoteHttpBodyConverter.body())
             .isEqualTo("{\"bookingId\":\"1\"}");
@@ -18,10 +18,19 @@ public class SingleQuoteHttpBodyConverterTest {
     @Test
     public void shouldSkipDoubleQuotes() {
         final SingleQuoteHttpBodyConverter singleQuoteHttpBodyConverter =
-            SingleQuoteHttpBodyConverter.jsonWithSingleQuotes("{\"bookingId\":\"1\"}");
+            HttpBodyConverter.jsonWithSingleQuotes("{\"bookingId\":\"1\"}");
 
         assertThat(singleQuoteHttpBodyConverter.body())
             .isEqualTo("{\"bookingId\":\"1\"}");
+    }
+
+    @Test
+    public void shouldSkipSingleQuotes() {
+        final SingleQuoteHttpBodyConverter singleQuoteHttpBodyConverter =
+            HttpBodyConverter.jsonWithSingleQuotes("{'merchantName':'McDonals\\'s'}");
+
+        assertThat(singleQuoteHttpBodyConverter.body())
+            .isEqualTo("{\"merchantName\":\"McDonals's\"}");
     }
 
 }
