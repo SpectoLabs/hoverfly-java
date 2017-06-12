@@ -33,6 +33,17 @@ public interface HttpBodyConverter {
     }
 
     /**
+     * Reads the input text with possible single quotes as delimiters
+     * and returns a String correctly formatted.
+     *
+     * @param body the body of the request or response
+     * @return the converter
+     */
+    static SingleQuoteHttpBodyConverter jsonWithSingleQuotes(String body) {
+        return new SingleQuoteHttpBodyConverter(body);
+    }
+
+    /**
      * Converts a given object into json, and returns application/json content type
      *
      * @param body         the request / response body
