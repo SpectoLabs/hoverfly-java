@@ -1,6 +1,10 @@
 package io.specto.hoverfly.ruletest;
 
+import io.specto.hoverfly.junit.core.SslConfigurer;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -49,7 +53,17 @@ public class HttpClientsTest {
 
     @Test
     public void shouldWorkWithOkHttpClient() throws Exception {
+        // Given
+        SslConfigurer sslConfigurer = hoverflyRule.getSslConfigurer();
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .sslSocketFactory(sslConfigurer.getSslContext().getSocketFactory(), sslConfigurer.getTrustManager())
+                .build();
 
+        // When
+        Response response = okHttpClient.newCall(new Request.Builder().url(TEST_URL).build()).execute();
+
+        // Then
+        assertJsonResponseBody(response.body().string());
     }
 
     private void assertJsonResponseBody(String body) {

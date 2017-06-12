@@ -260,6 +260,10 @@ public class Hoverfly implements AutoCloseable {
         return HoverflyMode.valueOf(hoverflyClient.getConfigInfo().getMode().toUpperCase());
     }
 
+    public SslConfigurer getSslConfigurer() {
+        return sslConfigurer;
+    }
+
     private void persistSimulation(Path path, Simulation simulation) throws IOException {
         Files.createDirectories(path.getParent());
         JSON_PRETTY_PRINTER.writeValue(path.toFile(), simulation);
