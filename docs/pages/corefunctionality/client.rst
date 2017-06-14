@@ -1,6 +1,6 @@
 .. _client:
 
-Admin API Client
+Admin API client
 ================
 
 Consuming Hoverfly Admin API is easy with *HoverflyClient*. It allows you to control an external Hoverfly instance, such as changing mode,
