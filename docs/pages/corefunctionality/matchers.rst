@@ -1,6 +1,6 @@
 .. _matchers:
 
-Request Field Matchers
+Request field matchers
 ======================
 
 Hoverfly-Java abstracts away some of the complexity of building the `request field matchers supported by Hoverfly <http://hoverfly.readthedocs.io/en/latest/pages/reference/hoverfly/request_matchers.html>`_.
