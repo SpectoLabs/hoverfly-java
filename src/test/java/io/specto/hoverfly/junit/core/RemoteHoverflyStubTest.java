@@ -49,8 +49,8 @@ public class RemoteHoverflyStubTest {
             assertThat(System.getProperty("http.proxyHost")).isEqualTo("hoverfly-cloud");
             assertThat(System.getProperty("https.proxyHost")).isEqualTo("hoverfly-cloud");
 
-            assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(hoverflyUnderTest.getHoverflyConfig().getProxyPort()));
-            assertThat(System.getProperty("https.proxyPort")).isEqualTo(String.valueOf(hoverflyUnderTest.getHoverflyConfig().getProxyPort()));
+            assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(hoverflyUnderTest.getHoverflyConfiguration().getProxyPort()));
+            assertThat(System.getProperty("https.proxyPort")).isEqualTo(String.valueOf(hoverflyUnderTest.getHoverflyConfiguration().getProxyPort()));
 
             assertThat(System.getProperty("http.nonProxyHosts")).isEqualTo("local|*.local|169.254/16|*.169.254/16|hoverfly-cloud");
         }

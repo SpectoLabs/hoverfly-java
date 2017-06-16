@@ -26,7 +26,7 @@ public class HoverflyClientTest {
     public void setUp() throws Exception {
         hoverfly = new Hoverfly(HoverflyMode.SIMULATE);
         hoverfly.start();
-        configuration = hoverfly.getHoverflyConfig();
+        configuration = hoverfly.getHoverflyConfiguration();
     }
 
     @Test

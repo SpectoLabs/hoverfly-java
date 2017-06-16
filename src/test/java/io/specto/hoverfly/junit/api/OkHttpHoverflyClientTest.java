@@ -33,7 +33,7 @@ public class OkHttpHoverflyClientTest {
     @Before
     public void setUp() throws Exception {
         startDefaultHoverfly();
-        HoverflyConfiguration hoverflyConfig = hoverfly.getHoverflyConfig();
+        HoverflyConfiguration hoverflyConfig = hoverfly.getHoverflyConfiguration();
         client = new OkHttpHoverflyClient(hoverflyConfig.getScheme(), hoverflyConfig.getHost(), hoverflyConfig.getAdminPort(), null);
     }
 
@@ -67,6 +67,7 @@ public class OkHttpHoverflyClientTest {
     }
 
 
+    // TODO Re-enable this test after new hoverfly release
     @Test
     @Ignore("TODO bug in hoverfly not returning mode arguments")
     public void shouldBeAbleToSetCaptureModeWithArguments() throws Exception {
