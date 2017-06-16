@@ -15,7 +15,7 @@ package io.specto.hoverfly.junit.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
-import io.specto.hoverfly.junit.core.model.HoverflyInfo;
+import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import io.specto.hoverfly.junit.api.HoverflyClient;
 import org.apache.commons.lang3.StringUtils;
@@ -223,7 +223,7 @@ public class Hoverfly implements AutoCloseable {
      * Gets configuration information from the running instance of Hoverfly.
      * @return the hoverfly info object
      */
-    public HoverflyInfo getHoverflyInfo() {
+    public HoverflyInfoView getHoverflyInfo() {
         return hoverflyClient.getConfigInfo();
     }
 

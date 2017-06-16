@@ -2,8 +2,11 @@ package io.specto.hoverfly.junit.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.specto.hoverfly.junit.api.command.DestinationCommand;
+import io.specto.hoverfly.junit.api.command.ModeCommand;
+import io.specto.hoverfly.junit.api.model.ModeArguments;
+import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.core.HoverflyMode;
-import io.specto.hoverfly.junit.core.model.HoverflyInfo;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import okhttp3.*;
 import org.slf4j.Logger;
@@ -69,11 +72,11 @@ class OkHttpHoverflyClient implements HoverflyClient {
     }
 
     @Override
-    public HoverflyInfo getConfigInfo() {
+    public HoverflyInfoView getConfigInfo() {
         try {
             final Request.Builder builder = createRequestBuilderWithUrl(INFO_PATH);
             final Request request = builder.get().build();
-            return exchange(request, HoverflyInfo.class);
+            return exchange(request, HoverflyInfoView.class);
         } catch (Exception e) {
             LOGGER.warn("Failed to get config information: {}", e.getMessage());
             throw new HoverflyClientException("Failed to get config information: " + e.getMessage());
@@ -84,7 +87,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
     public void setDestination(String destination) {
         try {
             final Request.Builder builder = createRequestBuilderWithUrl(DESTINATION_PATH);
-            final RequestBody body = createRequestBody(new HoverflyInfo(destination, null, null, null));
+            final RequestBody body = createRequestBody(new DestinationCommand(destination));
             final Request request = builder.put(body).build();
 
             exchange(request);
@@ -96,16 +99,12 @@ class OkHttpHoverflyClient implements HoverflyClient {
 
     @Override
     public void setMode(HoverflyMode mode) {
-        try {
-            final RequestBody body = createRequestBody(new HoverflyInfo(null, mode.name().toLowerCase(), null, null));
-            final Request.Builder builder = createRequestBuilderWithUrl(MODE_PATH);
-            final Request request = builder.put(body).build();
+        putModeRequest(new ModeCommand(mode));
+    }
 
-            exchange(request);
-        } catch (IOException e) {
-            LOGGER.warn("Failed to set mode: {}", e.getMessage());
-            throw new HoverflyClientException("Failed to set mode: " + e.getMessage());
-        }
+    @Override
+    public void setMode(HoverflyMode mode, ModeArguments modeArguments) {
+        putModeRequest(new ModeCommand(mode, modeArguments));
     }
 
     @Override
@@ -120,6 +119,19 @@ class OkHttpHoverflyClient implements HoverflyClient {
             LOGGER.debug("Hoverfly healthcheck failed: " + e.getMessage());
         }
         return isHealthy;
+    }
+
+    private void putModeRequest(ModeCommand modeCommand) {
+        try {
+            final RequestBody body = createRequestBody(modeCommand);
+            final Request.Builder builder = createRequestBuilderWithUrl(MODE_PATH);
+            final Request request = builder.put(body).build();
+
+            exchange(request);
+        } catch (IOException e) {
+            LOGGER.warn("Failed to set mode: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to set mode: " + e.getMessage());
+        }
     }
 
     private Request.Builder createRequestBuilderWithUrl(String path) {

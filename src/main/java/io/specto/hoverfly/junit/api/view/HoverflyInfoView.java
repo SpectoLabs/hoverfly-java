@@ -1,26 +1,31 @@
-package io.specto.hoverfly.junit.core.model;
+package io.specto.hoverfly.junit.api.view;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.specto.hoverfly.junit.api.model.ModeArguments;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class HoverflyInfo {
+public class HoverflyInfoView {
 
     private final String destination;
     private final String mode;
+    private final ModeArguments modeArguments;
     private final Usage usage;
     private final Middleware middleware;
 
+
     @JsonCreator
-    public HoverflyInfo(@JsonProperty("destination") String destination,
-                        @JsonProperty("mode") String mode,
-                        @JsonProperty("usage") Usage usage,
-                        @JsonProperty("middleware") Middleware middleware) {
+    public HoverflyInfoView(@JsonProperty("destination") String destination,
+                            @JsonProperty("mode") String mode,
+                            @JsonProperty("arguments") ModeArguments modeArguments,
+                            @JsonProperty("usage") Usage usage,
+                            @JsonProperty("middleware") Middleware middleware) {
         this.destination = destination;
         this.mode = mode;
+        this.modeArguments = modeArguments;
         this.usage = usage;
         this.middleware = middleware;
     }
@@ -32,6 +37,10 @@ public class HoverflyInfo {
 
     public String getMode() {
         return mode;
+    }
+
+    public ModeArguments getModeArguments() {
+        return modeArguments;
     }
 
     public Usage getUsage() {

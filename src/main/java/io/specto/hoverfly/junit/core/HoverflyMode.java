@@ -12,10 +12,23 @@
  */
 package io.specto.hoverfly.junit.core;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * Enums denoting the possible modes for {@link Hoverfly}
  */
 public enum HoverflyMode {
-    SIMULATE,
-    CAPTURE
+    SIMULATE("simulate"),
+    CAPTURE("capture");
+
+    String value;
+
+    HoverflyMode(String value) {
+        this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
 }
