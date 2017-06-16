@@ -1,5 +1,6 @@
 package io.specto.hoverfly.junit.core;
 
+import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
@@ -104,4 +105,12 @@ public class HoverflyConfigTest {
         assertThat(configs.getAuthToken()).isPresent();
         configs.getAuthToken().ifPresent(token -> assertThat(token).isEqualTo("some-token"));
     }
+
+//    @Test
+//    public void shouldSetCaptureHeaders() throws Exception {
+//        HoverflyConfiguration configs = configs().captureHeaders("Content-Type", "Authorization").build();
+//
+//        assertThat(configs.getCaptureHeaders()).hasSize(2);
+//        assertThat(configs.getCaptureHeaders()).containsOnly("Content-Type", "Authorization");
+//    }
 }

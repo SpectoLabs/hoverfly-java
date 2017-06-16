@@ -1,5 +1,6 @@
 package io.specto.hoverfly.junit.core;
 
+import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
