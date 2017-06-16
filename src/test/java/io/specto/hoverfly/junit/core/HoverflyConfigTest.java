@@ -108,18 +108,18 @@ public class HoverflyConfigTest {
 
     @Test
     public void shouldSetCaptureHeaders() throws Exception {
-        HoverflyConfiguration configs = configs().captureHeaders("Content-Type", "Authorization").build();
+        HoverflyConfiguration configs = configs().captureHeaders("Accept", "Authorization").build();
 
         assertThat(configs.getCaptureHeaders()).hasSize(2);
-        assertThat(configs.getCaptureHeaders()).containsOnly("Content-Type", "Authorization");
+        assertThat(configs.getCaptureHeaders()).containsOnly("Accept", "Authorization");
     }
 
     @Test
     public void shouldSetCaptureOneHeader() throws Exception {
-        HoverflyConfiguration configs = configs().captureHeaders("Content-Type").build();
+        HoverflyConfiguration configs = configs().captureHeaders("Accept").build();
 
         assertThat(configs.getCaptureHeaders()).hasSize(1);
-        assertThat(configs.getCaptureHeaders()).containsOnly("Content-Type");
+        assertThat(configs.getCaptureHeaders()).containsOnly("Accept");
     }
 
     @Test

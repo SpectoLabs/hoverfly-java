@@ -25,3 +25,9 @@ You can configure Hoverfly to proxy localhost requests. This is useful if the ta
 
     configs().proxyLocalHost()
 
+You can configure Hoverfly to capture request headers which is turned off by default:
+
+.. code-block:: java
+
+    configs().captureHeaders("Accept", "Authorization")
+    configs().captureAllHeaders()
