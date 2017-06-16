@@ -14,6 +14,7 @@ package io.specto.hoverfly.junit.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.core.model.Simulation;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
 import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
 
 /**
@@ -47,7 +49,7 @@ public class Hoverfly implements AutoCloseable {
     private static final int BOOT_TIMEOUT_SECONDS = 10;
     private static final int RETRY_BACKOFF_INTERVAL_MS = 100;
 
-    private final HoverflyConfiguration hoverflyConfig;
+    private final HoverflyConfiguration hoverflyConfiguration;
     private final HoverflyMode hoverflyMode;
     private final ProxyConfigurer proxyConfigurer;
     private final SslConfigurer sslConfigurer = new SslConfigurer();
@@ -64,12 +66,12 @@ public class Hoverfly implements AutoCloseable {
      * @param hoverflyMode   the mode
      */
     public Hoverfly(HoverflyConfig hoverflyConfigBuilder, HoverflyMode hoverflyMode) {
-        hoverflyConfig = hoverflyConfigBuilder.build();
-        this.proxyConfigurer = new ProxyConfigurer(hoverflyConfig);
+        hoverflyConfiguration = hoverflyConfigBuilder.build();
+        this.proxyConfigurer = new ProxyConfigurer(hoverflyConfiguration);
         this.hoverflyClient = HoverflyClient.custom()
-                .scheme(hoverflyConfig.getScheme())
-                .host(hoverflyConfig.getHost())
-                .port(hoverflyConfig.getAdminPort())
+                .scheme(hoverflyConfiguration.getScheme())
+                .host(hoverflyConfiguration.getHost())
+                .port(hoverflyConfiguration.getAdminPort())
                 .withAuthToken()
                 .build();
         this.hoverflyMode = hoverflyMode;
@@ -100,20 +102,24 @@ public class Hoverfly implements AutoCloseable {
             return;
         }
 
-        if (!hoverflyConfig.isRemoteInstance()) {
+        if (!hoverflyConfiguration.isRemoteInstance()) {
             startHoverflyProcess();
         }
 
         waitForHoverflyToBecomeHealthy();
 
-        if (StringUtils.isNotBlank(hoverflyConfig.getDestination())) {
-            setDestination(hoverflyConfig.getDestination());
+        if (StringUtils.isNotBlank(hoverflyConfiguration.getDestination())) {
+            setDestination(hoverflyConfiguration.getDestination());
         }
 
-        setMode(hoverflyMode);
+        if (hoverflyMode == CAPTURE) {
+            hoverflyClient.setMode(hoverflyMode, new ModeArguments(hoverflyConfiguration.getCaptureHeaders()));
+        } else {
+            hoverflyClient.setMode(hoverflyMode);
+        }
 
-        if (hoverflyConfig.getProxyCaCertificate().isPresent()) {
-          sslConfigurer.setDefaultSslContext(hoverflyConfig.getProxyCaCertificate().get());
+        if (hoverflyConfiguration.getProxyCaCertificate().isPresent()) {
+          sslConfigurer.setDefaultSslContext(hoverflyConfiguration.getProxyCaCertificate().get());
         } else if (useDefaultSslCert) {
             sslConfigurer.setDefaultSslContext();
         }
@@ -122,8 +128,8 @@ public class Hoverfly implements AutoCloseable {
     }
 
     private void startHoverflyProcess() {
-        checkPortInUse(hoverflyConfig.getProxyPort());
-        checkPortInUse(hoverflyConfig.getAdminPort());
+        checkPortInUse(hoverflyConfiguration.getProxyPort());
+        checkPortInUse(hoverflyConfiguration.getAdminPort());
 
         final SystemConfig systemConfig = new SystemConfigFactory().createSystemConfig();
 
@@ -135,17 +141,17 @@ public class Hoverfly implements AutoCloseable {
         commands.add("-db");
         commands.add("memory");
         commands.add("-pp");
-        commands.add(String.valueOf(hoverflyConfig.getProxyPort()));
+        commands.add(String.valueOf(hoverflyConfiguration.getProxyPort()));
         commands.add("-ap");
-        commands.add(String.valueOf(hoverflyConfig.getAdminPort()));
+        commands.add(String.valueOf(hoverflyConfiguration.getAdminPort()));
 
-        if (StringUtils.isNotBlank(hoverflyConfig.getSslCertificatePath())) {
-            tempFileManager.copyClassPathResource(hoverflyConfig.getSslCertificatePath(), "ca.crt");
+        if (StringUtils.isNotBlank(hoverflyConfiguration.getSslCertificatePath())) {
+            tempFileManager.copyClassPathResource(hoverflyConfiguration.getSslCertificatePath(), "ca.crt");
             commands.add("-cert");
             commands.add("ca.crt");
         }
-        if (StringUtils.isNotBlank(hoverflyConfig.getSslKeyPath())) {
-            tempFileManager.copyClassPathResource(hoverflyConfig.getSslKeyPath(), "ca.key");
+        if (StringUtils.isNotBlank(hoverflyConfiguration.getSslKeyPath())) {
+            tempFileManager.copyClassPathResource(hoverflyConfiguration.getSslKeyPath(), "ca.key");
             commands.add("-key");
             commands.add("ca.key");
             useDefaultSslCert = false;
@@ -248,8 +254,8 @@ public class Hoverfly implements AutoCloseable {
      * Gets the validated {@link HoverflyConfig} object used by the current Hoverfly instance
      * @return the current Hoverfly configurations
      */
-    public HoverflyConfiguration getHoverflyConfig() {
-        return hoverflyConfig;
+    public HoverflyConfiguration getHoverflyConfiguration() {
+        return hoverflyConfiguration;
     }
 
     /**

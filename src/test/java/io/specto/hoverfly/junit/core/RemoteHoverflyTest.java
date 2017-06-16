@@ -29,7 +29,7 @@ public class RemoteHoverflyTest {
     @Before
     public void setUp() throws Exception {
         remoteHoverfly.start();
-        HoverflyConfiguration remoteConfigs = remoteHoverfly.getHoverflyConfig();
+        HoverflyConfiguration remoteConfigs = remoteHoverfly.getHoverflyConfiguration();
         localHoverflyDelegate = new Hoverfly(configs()
                 .remote()
                 .adminPort(remoteConfigs.getAdminPort())

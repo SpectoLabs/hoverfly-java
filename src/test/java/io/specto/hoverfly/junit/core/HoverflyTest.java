@@ -5,6 +5,7 @@ import ch.qos.logback.core.Appender;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.api.HoverflyClient;
+import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -12,6 +13,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.LoggerFactory;
@@ -19,8 +21,10 @@ import org.zeroturnaround.exec.StartedProcess;
 
 import javax.net.ssl.SSLContext;
 import java.net.URL;
+import java.util.List;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +44,7 @@ public class HoverflyTest {
         hoverfly = new Hoverfly(configs().proxyPort(EXPECTED_PROXY_PORT), SIMULATE);
         hoverfly.start();
         assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(EXPECTED_PROXY_PORT));
-        assertThat(hoverfly.getHoverflyConfig().getProxyPort()).isEqualTo(EXPECTED_PROXY_PORT);
+        assertThat(hoverfly.getHoverflyConfiguration().getProxyPort()).isEqualTo(EXPECTED_PROXY_PORT);
     }
 
     @Test
@@ -75,7 +79,7 @@ public class HoverflyTest {
         // Given
         startDefaultHoverfly();
 
-        try (Hoverfly portClashHoverfly = new Hoverfly(configs().proxyPort(hoverfly.getHoverflyConfig().getProxyPort()), SIMULATE)) {
+        try (Hoverfly portClashHoverfly = new Hoverfly(configs().proxyPort(hoverfly.getHoverflyConfiguration().getProxyPort()), SIMULATE)) {
             // When
             Throwable throwable = catchThrowable(portClashHoverfly::start);
 
@@ -91,7 +95,7 @@ public class HoverflyTest {
         // Given
         startDefaultHoverfly();
 
-        try (Hoverfly portClashHoverfly = new Hoverfly(configs().adminPort(hoverfly.getHoverflyConfig().getAdminPort()), SIMULATE)) {
+        try (Hoverfly portClashHoverfly = new Hoverfly(configs().adminPort(hoverfly.getHoverflyConfiguration().getAdminPort()), SIMULATE)) {
             // When
             Throwable throwable = catchThrowable(portClashHoverfly::start);
 
@@ -249,8 +253,8 @@ public class HoverflyTest {
 
         hoverfly = new Hoverfly(SIMULATE);
 
-        assertThat(hoverfly.getHoverflyConfig().getProxyPort()).isNotZero();
-        assertThat(hoverfly.getHoverflyConfig().getAdminPort()).isNotZero();
+        assertThat(hoverfly.getHoverflyConfiguration().getProxyPort()).isNotZero();
+        assertThat(hoverfly.getHoverflyConfiguration().getAdminPort()).isNotZero();
     }
 
 
@@ -262,8 +266,8 @@ public class HoverflyTest {
         assertThat(System.getProperty("http.proxyHost")).isEqualTo("localhost");
         assertThat(System.getProperty("https.proxyHost")).isEqualTo("localhost");
 
-        assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(hoverfly.getHoverflyConfig().getProxyPort()));
-        assertThat(System.getProperty("https.proxyPort")).isEqualTo(String.valueOf(hoverfly.getHoverflyConfig().getProxyPort()));
+        assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(hoverfly.getHoverflyConfiguration().getProxyPort()));
+        assertThat(System.getProperty("https.proxyPort")).isEqualTo(String.valueOf(hoverfly.getHoverflyConfiguration().getProxyPort()));
 
         assertThat(System.getProperty("http.nonProxyHosts")).isEqualTo("local|*.local|169.254/16|*.169.254/16");
 
@@ -289,6 +293,37 @@ public class HoverflyTest {
             assertThat(startedProcess.getProcess().isAlive()).isFalse();
         }
 
+    }
+
+    @Test
+    public void shouldSetHeadersForCaptureMode() throws Exception {
+        hoverfly = new Hoverfly(configs().captureHeaders("Authorization"), CAPTURE);
+
+        HoverflyClient hoverflyClient = mock(HoverflyClient.class);
+        Whitebox.setInternalState(hoverfly, "hoverflyClient", hoverflyClient);
+        when(hoverflyClient.getHealth()).thenReturn(true);
+
+        hoverfly.start();
+
+        ArgumentCaptor<ModeArguments> modeArgumentCaptor = ArgumentCaptor.forClass(ModeArguments.class);
+        verify(hoverflyClient).setMode(eq(HoverflyMode.CAPTURE), modeArgumentCaptor.capture());
+
+        List<String> headersWhitelist = modeArgumentCaptor.getValue().getHeadersWhitelist();
+        assertThat(headersWhitelist).hasSize(1);
+        assertThat(headersWhitelist).containsOnly("Authorization");
+    }
+
+    @Test
+    public void shouldNotSetHeadersForNonCaptureMode() throws Exception {
+        hoverfly = new Hoverfly(configs().captureAllHeaders(), SIMULATE);
+
+        HoverflyClient hoverflyClient = mock(HoverflyClient.class);
+        Whitebox.setInternalState(hoverfly, "hoverflyClient", hoverflyClient);
+        when(hoverflyClient.getHealth()).thenReturn(true);
+
+        hoverfly.start();
+
+        verify(hoverflyClient, never()).setMode(eq(HoverflyMode.SIMULATE), any());
     }
 
     @After

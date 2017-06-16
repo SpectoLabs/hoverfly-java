@@ -19,8 +19,17 @@ public interface HoverflyClient {
 
     void setDestination(String destination);
 
+    /**
+     * Update Hoverfly mode
+     * @param mode {@link HoverflyMode}
+     */
     void setMode(HoverflyMode mode);
 
+    /**
+     * Update Hoverfly mode with additional arguments
+     * @param mode {@link HoverflyMode}
+     * @param modeArguments additional arguments such as headers to capture
+     */
     void setMode(HoverflyMode mode, ModeArguments modeArguments);
 
     /**

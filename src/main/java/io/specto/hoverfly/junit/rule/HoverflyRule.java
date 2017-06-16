@@ -243,7 +243,7 @@ public class HoverflyRule extends ExternalResource {
      * @return the proxy port
      */
     public int getProxyPort() {
-        return hoverfly.getHoverflyConfig().getProxyPort();
+        return hoverfly.getHoverflyConfiguration().getProxyPort();
     }
 
     public SslConfigurer getSslConfigurer() {
@@ -301,7 +301,7 @@ public class HoverflyRule extends ExternalResource {
      * @return a custom Hoverfly authorization header value
      */
     public String getAuthHeaderValue() {
-        Optional<String> authToken = hoverfly.getHoverflyConfig().getAuthToken();
+        Optional<String> authToken = hoverfly.getHoverflyConfiguration().getAuthToken();
         return authToken.map(s -> "Bearer " + s).orElse(null);
     }
 
