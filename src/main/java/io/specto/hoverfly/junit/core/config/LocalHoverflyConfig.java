@@ -10,72 +10,49 @@
  *
  * Copyright 2016-2016 SpectoLabs Ltd.
  */
-package io.specto.hoverfly.junit.core;
+package io.specto.hoverfly.junit.core.config;
 
+
+import io.specto.hoverfly.junit.core.Hoverfly;
+import io.specto.hoverfly.junit.core.HoverflyConfig;
 
 /**
- * Config used to change the settings for {@link Hoverfly}
+ * Config builder interface for settings specific to {@link Hoverfly} managed internally
  */
-class HoverflyConfigBuilder implements LocalHoverflyConfig {
+public class LocalHoverflyConfig extends HoverflyConfig {
 
-    private int proxyPort;
-    private int adminPort;
-    private boolean proxyLocalHost;
     // TODO should be combined field?
     private String sslCertificatePath;
     private String sslKeyPath;
-    private String destination;
-    private String proxyCaCert;
 
 
-    @Override
-    public HoverflyConfig proxyPort(int proxyPort) {
-        this.proxyPort = proxyPort;
-        return this;
-    }
-
-
-    @Override
-    public HoverflyConfig adminPort(int adminPort) {
-        this.adminPort = adminPort;
-        return this;
-    }
-
-    @Override
-    public HoverflyConfig proxyLocalHost() {
-        this.proxyLocalHost = true;
-        return this;
-    }
-
-    @Override
+    /**
+     * Sets the SSL certificate file for overriding default Hoverfly self-signed certificate
+     * The file can be in any PEM encoded certificate, in .crt or .pem extensions
+     * @param sslCertificatePath certificate file in classpath
+     * @return the {@link LocalHoverflyConfig} for further customizations
+     */
     public LocalHoverflyConfig sslCertificatePath(String sslCertificatePath) {
         this.sslCertificatePath = sslCertificatePath;
         return this;
     }
 
 
-    @Override
+    /**
+     * Sets the SSL key file for overriding default Hoverfly SSL key
+     * The file can be in any PEM encoded key, in .key or .pem extensions
+     * @param sslKeyPath key file in classpath
+     * @return the {@link LocalHoverflyConfig} for further customizations
+     */
     public LocalHoverflyConfig sslKeyPath(String sslKeyPath) {
         this.sslKeyPath = sslKeyPath;
         return this;
     }
 
-
-    @Override
-    public HoverflyConfig proxyCaCert(String proxyCaCert) {
-        this.proxyCaCert = proxyCaCert;
-        return this;
-    }
-
-    @Override
-    public HoverflyConfig destination(String destination) {
-        this.destination = destination;
-        return this;
-    }
-
     @Override
     public HoverflyConfiguration build() {
-        HoverflyConfiguration configs = new HoverflyConfiguration(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCert, sslCertificatePath, sslKeyPath);
+        HoverflyConfiguration configs = new HoverflyConfiguration(proxyPort, adminPort, proxyLocalHost, destination,
+                proxyCaCert, sslCertificatePath, sslKeyPath, captureHeaders);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }

@@ -1,5 +1,6 @@
 package io.specto.hoverfly.junit.core;
 
+import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

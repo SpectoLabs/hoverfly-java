@@ -13,17 +13,30 @@
 package io.specto.hoverfly.junit.core;
 
 
+import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
+import io.specto.hoverfly.junit.core.config.LocalHoverflyConfig;
+import io.specto.hoverfly.junit.core.config.RemoteHoverflyConfig;
+
+import java.util.List;
+
 /**
  * Config builder interface for common settings of {@link Hoverfly}
  */
-public interface HoverflyConfig {
+public abstract class HoverflyConfig {
+
+    protected int proxyPort;
+    protected int adminPort;
+    protected boolean proxyLocalHost;
+    protected String destination;
+    protected String proxyCaCert;
+    protected List<String> captureHeaders;
 
     /**
      * New instance
      * @return a {@link LocalHoverflyConfig} implementation
      */
-    static LocalHoverflyConfig configs() {
-        return new HoverflyConfigBuilder();
+    public static LocalHoverflyConfig configs() {
+        return new LocalHoverflyConfig();
     }
 
     /**
@@ -31,7 +44,10 @@ public interface HoverflyConfig {
      * @param adminPort the admin port
      * @return the {@link HoverflyConfig} for further customizations
      */
-    HoverflyConfig adminPort(int adminPort);
+    public HoverflyConfig adminPort(int adminPort) {
+        this.adminPort = adminPort;
+        return this;
+    }
 
     /**
      * Sets the proxy port for {@link Hoverfly}
@@ -39,21 +55,27 @@ public interface HoverflyConfig {
      * @param proxyPort the proxy port
      * @return the {@link HoverflyConfig} for further customizations
      */
-    HoverflyConfig proxyPort(int proxyPort);
+    public HoverflyConfig proxyPort(int proxyPort) {
+        this.proxyPort = proxyPort;
+        return this;
+    }
 
     /**
      * Sets destination filter to what target urls to simulate or capture
      * @param destination the destination filter
      * @return the {@link HoverflyConfig} for further customizations
      */
-    HoverflyConfig destination(String destination);
+    public HoverflyConfig destination(String destination) {
+        this.destination = destination;
+        return this;
+    }
 
     /**
      * Controls whether we want to proxy localhost.  If false then any request to localhost will not be proxied through {@link Hoverfly}.
      * @return the {@link HoverflyConfig} for further customizations
      */
     @Deprecated
-    default HoverflyConfig proxyLocalHost(boolean proxyLocalHost) {
+    public HoverflyConfig proxyLocalHost(boolean proxyLocalHost) {
         if (proxyLocalHost) {
             return proxyLocalHost();
         }
@@ -65,22 +87,15 @@ public interface HoverflyConfig {
      * By default it is false
      * @return a config
      */
-    HoverflyConfig proxyLocalHost();
-
-
-    /**
-     * Enable remote Hoverfly configurations
-     * @return a {@link RemoteHoverflyConfig} implementation
-     */
-    default RemoteHoverflyConfig remote() {
-        return new RemoteHoverflyConfigBuilder();
+    public HoverflyConfig proxyLocalHost() {
+        this.proxyLocalHost = true;
+        return this;
     }
 
-    /**
-     * Validate and build {@link HoverflyConfiguration}
-     * @return a validated hoverfly configuration object
-     */
-    HoverflyConfiguration build();
+//    HoverflyConfig captureHeaders(String header, String... headers);
+//
+//    default HoverflyConfig captureAllHeaders();
+
 
     /**
      * Set proxy CA certificate to validate the authenticity of a Hoverfly instance.
@@ -88,5 +103,23 @@ public interface HoverflyConfig {
      * @param proxyCaCert the path for the PEM encoded certificate relative to classpath
      * @return the {@link HoverflyConfig} for further customizations
      */
-    HoverflyConfig proxyCaCert(String proxyCaCert);
+    public HoverflyConfig proxyCaCert(String proxyCaCert) {
+        this.proxyCaCert = proxyCaCert;
+        return this;
+    }
+
+
+    /**
+     * Enable remote Hoverfly configurations
+     * @return a {@link RemoteHoverflyConfig} implementation
+     */
+    public RemoteHoverflyConfig remote() {
+        return new RemoteHoverflyConfig();
+    }
+
+    /**
+     * Validate and build {@link HoverflyConfiguration}
+     * @return a validated hoverfly configuration object
+     */
+    public abstract HoverflyConfiguration build();
 }

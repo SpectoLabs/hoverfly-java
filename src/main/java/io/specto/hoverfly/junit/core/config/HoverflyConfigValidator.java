@@ -1,5 +1,7 @@
-package io.specto.hoverfly.junit.core;
+package io.specto.hoverfly.junit.core.config;
 
+import io.specto.hoverfly.junit.core.Hoverfly;
+import io.specto.hoverfly.junit.core.HoverflyConfig;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -7,9 +9,7 @@ import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Optional;
 
 
 /**
@@ -61,7 +61,7 @@ class HoverflyConfigValidator {
 
         // Check proxy CA cert exists
         if (hoverflyConfig.getProxyCaCertificate().isPresent()) {
-            HoverflyUtils.findResourceOnClasspath(hoverflyConfig.getProxyCaCertificate().get());
+            findResourceOnClasspath(hoverflyConfig.getProxyCaCertificate().get());
         }
 
         return hoverflyConfig;
@@ -77,5 +77,11 @@ class HoverflyConfigValidator {
         } catch (IOException e) {
             throw new RuntimeException("Cannot find available port", e);
         }
+    }
+
+    private URL findResourceOnClasspath(String resourceName) {
+        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        return Optional.ofNullable(classLoader.getResource(resourceName))
+                .orElseThrow(() -> new IllegalArgumentException("Resource not found with name: " + resourceName));
     }
 }

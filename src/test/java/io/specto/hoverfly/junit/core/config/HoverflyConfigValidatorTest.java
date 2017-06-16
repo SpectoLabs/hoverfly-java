@@ -1,4 +1,4 @@
-package io.specto.hoverfly.junit.core;
+package io.specto.hoverfly.junit.core.config;
 
 
 import org.junit.Before;
@@ -82,7 +82,12 @@ public class HoverflyConfigValidatorTest {
 
     @Test
     public void shouldNotChangeUserDefinedHttpsAdminPort() throws Exception {
-        HoverflyConfiguration validated = configs().remote().host("remote-host.hoverfly.io").withHttpsAdminEndpoint().adminPort(8443).build();
+        HoverflyConfiguration validated = configs()
+                .remote()
+                .host("remote-host.hoverfly.io")
+                .withHttpsAdminEndpoint()
+                .adminPort(8443)
+                .build();
 
         assertThat(validated.getAdminPort()).isEqualTo(8443);
     }

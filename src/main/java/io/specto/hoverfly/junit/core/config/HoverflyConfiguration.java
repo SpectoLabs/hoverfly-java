@@ -1,6 +1,8 @@
-package io.specto.hoverfly.junit.core;
+package io.specto.hoverfly.junit.core.config;
 
-import java.util.Optional;
+import io.specto.hoverfly.junit.core.Hoverfly;
+
+import java.util.*;
 
 import static io.specto.hoverfly.junit.core.HoverflyConstants.HTTP;
 import static io.specto.hoverfly.junit.core.HoverflyConstants.LOCALHOST;
@@ -22,13 +24,22 @@ public class HoverflyConfiguration {
     private boolean isRemoteInstance;
     private String adminCertificate;
     private String proxyCaCertificate;
-
+    private List<String> captureHeaders = Collections.emptyList();
 
     /**
      * Create configurations for external hoverfly
      */
-    HoverflyConfiguration(String scheme, String host, int proxyPort, int adminPort, boolean proxyLocalHost, String destination, String proxyCaCertificate, String authToken, String adminCertificate) {
-        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, null, null);
+    HoverflyConfiguration(final String scheme,
+                          final String host,
+                          final int proxyPort,
+                          final int adminPort,
+                          final boolean proxyLocalHost,
+                          final String destination,
+                          final String proxyCaCertificate,
+                          final String authToken,
+                          final String adminCertificate,
+                          final List<String> captureHeaders) {
+        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, null, null, captureHeaders);
         setScheme(scheme);
         setHost(host);
         this.authToken = authToken;
@@ -39,7 +50,14 @@ public class HoverflyConfiguration {
     /**
      * Create configurations for internal-managed hoverfly
      */
-    HoverflyConfiguration(int proxyPort, int adminPort, boolean proxyLocalHost, String destination, String proxyCaCertificate, String sslCertificatePath, String sslKeyPath) {
+    HoverflyConfiguration(final int proxyPort,
+                          final int adminPort,
+                          final boolean proxyLocalHost,
+                          final String destination,
+                          final String proxyCaCertificate,
+                          final String sslCertificatePath,
+                          final String sslKeyPath,
+                          final List<String> captureHeaders) {
         this.proxyPort = proxyPort;
         this.adminPort = adminPort;
         this.proxyLocalHost = proxyLocalHost;
@@ -116,6 +134,10 @@ public class HoverflyConfiguration {
 
     public String getAdminCertificate() {
         return adminCertificate;
+    }
+
+    public List<String> getCaptureHeaders() {
+        return captureHeaders;
     }
 
     void setHost(String host) {
