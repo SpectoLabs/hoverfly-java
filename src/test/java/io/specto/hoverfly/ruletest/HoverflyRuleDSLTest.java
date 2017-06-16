@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
+import static io.specto.hoverfly.junit.dsl.HttpBodyConverter.jsonWithSingleQuotes;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.*;
 import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +34,9 @@ public class HoverflyRuleDSLTest {
                     .willReturn(created("http://localhost/api/bookings/1"))
 
                     .get("/api/bookings/1")
-                    .willReturn(success("{\"bookingId\":\"1\",\"origin\":\"London\",\"destination\":\"Singapore\",\"time\":\"2011-09-01T12:30\",\"_links\":{\"self\":{\"href\":\"http://localhost/api/bookings/1\"}}}", "application/json")),
+                    .willReturn(success().body(jsonWithSingleQuotes(
+                            "{'bookingId':'1','origin':'London','destination':'Singapore','time':'2011-09-01T12:30','_links':{'self':{'href':'http://localhost/api/bookings/1'}}}"
+                    ))),
 
             service("www.other-anotherservice.com")
 
