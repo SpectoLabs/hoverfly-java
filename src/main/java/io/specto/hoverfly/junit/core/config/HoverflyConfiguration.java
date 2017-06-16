@@ -65,6 +65,7 @@ public class HoverflyConfiguration {
         this.proxyCaCertificate = proxyCaCertificate;
         this.sslCertificatePath = sslCertificatePath;
         this.sslKeyPath = sslKeyPath;
+        this.captureHeaders = captureHeaders;
     }
 
     /**
