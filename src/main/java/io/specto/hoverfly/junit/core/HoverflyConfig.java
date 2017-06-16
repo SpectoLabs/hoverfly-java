@@ -17,6 +17,8 @@ import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.config.LocalHoverflyConfig;
 import io.specto.hoverfly.junit.core.config.RemoteHoverflyConfig;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -92,9 +94,25 @@ public abstract class HoverflyConfig {
         return this;
     }
 
-//    HoverflyConfig captureHeaders(String header, String... headers);
-//
-//    default HoverflyConfig captureAllHeaders();
+    /**
+     * Specifies which request headers to capture
+     * @param headers an array of header names
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public HoverflyConfig captureHeaders(String... headers) {
+        this.captureHeaders = Arrays.asList(headers);
+        return this;
+    }
+
+
+    /**
+     * Set to capture all request headers
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public HoverflyConfig captureAllHeaders() {
+        this.captureHeaders = Collections.singletonList("*");
+        return this;
+    }
 
 
     /**

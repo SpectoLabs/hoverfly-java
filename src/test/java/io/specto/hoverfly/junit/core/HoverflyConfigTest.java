@@ -106,11 +106,28 @@ public class HoverflyConfigTest {
         configs.getAuthToken().ifPresent(token -> assertThat(token).isEqualTo("some-token"));
     }
 
-//    @Test
-//    public void shouldSetCaptureHeaders() throws Exception {
-//        HoverflyConfiguration configs = configs().captureHeaders("Content-Type", "Authorization").build();
-//
-//        assertThat(configs.getCaptureHeaders()).hasSize(2);
-//        assertThat(configs.getCaptureHeaders()).containsOnly("Content-Type", "Authorization");
-//    }
+    @Test
+    public void shouldSetCaptureHeaders() throws Exception {
+        HoverflyConfiguration configs = configs().captureHeaders("Content-Type", "Authorization").build();
+
+        assertThat(configs.getCaptureHeaders()).hasSize(2);
+        assertThat(configs.getCaptureHeaders()).containsOnly("Content-Type", "Authorization");
+    }
+
+    @Test
+    public void shouldSetCaptureOneHeader() throws Exception {
+        HoverflyConfiguration configs = configs().captureHeaders("Content-Type").build();
+
+        assertThat(configs.getCaptureHeaders()).hasSize(1);
+        assertThat(configs.getCaptureHeaders()).containsOnly("Content-Type");
+    }
+
+    @Test
+    public void shouldSetCaptureAllHeaders() throws Exception {
+        HoverflyConfiguration configs = configs().captureAllHeaders().build();
+
+        assertThat(configs.getCaptureHeaders()).hasSize(1);
+        assertThat(configs.getCaptureHeaders()).containsOnly("*");
+    }
+
 }
