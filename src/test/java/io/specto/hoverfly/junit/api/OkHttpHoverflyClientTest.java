@@ -3,15 +3,20 @@ package io.specto.hoverfly.junit.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import io.specto.hoverfly.junit.api.model.ModeArguments;
+import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.SimulationSource;
 import io.specto.hoverfly.junit.core.model.*;
+import org.assertj.core.util.Lists;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.URL;
+import java.util.List;
 
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
@@ -39,7 +44,7 @@ public class OkHttpHoverflyClientTest {
 
     @Test
     public void shouldBeAbleToGetConfigInfo() throws Exception {
-        HoverflyInfo configInfo = client.getConfigInfo();
+        HoverflyInfoView configInfo = client.getConfigInfo();
 
         // TODO mapping string to enum for hoverfly mode
         assertThat(configInfo.getMode()).isEqualTo(SIMULATE.name().toLowerCase());
@@ -59,6 +64,17 @@ public class OkHttpHoverflyClientTest {
         client.setMode(CAPTURE);
 
         assertThat(hoverfly.getMode()).isEqualTo(CAPTURE);
+    }
+
+
+    @Test
+    @Ignore("TODO bug in hoverfly not returning mode arguments")
+    public void shouldBeAbleToSetCaptureModeWithArguments() throws Exception {
+        client.setMode(CAPTURE, new ModeArguments(Lists.newArrayList("Content-Type", "Authorization")));
+
+        List<String> headersWhitelist = hoverfly.getHoverflyInfo().getModeArguments().getHeadersWhitelist();
+        assertThat(headersWhitelist).hasSize(2);
+        assertThat(headersWhitelist).containsOnly("Content-Type", "Authorization");
     }
 
     @Test

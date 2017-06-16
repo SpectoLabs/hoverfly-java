@@ -1,7 +1,8 @@
 package io.specto.hoverfly.junit.api;
 
+import io.specto.hoverfly.junit.api.model.ModeArguments;
+import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.core.HoverflyMode;
-import io.specto.hoverfly.junit.core.model.HoverflyInfo;
 import io.specto.hoverfly.junit.core.model.Simulation;
 
 /**
@@ -14,11 +15,13 @@ public interface HoverflyClient {
 
     Simulation getSimulation();
 
-    HoverflyInfo getConfigInfo();
+    HoverflyInfoView getConfigInfo();
 
     void setDestination(String destination);
 
     void setMode(HoverflyMode mode);
+
+    void setMode(HoverflyMode mode, ModeArguments modeArguments);
 
     /**
      * Check Hoverfly is healthy

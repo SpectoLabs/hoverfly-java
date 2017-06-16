@@ -1,6 +1,6 @@
 package io.specto.hoverfly.junit.core;
 
-import io.specto.hoverfly.junit.core.model.HoverflyInfo;
+import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
 import org.junit.After;
 import org.junit.Before;
@@ -31,7 +31,7 @@ public class RemoteHoverflyStubTest {
                         .willReturn(success())
 
                         .put("/api/v2/hoverfly/mode")
-                        .body(HttpBodyConverter.json(new HoverflyInfo(null, HoverflyMode.SIMULATE.name().toLowerCase(), null, null)))
+                        .body(HttpBodyConverter.json(new HoverflyInfoView(null, SIMULATE.getValue(), null, null, null)))
                         .willReturn(success())
         ));
     }
