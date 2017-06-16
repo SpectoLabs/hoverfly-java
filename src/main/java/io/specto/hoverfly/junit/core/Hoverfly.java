@@ -132,7 +132,6 @@ public class Hoverfly implements AutoCloseable {
         LOGGER.info("Executing binary at {}", binaryPath);
         final List<String> commands = new ArrayList<>();
         commands.add(binaryPath.toString());
-        commands.add("-dev");   // TODO remove this after hoverfly release v0.12.1
         commands.add("-db");
         commands.add("memory");
         commands.add("-pp");
