@@ -1,27 +1,33 @@
 package io.specto.hoverfly.ruletest;
 
+import io.specto.hoverfly.junit.api.HoverflyClient;
+import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
+import io.specto.hoverfly.junit.core.HoverflyConstants;
+import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
+import io.specto.hoverfly.junit.dsl.HoverflyDslException;
 import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
+import io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import io.specto.hoverfly.models.SimpleBooking;
-import org.apache.commons.lang3.time.StopWatch;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.http.*;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.concurrent.TimeUnit;
 
 import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.HttpBodyConverter.json;
 import static io.specto.hoverfly.junit.dsl.HttpBodyConverter.xml;
-import static io.specto.hoverfly.junit.dsl.ResponseCreators.created;
-import static io.specto.hoverfly.junit.dsl.ResponseCreators.serverError;
-import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
+import static io.specto.hoverfly.junit.dsl.ResponseCreators.*;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -164,6 +170,7 @@ public class HoverflyRuleDslMatcherTest {
     }
 
     @Test
+    @Ignore("Enable after new hoverfly release")
     public void shouldIgnoreHttpSchemeWhenItIsNotSet() throws Exception {
         URI uri = UriComponentsBuilder.fromHttpUrl("https://www.always-success.com")
                 .path("/any/api/anything")
