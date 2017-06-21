@@ -1,12 +1,6 @@
 package io.specto.hoverfly.ruletest;
 
-import io.specto.hoverfly.junit.api.HoverflyClient;
-import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
-import io.specto.hoverfly.junit.core.HoverflyConstants;
-import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
-import io.specto.hoverfly.junit.dsl.HoverflyDslException;
 import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
-import io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import io.specto.hoverfly.models.SimpleBooking;
 import org.junit.ClassRule;

@@ -70,5 +70,12 @@ public class HoverflyDsl {
         return new StubServiceBuilder(matcher);
     }
 
+    /**
+     * Instantiates a new instance
+     * @return the builder
+     */
+    public static ResponseBuilder response() {
+        return new ResponseBuilder();
+    }
 
 }

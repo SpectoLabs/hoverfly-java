@@ -35,13 +35,14 @@ public class ResponseBuilder {
     private int delay;
     private TimeUnit delayTimeUnit;
 
-    private ResponseBuilder() {
+    ResponseBuilder() {
     }
 
     /**
      * Instantiates a new instance
      * @return the builder
      */
+    @Deprecated
     public static ResponseBuilder response() {
         return new ResponseBuilder();
     }

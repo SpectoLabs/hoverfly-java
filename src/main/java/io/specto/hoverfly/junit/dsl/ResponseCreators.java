@@ -12,7 +12,7 @@
  */
 package io.specto.hoverfly.junit.dsl;
 
-import static io.specto.hoverfly.junit.dsl.ResponseBuilder.response;
+import static io.specto.hoverfly.junit.dsl.HoverflyDsl.response;
 
 /**
  * Wrapper around a {@link ResponseBuilder} for building common types of responses

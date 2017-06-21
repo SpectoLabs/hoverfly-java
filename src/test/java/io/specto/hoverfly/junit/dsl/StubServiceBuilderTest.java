@@ -13,9 +13,8 @@ import org.junit.Test;
 import java.util.Set;
 
 import static io.specto.hoverfly.assertions.Assertions.assertThat;
-import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
+import static io.specto.hoverfly.junit.dsl.HoverflyDsl.*;
 import static io.specto.hoverfly.junit.dsl.HttpBodyConverter.json;
-import static io.specto.hoverfly.junit.dsl.ResponseBuilder.response;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.*;
 import static org.mockito.Mockito.spy;
