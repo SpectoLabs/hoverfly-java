@@ -40,11 +40,11 @@ public interface HoverflyClient {
     boolean getHealth();
 
     /**
-     * Static factory method for creating a {@link HoverflyClientBuilder}
+     * Static factory method for creating a {@link Builder}
      * @return a builder for HoverflyClient
      */
-    static HoverflyClientBuilder custom() {
-        return new HoverflyClientBuilder();
+    static Builder custom() {
+        return new Builder();
     }
 
     /**
@@ -52,42 +52,42 @@ public interface HoverflyClient {
      * @return a default HoverflyClient
      */
     static HoverflyClient createDefault() {
-        return new HoverflyClientBuilder().build();
+        return new Builder().build();
     }
 
     /**
      * HTTP client builder for Hoverfly admin API
      */
-    class HoverflyClientBuilder {
+    class Builder {
 
         private String scheme = HoverflyConstants.HTTP;
         private String host = HoverflyConstants.LOCALHOST;
         private int port = HoverflyConstants.DEFAULT_ADMIN_PORT;
         private String authToken = null;
 
-        HoverflyClientBuilder() {
+        Builder() {
         }
 
-        public HoverflyClientBuilder scheme(String scheme) {
+        public Builder scheme(String scheme) {
             this.scheme = scheme;
             return this;
         }
 
-        public HoverflyClientBuilder host(String host) {
+        public Builder host(String host) {
             this.host = host;
             return this;
         }
 
-        public HoverflyClientBuilder port(int port) {
+        public Builder port(int port) {
             this.port = port;
             return this;
         }
 
         /**
          * Get token from environment variable "HOVERFLY_AUTH_TOKEN" to authenticate with admin API
-         * @return this HoverflyClientBuilder for further customizations
+         * @return this Builder for further customizations
          */
-        public HoverflyClientBuilder withAuthToken() {
+        public Builder withAuthToken() {
             this.authToken = System.getenv(HoverflyConstants.HOVERFLY_AUTH_TOKEN);
             return this;
         }
