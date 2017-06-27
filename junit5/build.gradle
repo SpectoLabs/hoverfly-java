@@ -1,0 +1,32 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4'
+    }
+}
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+archivesBaseName = 'hoverfly-java-junit5'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.0.0-M4'
+    compile(rootProject) {
+        exclude group: 'junit'
+    }
+
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M4'
+    testCompile 'org.mockito:mockito-core:2.7.22'
+    testCompile 'org.assertj:assertj-core:3.6.1'
+
+}
