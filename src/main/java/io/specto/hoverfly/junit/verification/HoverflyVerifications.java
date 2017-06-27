@@ -11,7 +11,7 @@ public class HoverflyVerifications {
         return data -> {
             int actualNumberOfRequests = getActualNumberOfRequests(data);
             if (actualNumberOfRequests != expectedNumberOfRequests) {
-                handleVerificationFailure(expectedNumberOfRequests, actualNumberOfRequests);
+                handleVerificationFailure(expectedNumberOfRequests, actualNumberOfRequests, data);
             }
         };
     }
@@ -24,7 +24,7 @@ public class HoverflyVerifications {
         return data -> {
             int actualNumberOfRequests = getActualNumberOfRequests(data);
             if (actualNumberOfRequests < expectedNumberOfRequests) {
-                handleVerificationFailure(expectedNumberOfRequests, actualNumberOfRequests, "at least");
+                handleVerificationFailure(expectedNumberOfRequests, actualNumberOfRequests, "at least", data);
             }
         };
     }
@@ -33,7 +33,7 @@ public class HoverflyVerifications {
         return data -> {
             int actualNumberOfRequests = getActualNumberOfRequests(data);
             if (actualNumberOfRequests > expectedNumberOfRequests) {
-                handleVerificationFailure(expectedNumberOfRequests, actualNumberOfRequests, "at most");
+                handleVerificationFailure(expectedNumberOfRequests, actualNumberOfRequests, "at most", data);
             }
         };
     }
@@ -44,21 +44,21 @@ public class HoverflyVerifications {
 
     private static int getActualNumberOfRequests(VerificationData data) {
         if (data == null || data.getJournal() == null || data.getJournal().getEntries() == null) {
-            throw new HoverflyVerificationException("Failed to get journal for verification.");
+            throw new HoverflyVerificationError("Failed to get journal for verification.");
         }
         return data.getJournal().getEntries().size();
     }
 
 
-    private static void handleVerificationFailure(int expectedNumberOfRequests, int actualNumberOfRequests) {
-        handleVerificationFailure(expectedNumberOfRequests, actualNumberOfRequests, "");
+    private static void handleVerificationFailure(int expected, int actual, VerificationData data) {
+        handleVerificationFailure(expected, actual, "", data);
     }
 
-    private static void handleVerificationFailure(int expectedNumberOfRequests, int actualNumberOfRequests, String description) {
+    private static void handleVerificationFailure(int expected, int actual, String description, VerificationData data) {
 
         StringBuilder sb = new StringBuilder();
 
-        if (expectedNumberOfRequests == 0) {
+        if (expected == 0) {
             sb.append("Not expected any request, ");
         } else {
             sb.append("Expected ");
@@ -67,17 +67,24 @@ public class HoverflyVerifications {
                 sb.append(description).append(" ");
             }
 
-            sb.append(expectedNumberOfRequests).append(" ");
+            sb.append(expected).append(" ");
 
-            if (expectedNumberOfRequests > 1) {
+            if (expected > 1) {
                 sb.append("requests, ");
             } else {
                 sb.append("request, ");
             }
         }
 
-        sb.append("but actual number of requests is ").append(actualNumberOfRequests).append(".");
+        sb.append("but actual number of requests is ").append(actual).append(".");
+        sb.append("\n").append("Actual requests found: ").append("\n");
 
-        throw new HoverflyVerificationException(sb.toString());
+        data.getJournal().getEntries().stream()
+                .map(VerificationUtils::format)
+                .forEach(formatted -> sb.append(formatted).append("\n"));
+
+        throw new HoverflyVerificationError(sb.toString());
     }
+
+
 }

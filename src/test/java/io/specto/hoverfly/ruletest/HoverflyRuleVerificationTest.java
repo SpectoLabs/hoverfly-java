@@ -2,6 +2,7 @@ package io.specto.hoverfly.ruletest;
 
 import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
+import io.specto.hoverfly.junit.verification.HoverflyVerificationError;
 import io.specto.hoverfly.models.SimpleBooking;
 import org.junit.ClassRule;
 import org.junit.Test;
