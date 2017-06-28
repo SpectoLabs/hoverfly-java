@@ -1,12 +1,15 @@
 package io.specto.hoverfly.junit.core.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
+import org.assertj.core.util.Lists;
 import org.junit.Test;
 
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,8 +30,15 @@ public class JournalTest {
         JournalEntry logEntry = journal.getEntries().iterator().next();
 
         assertThat(logEntry.getMode()).isEqualTo("simulate");
-        assertThat(logEntry.getRequest()).isNotNull();
-        assertThat(logEntry.getRequest().getDestination()).isEqualTo("hoverfly.io");
+        RequestDetails request = logEntry.getRequest();
+        assertThat(request.getDestination()).isEqualTo("hoverfly.io");
+        assertThat(request.getScheme()).isEqualTo("http");
+        assertThat(request.getMethod()).isEqualTo("GET");
+        assertThat(request.getPath()).isEqualTo("/");
+        assertThat(request.getHeaders()).containsAllEntriesOf(ImmutableMap.of(
+                "Accept", Lists.newArrayList("*/*"),
+                "User-Agent", Lists.newArrayList("curl/7.49.1")));
+
         assertThat(logEntry.getResponse()).isNotNull();
         assertThat(logEntry.getLatency()).isEqualTo(2);
         assertThat(logEntry.getTimeStarted()).isEqualTo(

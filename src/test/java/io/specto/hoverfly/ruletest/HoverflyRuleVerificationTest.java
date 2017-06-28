@@ -2,7 +2,9 @@ package io.specto.hoverfly.ruletest;
 
 import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
+import io.specto.hoverfly.junit.verification.HoverflyVerificationError;
 import io.specto.hoverfly.models.SimpleBooking;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.*;
 import static io.specto.hoverfly.junit.verification.HoverflyVerifications.never;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class HoverflyRuleVerificationTest {
@@ -43,6 +46,12 @@ public class HoverflyRuleVerificationTest {
                     .willReturn(success())
 
     )).printSimulationData();
+
+
+    @Before
+    public void setUp() throws Exception {
+        hoverflyRule.resetJournal();
+    }
 
     @Test
     public void shouldVerifyRequestHasBeenMadeExactlyOnce() throws Exception {
@@ -114,5 +123,56 @@ public class HoverflyRuleVerificationTest {
         hoverflyRule.verifyNever(service(matches("api.flight.*")));
 
 
+    }
+
+    @Test
+    public void shouldVerifyRequestsInOrder() throws Exception {
+
+        RequestEntity<String> bookFlightRequest = RequestEntity.put(new URI("http://api-sandbox.flight.com/api/bookings/1"))
+                .contentType(APPLICATION_JSON)
+                .body(HttpBodyConverter.OBJECT_MAPPER.writeValueAsString(booking));
+
+        restTemplate.exchange(bookFlightRequest, String.class);
+
+
+        URI uri = UriComponentsBuilder.fromHttpUrl("http://api-sandbox.flight.com")
+                .path("/api/bookings")
+                .queryParam("airline", "Pacific Air")
+                .queryParam("page", 1)
+                .build()
+                .toUri();
+
+        restTemplate.getForEntity(uri, SimpleBooking.class);
+
+        hoverflyRule.verifyInOrder(
+                service("api-sandbox.flight.com").put(startsWith("/api/bookings")).anyBody(),
+                service("api-sandbox.flight.com").get("/api/bookings").anyQueryParams());
+    }
+
+
+    @Test
+    public void shouldThrowExceptionWhenVerifyRequestsInOrderFailed() throws Exception {
+        RequestEntity<String> bookFlightRequest = RequestEntity.put(new URI("http://api-sandbox.flight.com/api/bookings/1"))
+                .contentType(APPLICATION_JSON)
+                .body(HttpBodyConverter.OBJECT_MAPPER.writeValueAsString(booking));
+
+        restTemplate.exchange(bookFlightRequest, String.class);
+
+        Thread.sleep(1000);
+
+        URI uri = UriComponentsBuilder.fromHttpUrl("http://api-sandbox.flight.com")
+                .path("/api/bookings")
+                .queryParam("airline", "Pacific Air")
+                .queryParam("page", 1)
+                .build()
+                .toUri();
+
+        restTemplate.getForEntity(uri, SimpleBooking.class);
+
+        assertThatThrownBy(() -> hoverflyRule.verifyInOrder(
+                service("api-sandbox.flight.com").get("/api/bookings").anyQueryParams(),
+                service("api-sandbox.flight.com").put(startsWith("/api/bookings")).anyBody()))
+                .isInstanceOf(HoverflyVerificationError.class)
+                .hasMessageContaining("are not in the expected order");
     }
 }

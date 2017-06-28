@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class RequestDetails {
     private final String body;
     private final String method;
 
-    private final Map<String, List<String>> headers;
+    private final Map<String, List<String>> headers = new HashMap<>();
 
     @JsonCreator
     public RequestDetails(@JsonProperty("scheme") String scheme,
@@ -26,14 +27,16 @@ public class RequestDetails {
                           @JsonProperty("query") String query,
                           @JsonProperty("body") String body,
                           @JsonProperty("method") String method,
-                          @JsonProperty("header") Map<String, List<String>> headers) {
+                          @JsonProperty("headers") Map<String, List<String>> headers) {
         this.scheme = scheme;
         this.destination = destination;
         this.path = path;
         this.query = query;
         this.body = body;
         this.method = method;
-        this.headers = headers;
+        if (headers != null) {
+            this.headers.putAll(headers);
+        }
     }
 
     public String getScheme() {

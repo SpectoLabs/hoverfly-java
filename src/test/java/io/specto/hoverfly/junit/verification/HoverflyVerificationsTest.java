@@ -20,7 +20,6 @@ public class HoverflyVerificationsTest {
     private JournalEntry journalEntry;
 
 
-
     @Before
     public void setUp() throws Exception {
         Journal journal = objectMapper.readValue(resource, Journal.class);
@@ -37,7 +36,7 @@ public class HoverflyVerificationsTest {
     public void shouldThrowExceptionWhenVerifyWithTimesFailed() throws Exception {
         VerificationData data = new VerificationData(new Journal(Collections.emptyList()));
         assertThatThrownBy(() -> HoverflyVerifications.times(1).verify(data))
-                .isInstanceOf(HoverflyVerificationException.class)
+                .isInstanceOf(HoverflyVerificationError.class)
                 .hasMessageContaining("Expected 1 request, but actual number of requests is 0");
     }
 
@@ -46,7 +45,7 @@ public class HoverflyVerificationsTest {
     public void shouldThrowHoverflyVerificationExceptionIfJournalIsNull() throws Exception {
         VerificationData data = new VerificationData();
         assertThatThrownBy(() -> HoverflyVerifications.times(1).verify(data))
-                .isInstanceOf(HoverflyVerificationException.class)
+                .isInstanceOf(HoverflyVerificationError.class)
                 .hasMessageContaining("Failed to get journal");
     }
 
@@ -61,7 +60,7 @@ public class HoverflyVerificationsTest {
     public void shouldThrowExceptionIfVerifyWithNeverFailed() throws Exception {
         VerificationData data = new VerificationData(new Journal(Lists.newArrayList(journalEntry)));
         assertThatThrownBy(() -> HoverflyVerifications.never().verify(data))
-                .isInstanceOf(HoverflyVerificationException.class)
+                .isInstanceOf(HoverflyVerificationError.class)
                 .hasMessageContaining("Not expected any request, but actual number of requests is 1");
     }
 
@@ -81,7 +80,7 @@ public class HoverflyVerificationsTest {
 
         VerificationData data = new VerificationData(new Journal(Lists.newArrayList(journalEntry)));
         assertThatThrownBy(() -> HoverflyVerifications.atLeast(2).verify(data))
-                .isInstanceOf(HoverflyVerificationException.class)
+                .isInstanceOf(HoverflyVerificationError.class)
                 .hasMessageContaining("Expected at least 2 requests, but actual number of requests is 1");
     }
 
@@ -112,7 +111,7 @@ public class HoverflyVerificationsTest {
     public void shouldThrowExceptionWhenVerifyWithAtMostTwoTimesButThreeRequestsWereMade() throws Exception {
         VerificationData data = new VerificationData(new Journal(Lists.newArrayList(journalEntry, journalEntry, journalEntry)));
         assertThatThrownBy(() -> HoverflyVerifications.atMost(2).verify(data))
-                .isInstanceOf(HoverflyVerificationException.class)
+                .isInstanceOf(HoverflyVerificationError.class)
                 .hasMessageContaining("Expected at most 2 requests, but actual number of requests is 3");
     }
 }

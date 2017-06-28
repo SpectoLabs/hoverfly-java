@@ -281,6 +281,10 @@ public class HoverflyRule extends ExternalResource {
         capturePath = fileRelativeToTestResourcesHoverfly(recordFile);
     }
 
+    public void resetJournal() {
+        hoverfly.resetJournal();
+    }
+
     /**
      * Get custom Hoverfly header name used by Http client to authenticate with secured Hoverfly proxy
      * @return the custom Hoverfly authorization header name
@@ -317,6 +321,10 @@ public class HoverflyRule extends ExternalResource {
 
     public void verifyNever(StubServiceBuilder requestedServiceBuilder) {
         hoverfly.verifyNever(requestedServiceBuilder);
+    }
+
+    public void verifyInOrder(RequestMatcherBuilder... requestMatchers) {
+        hoverfly.verifyInOrder(requestMatchers);
     }
 
     private void checkMode(HoverflyMode mode) {

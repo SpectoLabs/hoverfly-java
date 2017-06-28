@@ -23,6 +23,7 @@ import io.specto.hoverfly.junit.core.model.Journal;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import io.specto.hoverfly.junit.dsl.RequestMatcherBuilder;
 import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
+import io.specto.hoverfly.junit.verification.InOrderVerification;
 import io.specto.hoverfly.junit.verification.VerificationCriteria;
 import io.specto.hoverfly.junit.verification.VerificationData;
 import org.apache.commons.lang3.StringUtils;
@@ -313,6 +314,13 @@ public class Hoverfly implements AutoCloseable {
     }
 
 
+    public void verifyInOrder(RequestMatcherBuilder... requestMatchers) {
+        InOrderVerification inOrder = new InOrderVerification(hoverflyClient, requestMatchers);
+
+        inOrder.verify();
+    }
+
+
     private void persistSimulation(Path path, Simulation simulation) throws IOException {
         Files.createDirectories(path.getParent());
         JSON_PRETTY_PRINTER.writeValue(path.toFile(), simulation);
@@ -335,7 +343,6 @@ public class Hoverfly implements AutoCloseable {
         }
         throw new IllegalStateException("Hoverfly has not become healthy in " + BOOT_TIMEOUT_SECONDS + " seconds");
     }
-
 
     private void cleanUp() {
         LOGGER.info("Destroying hoverfly process");
