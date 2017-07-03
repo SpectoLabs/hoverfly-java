@@ -25,6 +25,7 @@ public class SimulationTest {
 
     private URL v1Resource = Resources.getResource("simulations/v1-simulation.json");
     private URL v2Resource = Resources.getResource("simulations/v2-simulation.json");
+    private URL v3Resource = Resources.getResource("simulations/v3-simulation.json");
     private URL v2ResourceWithUnknownFields = Resources.getResource("simulations/v2-simulation-with-unknown-fields.json");
     private URL v1ResourceWithLooseMatching = Resources.getResource("simulations/v1-simulation-with-loose-matching.json");
     private URL v1ResourceWithRecording = Resources.getResource("simulations/v1-simulation-with-recording.json");
@@ -55,13 +56,13 @@ public class SimulationTest {
     }
 
     @Test
-    public void shouldSerializeV2Simulation() throws Exception {
+    public void shouldSerializeV3Simulation() throws Exception {
 
-        Simulation simulation = getV2Simulation();
+        Simulation simulation = getLatestSimulation();
 
         String actual = objectMapper.writeValueAsString(simulation);
 
-        String expected = Resources.toString(v2Resource, Charset.forName("UTF-8"));
+        String expected = Resources.toString(v3Resource, Charset.forName("UTF-8"));
         JSONAssert.assertEquals(expected, actual, JSONCompareMode.STRICT);
     }
 
@@ -105,9 +106,15 @@ public class SimulationTest {
     }
 
 
-    private Simulation getV2Simulation() {
+    private Simulation getLatestSimulation() {
         HoverflyData data = getTestHoverflyData();
         HoverflyMetaData meta = new HoverflyMetaData();
+        return new Simulation(data, meta);
+    }
+
+    private Simulation getV2Simulation() {
+        HoverflyData data = getTestHoverflyData();
+        HoverflyMetaData meta = new HoverflyMetaData("v2");
         return new Simulation(data, meta);
     }
 

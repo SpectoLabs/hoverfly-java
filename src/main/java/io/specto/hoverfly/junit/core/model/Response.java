@@ -29,16 +29,19 @@ public class Response {
     private final Integer status;
     private final String body;
     private final boolean encodedBody;
+    private final boolean templated;
     private final Map<String, List<String>> headers;
 
     @JsonCreator
     public Response(@JsonProperty("status") Integer status,
                     @JsonProperty("body") String body,
                     @JsonProperty("encodedBody") boolean encodedBody,
+                    @JsonProperty("templated") boolean templated,
                     @JsonProperty("headers") Map<String, List<String>> headers) {
         this.status = status;
         this.body = body;
         this.encodedBody = encodedBody;
+        this.templated = templated;
         this.headers = headers;
     }
 
@@ -54,15 +57,21 @@ public class Response {
         return encodedBody;
     }
 
+
+    public boolean isTemplated() {
+        return templated;
+    }
+
     public Map<String, List<String>> getHeaders() {
         return headers;
     }
 
     static class Builder {
-        private Integer status = null;
-        private String body = null;
-        private boolean encodedBody = false;
-        private Map<String, List<String>> headers = null;
+        private Integer status;
+        private String body;
+        private boolean encodedBody;
+        private boolean templated;
+        private Map<String, List<String>> headers;
 
         Builder status(int status) {
             this.status = status;
@@ -79,13 +88,18 @@ public class Response {
             return this;
         }
 
+        Builder templated(boolean templated) {
+            this.templated = templated;
+            return this;
+        }
+
         Builder headers(Map<String, List<String>> headers) {
             this.headers = headers;
             return this;
         }
 
         Response build() {
-            return new Response(status, body, encodedBody, headers);
+            return new Response(status, body, encodedBody, templated, headers);
         }
     }
 
