@@ -36,7 +36,7 @@ public class HoverflyRulePortConfigurationTest {
 
     @Test
     public void shouldChangeAdminPortToConfiguredPort() {
-        final ResponseEntity<String> health = restTemplate.getForEntity(String.format("http://localhost:%s/api/stats", EXPECTED_ADMIN_PORT), String.class);
+        final ResponseEntity<String> health = restTemplate.getForEntity(String.format("http://localhost:%s/api/health", EXPECTED_ADMIN_PORT), String.class);
         assertThat(health.getStatusCode()).isEqualTo(OK);
     }
 

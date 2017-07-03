@@ -24,7 +24,7 @@ public class HoverflyMetaData {
     private final String schemaVersion;
 
     public HoverflyMetaData() {
-        schemaVersion = "v2";
+        schemaVersion = "v3";
     }
 
     @JsonCreator

@@ -83,7 +83,7 @@ public class ResponseBuilder {
      * @return the response
      */
     Response build() {
-        return new Response(status, body, false, headers);
+        return new Response(status, body, false, true, headers);
     }
 
     public ResponseBuilder body(final HttpBodyConverter httpBodyConverter) {
