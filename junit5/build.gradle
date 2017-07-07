@@ -20,13 +20,21 @@ repositories {
 
 dependencies {
 
-    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.0.0-M4'
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.0.0-M5'
     compile(rootProject) {
         exclude group: 'junit'
     }
 
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M4'
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M5'
     testCompile 'org.mockito:mockito-core:2.7.22'
     testCompile 'org.assertj:assertj-core:3.6.1'
+    testCompile 'com.squareup.okhttp3:okhttp:3.8.0'
+    testCompile 'net.javacrumbs.json-unit:json-unit:1.17.0'
+    testCompile 'net.javacrumbs.json-unit:json-unit-fluent:1.17.0'
+
+    // Only needed to run tests in an IntelliJ IDEA that bundles an older version
+    testRuntime("org.junit.platform:junit-platform-launcher:1.0.0-M5")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.0-M5")
+    testRuntime("org.junit.vintage:junit-vintage-engine:4.12.0-M5")
 
 }

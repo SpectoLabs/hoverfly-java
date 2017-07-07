@@ -1,6 +1,5 @@
 package io.specto.hoverfly.junit5.spi;
 
-import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.SimulationSource;
 
 /**
@@ -9,7 +8,7 @@ import io.specto.hoverfly.junit.core.SimulationSource;
  */
 public interface HoverflySimulation {
 
-    void simulation(Hoverfly hoverfly);
+    SimulationSource simulation();
 
     class DefaultHoverflySimulation implements HoverflySimulation {
 
@@ -20,8 +19,8 @@ public interface HoverflySimulation {
         }
 
         @Override
-        public void simulation(Hoverfly hoverfly) {
-            hoverfly.importSimulation(SimulationSource.defaultPath(convertClassName()));
+        public SimulationSource simulation() {
+            return SimulationSource.defaultPath(convertClassName() + ".json");
         }
 
         private String convertClassName() {

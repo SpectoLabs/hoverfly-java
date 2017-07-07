@@ -8,12 +8,10 @@ import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.ContainerExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
-import org.junit.jupiter.api.extension.TestExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.junit.platform.commons.support.AnnotationSupport;
 
@@ -39,14 +37,14 @@ public class HoverflyCoreResolver implements TestInstancePostProcessor, Paramete
     private boolean isHoverflyStatic = false;
 
     @Override
-    public boolean supports(ParameterContext parameterContext, ExtensionContext context)
+    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext context)
         throws ParameterResolutionException {
 
         return parameterContext.getParameter().isAnnotationPresent(HoverflyCore.class);
     }
 
     @Override
-    public Object resolve(ParameterContext parameterContext, ExtensionContext context)
+    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext context)
         throws ParameterResolutionException {
 
         startHoverflyIfNotStarted(parameterContext.getParameter().getAnnotation(HoverflyCore.class));
@@ -69,7 +67,7 @@ public class HoverflyCoreResolver implements TestInstancePostProcessor, Paramete
     }
 
     @Override
-    public void afterEach(TestExtensionContext context) throws Exception {
+    public void afterEach(ExtensionContext context) throws Exception {
         if (isRunning() && !isHoverflyStatic) {
             this.hoverfly.close();
             this.hoverfly = null;
@@ -77,7 +75,7 @@ public class HoverflyCoreResolver implements TestInstancePostProcessor, Paramete
     }
 
     @Override
-    public void afterAll(ContainerExtensionContext context) throws Exception {
+    public void afterAll(ExtensionContext context) throws Exception {
         if (isRunning() && isHoverflyStatic) {
             this.hoverfly.close();
             this.hoverfly = null;
