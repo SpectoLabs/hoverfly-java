@@ -10,6 +10,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 /**
@@ -20,7 +23,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
  *
  * To configure instance just annotate test class with {@link HoverflySimulate} annotation.
  */
-public class HoverflySimulateResolver implements AfterAllCallback, BeforeAllCallback {
+public class HoverflySimulateResolver implements AfterAllCallback, BeforeAllCallback, ParameterResolver {
 
     private Hoverfly hoverfly;
 
@@ -95,5 +98,17 @@ public class HoverflySimulateResolver implements AfterAllCallback, BeforeAllCall
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    @Override
+    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+        throws ParameterResolutionException {
+        return Hoverfly.class.isAssignableFrom(parameterContext.getParameter().getType());
+    }
+
+    @Override
+    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+        throws ParameterResolutionException {
+        return this.hoverfly;
     }
 }

@@ -1,5 +1,6 @@
 package io.specto.hoverfly.junit5;
 
+import io.specto.hoverfly.junit.core.Hoverfly;
 import java.io.IOException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith({HoverflySimulateResolver.class})
 public class HoverflyDefaultsSimulationTest {
@@ -26,6 +28,11 @@ public class HoverflyDefaultsSimulationTest {
 
         assertThatJson(response.body().string()).node("bookingId").isEqualTo("\"1\"");
 
+    }
+
+    @Test
+    public void shouldInjectInstanceAsParameter(Hoverfly hoverfly) {
+        assertThat(hoverfly).isNotNull();
     }
 
 }
