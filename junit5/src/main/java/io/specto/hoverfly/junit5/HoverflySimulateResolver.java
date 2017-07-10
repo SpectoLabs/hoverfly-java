@@ -59,7 +59,7 @@ public class HoverflySimulateResolver implements AfterAllCallback, BeforeAllCall
     }
 
     private void startHoverflyWithDefaultsIfNotStarted(Class<?> currentTest) {
-        if (this.hoverfly == null) {
+        if (!isRunning()) {
             this.hoverfly = new Hoverfly(HoverflyConfig.configs(), HoverflyMode.SIMULATE);
             this.hoverfly.start();
 
@@ -70,7 +70,7 @@ public class HoverflySimulateResolver implements AfterAllCallback, BeforeAllCall
     }
 
     private void startHoverflyIfNotStarted(HoverflySimulate hoverflySimulate) {
-        if (this.hoverfly == null) {
+        if (!isRunning()) {
             try {
                 this.hoverfly = new Hoverfly(hoverflySimulate.config().newInstance().create(),
                     HoverflyMode.SIMULATE);

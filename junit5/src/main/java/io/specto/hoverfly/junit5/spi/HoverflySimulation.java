@@ -1,6 +1,7 @@
 package io.specto.hoverfly.junit5.spi;
 
 import io.specto.hoverfly.junit.core.SimulationSource;
+import io.specto.hoverfly.junit5.DefaultSimulationFilename;
 
 /**
  * Interface to be implemented for specifying Simulation in Hoverfly instance
@@ -20,12 +21,9 @@ public interface HoverflySimulation {
 
         @Override
         public SimulationSource simulation() {
-            return SimulationSource.defaultPath(convertClassName() + ".json");
+            return SimulationSource.defaultPath(DefaultSimulationFilename.get(this.currentTest));
         }
 
-        private String convertClassName() {
-            return currentTest.getCanonicalName().replace('.', '_').replace('$', '_');
-        }
     }
 
 }
