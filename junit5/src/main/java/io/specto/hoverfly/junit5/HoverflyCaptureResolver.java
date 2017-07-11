@@ -19,6 +19,15 @@ import org.junit.platform.commons.support.AnnotationSupport;
 
 import static io.specto.hoverfly.junit.core.SimulationSource.empty;
 
+
+/**
+ * Hoverfly Capture Resolver. This resolver starts Hoverfly proxy server before all test methods are executed and stops it after all.
+ *
+ * By default Hoverfly is configured with default configuration parameters and captured data is stored from a file located at
+ * Hoverfly default path (src/test/resources/hoverfly) and file called with fully qualified name of test class, replacing dots (.) and dollar signs ($) to underlines (_).
+ *
+ * To configure instance just annotate test class with {@link HoverflyCapture} annotation.
+ */
 public class HoverflyCaptureResolver implements BeforeAllCallback, AfterAllCallback, ParameterResolver {
 
     private Hoverfly hoverfly;

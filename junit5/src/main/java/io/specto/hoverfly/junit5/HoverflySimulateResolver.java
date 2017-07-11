@@ -18,7 +18,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
 /**
  * Hoverfly Simulate Resolver. This resolver starts Hoverfly proxy server before all test methods are executed and stops it after all.
  *
- * By default Hoverfly is configured with default configuration paramters and simulation is loaded from a file located at
+ * By default Hoverfly is configured with default configuration parameters and simulation is loaded from a file located at
  * Hoverfly default path (src/test/resources/hoverfly) and file called with fully qualified name of test class, replacing dots (.) and dollar signs ($) to underlines (_).
  *
  * To configure instance just annotate test class with {@link HoverflySimulate} annotation.
