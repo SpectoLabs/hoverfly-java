@@ -20,7 +20,8 @@ for this is https://en.wikipedia.org/wiki/Service_virtualization[Service Virtual
 - Https automatically supported, no extra configuration required
 - Interoperable with standard Hoverfly JSON, making it easy to re-use data between Java and other native language bindings.
 - Use externally managed Hoverfly cluster for API simulations
-- Verification that expected requests have been made
+- Request verification
+- Response templating
 
 == Documentation
 
@@ -32,7 +33,7 @@ Full documentation is available http://hoverfly-java.readthedocs.io/[here^]
 <dependency>
     <groupId>io.specto</groupId>
     <artifactId>hoverfly-java</artifactId>
-    <version>0.7.1</version>
+    <version>0.8.0</version>
     <scope>test</scope>
 </dependency>
 ```
