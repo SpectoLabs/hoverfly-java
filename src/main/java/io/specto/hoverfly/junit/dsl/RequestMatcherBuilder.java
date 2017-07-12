@@ -19,17 +19,12 @@ import io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers;
 import io.specto.hoverfly.junit.dsl.matchers.PlainTextFieldMatcher;
 import io.specto.hoverfly.junit.dsl.matchers.RequestFieldMatcher;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.specto.hoverfly.junit.core.model.FieldMatcher.blankMatcher;
-import static io.specto.hoverfly.junit.core.model.FieldMatcher.exactlyMatches;
-import static io.specto.hoverfly.junit.core.model.FieldMatcher.wildCardMatches;
+import static io.specto.hoverfly.junit.core.model.FieldMatcher.*;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.equalsTo;
-import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
 /**
  * A builder for {@link Request}
@@ -155,20 +150,12 @@ public class RequestMatcherBuilder {
 
         if (!this.queryPatterns.isEmpty()) {
             String queryPatterns = this.queryPatterns.entrySet().stream()
-                    .flatMap(e -> e.getValue().stream().map(v -> encodeUrl(e.getKey().getPattern()) + "=" + encodeUrl(v.getPattern())))
+                    .flatMap(e -> e.getValue().stream().map(v -> e.getKey().getPattern() + "=" + v.getPattern()))
                     .collect(Collectors.joining("&"));
             query = isFuzzyMatchedQuery ? wildCardMatches(queryPatterns) : exactlyMatches(queryPatterns);
         }
 
         return new Request(path, method, destination, scheme, query, body, headers);
-    }
-
-    private String encodeUrl(String str) {
-        try {
-            return URLEncoder.encode(str, UTF_8).replaceAll("\\+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            throw new UnsupportedOperationException(e);
-        }
     }
 
     private static class MultivaluedHashMap<K, V> {

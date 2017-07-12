@@ -329,7 +329,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldEncodeSpacesInQueryParams() throws Exception {
+    public void shouldNotEncodeSpacesInQueryParams() throws Exception {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
                 .queryParam("destination", "New York")
@@ -338,7 +338,7 @@ public class StubServiceBuilderTest {
         // Then
         assertThat(pairs).hasSize(1);
         FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
-        assertThat(query.getExactMatch()).isEqualTo("destination=New%20York");
+        assertThat(query.getExactMatch()).isEqualTo("destination=New York");
     }
 
 

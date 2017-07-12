@@ -7,6 +7,7 @@ import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.api.HoverflyClient;
 import io.specto.hoverfly.junit.api.HoverflyClientException;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
+import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -358,6 +359,18 @@ public class HoverflyTest {
         hoverfly.resetJournal();
 
         verify(hoverflyClient).deleteJournal();
+    }
+
+    @Test
+    public void shouldNotAffectHoverflyHealthCheckWhenSettingProxyLocalhost() throws Exception {
+
+        hoverfly = new Hoverfly(HoverflyMode.SIMULATE);
+        HoverflyConfiguration hoverflyConfig = hoverfly.getHoverflyConfig();
+
+        ProxyConfigurer proxyConfigurer = new ProxyConfigurer(hoverflyConfig);
+        proxyConfigurer.setProxySystemProperties();
+
+        hoverfly.start();
     }
 
     @After
