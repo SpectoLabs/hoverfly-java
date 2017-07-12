@@ -29,7 +29,7 @@ public class HoverflyDslResponseTemplatingTest {
                     // Path param for template
                     .get("/api/bookings/1")
                     .willReturn(success().body(jsonWithSingleQuotes(
-                            "{'id':{{ Request.PathParam.[2] }},'origin':'London','destination':'Singapore','time':'2011-09-01T12:30','_links':{'self':{'href':'http://localhost/api/bookings/{{ Request.PathParam.[2] }}'}}}"
+                            "{'id':{{ Request.Path.[2] }},'origin':'London','destination':'Singapore','time':'2011-09-01T12:30','_links':{'self':{'href':'http://localhost/api/bookings/{{ Request.Path.[2] }}'}}}"
                     )))
                     // Query Param for template
                     .get("/api/bookings")
