@@ -408,6 +408,31 @@ public class StubServiceBuilderTest {
         verify(objectMapper).writeValueAsString(new SomeJson("requestFieldOne", "requestFieldTwo"));
     }
 
+    @Test
+    public void shouldBuildTemplatedResponseByDefault() throws Exception {
+
+        final RequestResponsePair pair = service("www.base-url.com")
+                .get("/")
+                .willReturn(success().body("{\"id\":{{ Request.Path.[2] }}"))
+                .getRequestResponsePairs()
+                .iterator().next();
+
+        assertThat(pair.getResponse().isTemplated()).isTrue();
+    }
+
+    @Test
+    public void shouldBeAbleToDisableTemplatedResponse() throws Exception {
+
+        final RequestResponsePair pair = service("www.base-url.com")
+                .get("/")
+                .willReturn(success().body("{\"id\":{{ Request.Path.[2] }}").disableTemplating())
+                .getRequestResponsePairs()
+                .iterator().next();
+
+        assertThat(pair.getResponse().isTemplated()).isFalse();
+    }
+
+
     public static final class SomeJson {
         private final String firstField;
         private final String secondField;

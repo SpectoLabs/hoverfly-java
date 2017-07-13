@@ -31,6 +31,7 @@ public class ResponseBuilder {
     private final Map<String, List<String>> headers = new HashMap<>();
     private String body = "";
     private int status = 200;
+    private boolean templated = true;
 
     private int delay;
     private TimeUnit delayTimeUnit;
@@ -83,12 +84,18 @@ public class ResponseBuilder {
      * @return the response
      */
     Response build() {
-        return new Response(status, body, false, true, headers);
+        return new Response(status, body, false, templated, headers);
     }
 
     public ResponseBuilder body(final HttpBodyConverter httpBodyConverter) {
         this.body = httpBodyConverter.body();
         this.header("Content-Type", httpBodyConverter.contentType());
+        return this;
+    }
+
+
+    public ResponseBuilder disableTemplating() {
+        this.templated = false;
         return this;
     }
 
@@ -107,6 +114,5 @@ public class ResponseBuilder {
     ResponseDelaySettingsBuilder addDelay() {
         return new ResponseDelaySettingsBuilder(delay, delayTimeUnit);
     }
-
 }
 
