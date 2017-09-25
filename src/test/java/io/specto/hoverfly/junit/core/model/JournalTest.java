@@ -42,7 +42,7 @@ public class JournalTest {
         assertThat(logEntry.getResponse()).isNotNull();
         assertThat(logEntry.getLatency()).isEqualTo(2);
         assertThat(logEntry.getTimeStarted()).isEqualTo(
-                LocalDateTime.parse("2017-06-22T13:18:08+01:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+                LocalDateTime.parse("2017-06-22T13:18:08.050+01:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME));
 
     }
 }

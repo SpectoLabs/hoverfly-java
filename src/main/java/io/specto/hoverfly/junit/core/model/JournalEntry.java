@@ -17,7 +17,7 @@ public class JournalEntry {
     private final String mode;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private final LocalDateTime timeStarted;
 
     private final Integer latency;
