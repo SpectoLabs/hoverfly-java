@@ -1,14 +1,36 @@
+# IDE
+## Eclipse
+.project
+.classpath
+.settings/
+
+## IntelliJ
+*.iml
+*.ipr
+*.iws
 .idea
-requests.db
-src/test/resources/hoverfly/recorded-simulation.json
-.gradle/
+
+# Build artifacts
+.gradle
 build/
-.DS_Store
 out/
 target/
+
+# Logs
+*.log
+
+# Floobits
+.floo
+.flooignore
+
+# Test resources which shouldn't be part of SCM
+src/test/resources/hoverfly/recorded-simulation.json
 *scenario.json
 src/test/resources/hoverfly/first-multi-capture**
 src/test/resources/hoverfly/third-multi-capture/**
 src/test/resources/hoverfly/second-multi-capture-scenario.json
-/src/test/resources/hfc-ca-signed.pem
-.floo
+src/test/resources/hfc-ca-signed.pem
+
+# Misc
+requests.db
+.DS_Store
