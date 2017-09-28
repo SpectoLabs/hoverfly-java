@@ -21,7 +21,6 @@ target/
 
 # Floobits
 .floo
-.flooignore
 
 # Test resources which shouldn't be part of SCM
 src/test/resources/hoverfly/recorded-simulation.json
