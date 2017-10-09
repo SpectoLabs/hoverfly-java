@@ -1,7 +1,6 @@
 package io.specto.hoverfly.junit5.api;
 
 import io.specto.hoverfly.junit.core.HoverflyMode;
-import io.specto.hoverfly.junit5.spi.HoverflyConfigProducer;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -11,7 +10,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HoverflyCore {
 
-    Class<? extends HoverflyConfigProducer> config() default HoverflyConfigProducer.DefaultHoverflyConfigProducer.class;
+    HoverflyConfig config() default @HoverflyConfig;
     HoverflyMode mode() default HoverflyMode.SIMULATE;
 
 }

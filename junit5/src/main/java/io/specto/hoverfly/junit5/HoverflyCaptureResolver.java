@@ -4,7 +4,6 @@ import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit5.api.HoverflyCapture;
-import io.specto.hoverfly.junit5.spi.HoverflyConfigProducer;
 import java.lang.reflect.AnnotatedElement;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,8 +44,10 @@ public class HoverflyCaptureResolver implements BeforeAllCallback, AfterAllCallb
             final Optional<Class<?>> testClass = context.getTestClass();
             if (testClass.isPresent()) {
                 final HoverflyCapture hoverflyCapture = hoverflyCaptureOptional.get();
-                final HoverflyConfigProducer hoverflyConfigProducer = hoverflyCapture.config().newInstance();
-                startHoverflyIfNotStarted(testClass.get(), hoverflyConfigProducer.create(), hoverflyCapture.path(), hoverflyCapture.recordFile());
+                HoverflyConfig configs = HoverflyConfig.configs()
+                        .proxyPort(hoverflyCapture.config().proxyPort())
+                        .adminPort(hoverflyCapture.config().adminPort());
+                startHoverflyIfNotStarted(testClass.get(), configs, hoverflyCapture.path(), hoverflyCapture.recordFile());
             }
 
         } else {

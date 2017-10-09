@@ -197,7 +197,13 @@ public class Hoverfly implements AutoCloseable {
      *
      * @param simulationSource the simulation to import
      */
+
+    @Deprecated
     public void importSimulation(SimulationSource simulationSource) {
+        simulate(simulationSource);
+    }
+
+    public void simulate(SimulationSource simulationSource) {
         LOGGER.info("Importing simulation data to Hoverfly");
 
         final Simulation simulation = simulationSource.getSimulation();

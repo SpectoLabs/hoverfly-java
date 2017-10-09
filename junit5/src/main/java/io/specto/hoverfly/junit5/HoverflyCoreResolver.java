@@ -1,6 +1,7 @@
 package io.specto.hoverfly.junit5;
 
 import io.specto.hoverfly.junit.core.Hoverfly;
+import io.specto.hoverfly.junit.core.HoverflyConfig;
 import io.specto.hoverfly.junit.core.SimulationSource;
 import io.specto.hoverfly.junit5.api.HoverflyCore;
 import java.lang.reflect.Field;
@@ -88,15 +89,12 @@ public class HoverflyCoreResolver implements TestInstancePostProcessor, Paramete
 
     private void startHoverflyIfNotStarted(HoverflyCore hoverflyCore) {
         if (this.hoverfly == null) {
-            try {
-                this.hoverfly = new Hoverfly(hoverflyCore.config().newInstance().create(),
-                    hoverflyCore.mode());
-                this.hoverfly.start();
-            } catch (InstantiationException e) {
-                throw new IllegalStateException(e);
-            } catch (IllegalAccessException e) {
-                throw new IllegalStateException(e);
-            }
+            HoverflyConfig configs = HoverflyConfig.configs()
+                    .proxyPort(hoverflyCore.config().proxyPort())
+                    .adminPort(hoverflyCore.config().adminPort());
+            this.hoverfly = new Hoverfly(configs,
+                hoverflyCore.mode());
+            this.hoverfly.start();
         }
     }
 }
