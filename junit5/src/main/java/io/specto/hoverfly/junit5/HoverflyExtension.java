@@ -7,6 +7,7 @@ import io.specto.hoverfly.junit5.api.HoverflyConfig;
 import io.specto.hoverfly.junit5.api.HoverflyCore;
 import io.specto.hoverfly.junit5.api.HoverflySimulate;
 import java.lang.reflect.AnnotatedElement;
+import java.nio.file.Path;
 import java.util.Optional;
 
 import org.junit.jupiter.api.extension.*;
@@ -23,14 +24,36 @@ import static io.specto.hoverfly.junit.core.SimulationSource.defaultPath;
  *
  * To configure instance just annotate test class with {@link HoverflySimulate} annotation.
  */
+
+/**
+ * Hoverfly Core resolver. This resolver starts and stops Hoverfly server, but the developer is responsible of calling
+ * {@link Hoverfly#exportSimulation(Path)} or {@link Hoverfly#importSimulation(SimulationSource)}
+ *
+ * {@link HoverflyCore} annotation can be used to annotate a {@link Hoverfly} class at test field level with public scope or as test parameter,
+ * but in both cases Hoverfly server is started before executing each test method and stopped after each test method.
+ *
+ * This behaviour is implemented to follow the JUnit 5 lifecycle convention of {@link TestInstancePostProcessor}
+ * and {@link ParameterResolver}.
+ *
+ * The only exception is when Hoverfly instance is created at test field level with public and static modifiers.
+ * In this case Hoverfly server is stopped at the end of test class instead of test method level.
+ *
+ * @see HoverflyCore
+ */
 public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, BeforeAllCallback, ParameterResolver {
 
     private Hoverfly hoverfly;
+    private SimulationSource source = SimulationSource.empty();
+    private HoverflyMode mode = HoverflyMode.SIMULATE;
 
     @Override
     public void beforeEach(ExtensionContext context) throws Exception {
         if (isRunning()) {
-            hoverfly.resetJournal();
+            hoverfly.reset();
+            hoverfly.setMode(mode);
+            if (mode == HoverflyMode.SIMULATE) {
+                hoverfly.simulate(source);
+            }
         }
     }
 
@@ -46,8 +69,6 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
         }
 
         HoverflyConfig config = null;
-        HoverflyMode mode = HoverflyMode.SIMULATE;
-        SimulationSource source = SimulationSource.empty();
 
         if (AnnotationSupport.isAnnotated(annotatedElement, HoverflySimulate.class)) {
             HoverflySimulate hoverflySimulate = annotatedElement.getAnnotation(HoverflySimulate.class);
@@ -104,8 +125,11 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
     private io.specto.hoverfly.junit.core.HoverflyConfig getHoverflyConfigs(HoverflyConfig config) {
 
         if (config != null) {
-            return configs().adminPort(config.adminPort())
-                    .proxyPort(config.proxyPort());
+            return configs()
+                    .adminPort(config.adminPort())
+                    .proxyPort(config.proxyPort())
+                    .destination(config.destination())
+                    .proxyLocalHost(config.proxyLocalHost());
 
         } else {
             return configs();
@@ -115,15 +139,16 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
 
     private SimulationSource getSimulationSource(HoverflySimulate hoverflySimulate) {
         SimulationSource source = SimulationSource.empty();
+        String value = hoverflySimulate.source().value();
         switch (hoverflySimulate.source().type()) {
             case DEFAULT_PATH:
-                source = defaultPath(hoverflySimulate.source().value());
+                source = defaultPath(value);
                 break;
             case URL:
-                source = SimulationSource.url(hoverflySimulate.source().value());
+                source = SimulationSource.url(value);
                 break;
             case CLASSPATH:
-                source = SimulationSource.classpath(hoverflySimulate.source().value());
+                source = SimulationSource.classpath(value);
                 break;
         }
         return source;

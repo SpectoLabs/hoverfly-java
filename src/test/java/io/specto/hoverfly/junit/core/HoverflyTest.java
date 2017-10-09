@@ -70,7 +70,7 @@ public class HoverflyTest {
         // When
         URL resource = Resources.getResource("test-service.json");
         Simulation importedSimulation = mapper.readValue(resource, Simulation.class);
-        hoverfly.importSimulation(classpath("test-service.json"));
+        hoverfly.simulate(classpath("test-service.json"));
 
         // Then
         Simulation exportedSimulation = hoverfly.getSimulation();

@@ -1,6 +1,8 @@
 package io.specto.hoverfly.junit5;
 
 import io.specto.hoverfly.junit.core.Hoverfly;
+import io.specto.hoverfly.junit.core.HoverflyMode;
+import io.specto.hoverfly.junit.core.SimulationSource;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -35,4 +37,28 @@ class HoverflyDefaultCoreTest {
 
         assertThat(response.code()).isEqualTo(500);
     }
+
+
+    @Test
+    void shouldInjectDefaultHoverfly(Hoverfly hoverfly) {
+        assertThat(hoverfly.isHealthy()).isTrue();
+        assertThat(hoverfly.getMode()).isEqualTo(HoverflyMode.SIMULATE);
+        assertThat(hoverfly.getHoverflyConfig().getDestination()).isNull();
+        assertThat(hoverfly.getHoverflyConfig().isProxyLocalHost()).isFalse();
+        assertThat(hoverfly.getHoverflyConfig().isRemoteInstance()).isFalse();
+    }
+
+    @Test
+    void shouldNotImportAnySimulationByDefault(Hoverfly hoverfly) {
+        assertThat(hoverfly.getSimulation()).isEqualTo(SimulationSource.empty().getSimulation());
+    }
+
+    @Test
+    void shouldBeAbleToSwithToCaptureModeForThisTest(Hoverfly hoverfly) {
+        hoverfly.setMode(HoverflyMode.CAPTURE);
+
+        assertThat(hoverfly.getMode()).isEqualTo(HoverflyMode.CAPTURE);
+    }
+
+
 }

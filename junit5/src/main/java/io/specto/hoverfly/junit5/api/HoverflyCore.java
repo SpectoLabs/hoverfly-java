@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HoverflyCore {
 
-    HoverflyConfig config() default @HoverflyConfig;
     HoverflyMode mode() default HoverflyMode.SIMULATE;
+    HoverflyConfig config() default @HoverflyConfig;
 
 }

@@ -302,6 +302,10 @@ public class Hoverfly implements AutoCloseable {
         return HoverflyMode.valueOf(hoverflyClient.getConfigInfo().getMode().toUpperCase());
     }
 
+    public boolean isHealthy() {
+        return hoverflyClient.getHealth();
+    }
+
     public SslConfigurer getSslConfigurer() {
         return sslConfigurer;
     }

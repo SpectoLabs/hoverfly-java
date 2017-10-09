@@ -38,7 +38,7 @@ class HoverflyDefaultsSimulationTest {
     void shouldInjectDefaultInstanceAsParameter(Hoverfly hoverfly) {
         assertThat(hoverfly).isNotNull();
         assertThat(hoverfly.getMode()).isEqualTo(HoverflyMode.SIMULATE);
-        assertThat(hoverfly.getHoverflyConfig().getDestination()).isNull();
+        assertThat(hoverfly.getHoverflyConfig().getDestination()).isEmpty();
         assertThat(hoverfly.getHoverflyConfig().isProxyLocalHost()).isFalse();
         assertThat(hoverfly.getHoverflyConfig().isRemoteInstance()).isFalse();
     }

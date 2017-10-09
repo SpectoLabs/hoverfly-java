@@ -20,6 +20,6 @@ public @interface HoverflySimulate {
     enum SourceType {
         DEFAULT_PATH,
         CLASSPATH,
-        URL;
+        URL
     }
 }
