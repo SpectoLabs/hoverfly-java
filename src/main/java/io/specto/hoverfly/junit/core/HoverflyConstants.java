@@ -17,6 +17,8 @@ public class HoverflyConstants {
     public static final String HTTP = "http";
     public static final String HTTPS = "https";
 
+    public static final String DEFAULT_HOVERFLY_EXPORT_PATH = "src/test/resources/hoverfly";
+
     private HoverflyConstants() {
     }
 }

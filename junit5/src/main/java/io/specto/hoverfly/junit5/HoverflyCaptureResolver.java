@@ -4,18 +4,15 @@ import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit5.api.HoverflyCapture;
+import org.junit.jupiter.api.extension.*;
+import org.junit.platform.commons.support.AnnotationSupport;
+
 import java.lang.reflect.AnnotatedElement;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junit.jupiter.api.extension.ParameterResolver;
-import org.junit.platform.commons.support.AnnotationSupport;
 
+import static io.specto.hoverfly.junit.core.HoverflyConstants.DEFAULT_HOVERFLY_EXPORT_PATH;
 import static io.specto.hoverfly.junit.core.SimulationSource.empty;
 
 
@@ -46,14 +43,15 @@ public class HoverflyCaptureResolver implements BeforeAllCallback, AfterAllCallb
                 final HoverflyCapture hoverflyCapture = hoverflyCaptureOptional.get();
                 HoverflyConfig configs = HoverflyConfig.configs()
                         .proxyPort(hoverflyCapture.config().proxyPort())
-                        .adminPort(hoverflyCapture.config().adminPort());
-                startHoverflyIfNotStarted(testClass.get(), configs, hoverflyCapture.path(), hoverflyCapture.recordFile());
+                        .adminPort(hoverflyCapture.config().adminPort())
+                        .destination(hoverflyCapture.config().destination());
+                startHoverflyIfNotStarted(testClass.get(), configs, hoverflyCapture.path(), hoverflyCapture.filename());
             }
 
         } else {
             final Optional<Class<?>> testClass = context.getTestClass();
             if (testClass.isPresent()) {
-                startHoverflyIfNotStarted(testClass.get(), HoverflyConfig.configs(), HoverflyCapture.PATH, HoverflyCapture.NO_RECORD_FILE);
+                startHoverflyIfNotStarted(testClass.get(), HoverflyConfig.configs(), DEFAULT_HOVERFLY_EXPORT_PATH, "");
             }
         }
     }
@@ -67,14 +65,14 @@ public class HoverflyCaptureResolver implements BeforeAllCallback, AfterAllCallb
                 hoverfly.exportSimulation(capturePath);
             }
 
-            hoverfly.importSimulation(empty());
+            hoverfly.simulate(empty());
             capturePath = fileRelativeToTestResourcesHoverfly(path, recordFile, currentTest);
         }
     }
 
     private Path fileRelativeToTestResourcesHoverfly(String path, String recordFile, Class<?> testClass) {
         String filename = recordFile;
-        if (HoverflyCapture.NO_RECORD_FILE.equals(recordFile)) {
+        if (recordFile.isEmpty()) {
             filename = DefaultSimulationFilename.get(testClass);
         }
 

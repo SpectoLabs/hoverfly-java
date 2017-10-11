@@ -9,11 +9,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HoverflyCapture {
 
-    String NO_RECORD_FILE = "";
-    String PATH = "src/test/resources/hoverfly";
-
     HoverflyConfig config() default @HoverflyConfig;
-    String path() default PATH;
-    String recordFile() default NO_RECORD_FILE;
+    String path() default "src/test/resources/hoverfly";
+    String filename() default "";
 
 }

@@ -15,6 +15,7 @@ package io.specto.hoverfly.junit.rule;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import io.specto.hoverfly.junit.core.HoverflyConstants;
 import org.junit.Rule;
 import org.junit.runner.Description;
 
@@ -24,26 +25,27 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static io.specto.hoverfly.junit.core.HoverflyConstants.DEFAULT_HOVERFLY_EXPORT_PATH;
+
 /**
  * Utility methods for {@link HoverflyRule}
  */
 class HoverflyRuleUtils {
 
-    private static final String SRC_TEST_RESOURCES_HOVERFLY = "src/test/resources/hoverfly";
     private static final ObjectWriter JSON_PRETTY_PRINTER = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
     /**
      * Looks for a file in the src/test/resources/hoverfly directory with the given name
      */
     static Path fileRelativeToTestResourcesHoverfly(String fileName) {
-        return Paths.get(SRC_TEST_RESOURCES_HOVERFLY).resolve(fileName);
+        return Paths.get(DEFAULT_HOVERFLY_EXPORT_PATH).resolve(fileName);
     }
 
     /**
      * Creates src/test/resources/hoverfly directory if it does not exist
      */
     static void createTestResourcesHoverflyDirectoryIfNoneExisting() {
-        final Path path = Paths.get(SRC_TEST_RESOURCES_HOVERFLY);
+        final Path path = Paths.get(DEFAULT_HOVERFLY_EXPORT_PATH);
 
         if (! existsAndIsDirectory(path)) {
             // Delete in case src/test/resources/hoverfly is a file
