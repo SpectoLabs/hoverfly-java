@@ -287,6 +287,14 @@ public class Hoverfly implements AutoCloseable {
     }
 
     /**
+     * Reset mode with the initial mode arguments.
+     * @param mode Hoverfly mode to reset
+     */
+    public void resetMode(HoverflyMode mode) {
+        hoverflyClient.setMode(mode, new ModeArguments(hoverflyConfig.getCaptureHeaders()));
+    }
+
+    /**
      * Gets the validated {@link HoverflyConfig} object used by the current Hoverfly instance
      * @return the current Hoverfly configurations
      */

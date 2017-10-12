@@ -3,54 +3,52 @@ package io.specto.hoverfly.junit5;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.SimulationSource;
+import io.specto.hoverfly.junit5.api.HoverflyCapture;
 import io.specto.hoverfly.junit5.api.HoverflyConfig;
 import io.specto.hoverfly.junit5.api.HoverflyCore;
 import io.specto.hoverfly.junit5.api.HoverflySimulate;
+import org.junit.jupiter.api.extension.*;
+
 import java.lang.reflect.AnnotatedElement;
 import java.nio.file.Path;
-import java.util.Optional;
 
-import org.junit.jupiter.api.extension.*;
-import org.junit.platform.commons.support.AnnotationSupport;
-
-import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
-import static io.specto.hoverfly.junit.core.SimulationSource.defaultPath;
+import static io.specto.hoverfly.junit5.HoverflyExtensionUtils.*;
+import static org.junit.platform.commons.support.AnnotationSupport.isAnnotated;
 
 /**
- * Hoverfly Simulate Resolver. This resolver starts Hoverfly proxy server before all test methods are executed and stops it after all.
+ * HoverflyExtension starts Hoverfly proxy server before all test methods are executed and stops it after all. It also reset
+ * Hoverfly state between each test and restore global configurations.
  *
- * By default Hoverfly is configured with default configuration parameters and simulation is loaded from a file located at
+ * By default Hoverfly is started in simulate mode and configured with default configuration parameters. The user is responsible of calling
+ * {@link Hoverfly#exportSimulation(Path)} or {@link Hoverfly#simulate(SimulationSource)}
+ *
+ * It implements {@link ParameterResolver} which gives you the flexibility to inject the current {@link Hoverfly} instance into JUnit 5 annotated method,
+ * and make use of the Hoverfly API directly.
+ *
+ * {@link HoverflyCore} annotation can be used along with HoverflyExtension to set the mode and customize the configurations.
+ * {see HoverflyCore} for more configuration options*
+ *
+ * {@link HoverflySimulate} annotation can be used to instruct Hoverfly to load simulation from a file located at
  * Hoverfly default path (src/test/resources/hoverfly) and file called with fully qualified name of test class, replacing dots (.) and dollar signs ($) to underlines (_).
+ * {see HoverflySimulate} for more configuration options
  *
- * To configure instance just annotate test class with {@link HoverflySimulate} annotation.
- */
-
-/**
- * Hoverfly Core resolver. This resolver starts and stops Hoverfly server, but the developer is responsible of calling
- * {@link Hoverfly#exportSimulation(Path)} or {@link Hoverfly#importSimulation(SimulationSource)}
- *
- * {@link HoverflyCore} annotation can be used to annotate a {@link Hoverfly} class at test field level with public scope or as test parameter,
- * but in both cases Hoverfly server is started before executing each test method and stopped after each test method.
- *
- * This behaviour is implemented to follow the JUnit 5 lifecycle convention of {@link TestInstancePostProcessor}
- * and {@link ParameterResolver}.
- *
- * The only exception is when Hoverfly instance is created at test field level with public and static modifiers.
- * In this case Hoverfly server is stopped at the end of test class instead of test method level.
- *
- * @see HoverflyCore
+ * {@link HoverflyCapture} annotation can be used to config Hoverfly to capture and export simulation to a file located at
+ * Hoverfly default path (src/test/resources/hoverfly) and file called with fully qualified name of test class, replacing dots (.) and dollar signs ($) to underlines (_).
+ * {see HoverflyCapture} for more configuration options*
  */
 public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, BeforeAllCallback, ParameterResolver {
 
     private Hoverfly hoverfly;
     private SimulationSource source = SimulationSource.empty();
     private HoverflyMode mode = HoverflyMode.SIMULATE;
+    private Path capturePath;
 
     @Override
     public void beforeEach(ExtensionContext context) throws Exception {
         if (isRunning()) {
             hoverfly.reset();
-            hoverfly.setMode(mode);
+            // Reset to per-class global configuration
+            hoverfly.resetMode(mode);
             if (mode == HoverflyMode.SIMULATE) {
                 hoverfly.simulate(source);
             }
@@ -60,30 +58,38 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
 
-        final Optional<AnnotatedElement> testClassElement = context.getElement();
-        AnnotatedElement annotatedElement;
-        if (!testClassElement.isPresent()) {
-            return;
-        } else {
-             annotatedElement = testClassElement.get();
-        }
+        AnnotatedElement annotatedElement = context.getElement().orElseThrow(() -> new IllegalStateException("No test class found."));
 
         HoverflyConfig config = null;
 
-        if (AnnotationSupport.isAnnotated(annotatedElement, HoverflySimulate.class)) {
+        if (isAnnotated(annotatedElement, HoverflySimulate.class)) {
             HoverflySimulate hoverflySimulate = annotatedElement.getAnnotation(HoverflySimulate.class);
             config = hoverflySimulate.config();
             if (hoverflySimulate.source().value().isEmpty()) {
                 source = context.getTestClass()
-                        .map(testClass -> defaultPath(DefaultSimulationFilename.get(testClass)))
+                        .map(HoverflyExtensionUtils::getFileNameFromTestClass)
+                        .map(SimulationSource::defaultPath)
                         .orElse(SimulationSource.empty());
             } else {
                 source = getSimulationSource(hoverflySimulate);
             }
-        } else if (AnnotationSupport.isAnnotated(annotatedElement, HoverflyCore.class)) {
+        } else if (isAnnotated(annotatedElement, HoverflyCore.class)) {
             HoverflyCore hoverflyCore = annotatedElement.getAnnotation(HoverflyCore.class);
             config = hoverflyCore.config();
             mode = hoverflyCore.mode();
+        } else if (isAnnotated(annotatedElement, HoverflyCapture.class)) {
+            HoverflyCapture hoverflyCapture = annotatedElement.getAnnotation(HoverflyCapture.class);
+            config = hoverflyCapture.config();
+            mode = HoverflyMode.CAPTURE;
+            String filename = hoverflyCapture.filename();
+            if (filename.isEmpty()) {
+                filename = context.getTestClass()
+                        .map(HoverflyExtensionUtils::getFileNameFromTestClass)
+                        .orElseThrow((() -> new IllegalStateException("Failed to resolve capture filename.")));
+            }
+
+            capturePath = getCapturePath(hoverflyCapture.path(), filename);
+
         }
 
         if (!isRunning()) {
@@ -94,15 +100,20 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
         if (mode == HoverflyMode.SIMULATE) {
             hoverfly.simulate(source);
         }
-
-
     }
+
 
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
         if (isRunning()) {
-            this.hoverfly.close();
-            this.hoverfly = null;
+            try {
+                if (this.capturePath != null) {
+                    this.hoverfly.exportSimulation(this.capturePath);
+                }
+            } finally {
+                this.hoverfly.close();
+                this.hoverfly = null;
+            }
         }
     }
 
@@ -122,35 +133,4 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
         return this.hoverfly != null;
     }
 
-    private io.specto.hoverfly.junit.core.HoverflyConfig getHoverflyConfigs(HoverflyConfig config) {
-
-        if (config != null) {
-            return configs()
-                    .adminPort(config.adminPort())
-                    .proxyPort(config.proxyPort())
-                    .destination(config.destination())
-                    .proxyLocalHost(config.proxyLocalHost());
-
-        } else {
-            return configs();
-        }
-    }
-
-
-    private SimulationSource getSimulationSource(HoverflySimulate hoverflySimulate) {
-        SimulationSource source = SimulationSource.empty();
-        String value = hoverflySimulate.source().value();
-        switch (hoverflySimulate.source().type()) {
-            case DEFAULT_PATH:
-                source = defaultPath(value);
-                break;
-            case URL:
-                source = SimulationSource.url(value);
-                break;
-            case CLASSPATH:
-                source = SimulationSource.classpath(value);
-                break;
-        }
-        return source;
-    }
 }

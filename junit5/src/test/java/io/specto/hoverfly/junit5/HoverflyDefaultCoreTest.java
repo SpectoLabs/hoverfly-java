@@ -54,7 +54,7 @@ class HoverflyDefaultCoreTest {
     }
 
     @Test
-    void shouldBeAbleToSwithToCaptureModeForThisTest(Hoverfly hoverfly) {
+    void shouldBeAbleToSwitchToCaptureModeForThisTest(Hoverfly hoverfly) {
         hoverfly.setMode(HoverflyMode.CAPTURE);
 
         assertThat(hoverfly.getMode()).isEqualTo(HoverflyMode.CAPTURE);

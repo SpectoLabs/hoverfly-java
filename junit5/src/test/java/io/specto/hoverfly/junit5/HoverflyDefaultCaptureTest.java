@@ -25,7 +25,7 @@ class HoverflyDefaultCaptureTest {
 
     @Nested
     @HoverflyCapture
-    @ExtendWith(HoverflyCaptureResolver.class)
+    @ExtendWith(HoverflyExtension.class)
     class NestedTest {
 
         @Test
