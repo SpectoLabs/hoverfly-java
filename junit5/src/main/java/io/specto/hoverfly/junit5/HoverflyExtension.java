@@ -65,18 +65,29 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
         if (isAnnotated(annotatedElement, HoverflySimulate.class)) {
             HoverflySimulate hoverflySimulate = annotatedElement.getAnnotation(HoverflySimulate.class);
             config = hoverflySimulate.config();
-            if (hoverflySimulate.source().value().isEmpty()) {
-                source = context.getTestClass()
+
+            HoverflySimulate.SourceType type = hoverflySimulate.source().type();
+            String path = hoverflySimulate.source().value();
+
+            if (path.isEmpty()) {
+                 path = context.getTestClass()
                         .map(HoverflyExtensionUtils::getFileNameFromTestClass)
-                        .map(SimulationSource::defaultPath)
-                        .orElse(SimulationSource.empty());
-            } else {
-                source = getSimulationSource(hoverflySimulate);
+                        .orElseThrow(() -> new IllegalStateException("No test class found."));
             }
+
+            if(hoverflySimulate.enableAutoCapture()) {
+                AutoCaptureSource.newInstance(path, type).ifPresent(source -> {
+                    mode = HoverflyMode.CAPTURE;
+                    capturePath = source.getCapturePath();
+                });
+            }
+            source = getSimulationSource(path, type);
+
         } else if (isAnnotated(annotatedElement, HoverflyCore.class)) {
             HoverflyCore hoverflyCore = annotatedElement.getAnnotation(HoverflyCore.class);
             config = hoverflyCore.config();
             mode = hoverflyCore.mode();
+
         } else if (isAnnotated(annotatedElement, HoverflyCapture.class)) {
             HoverflyCapture hoverflyCapture = annotatedElement.getAnnotation(HoverflyCapture.class);
             config = hoverflyCapture.config();
@@ -89,7 +100,6 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
             }
 
             capturePath = getCapturePath(hoverflyCapture.path(), filename);
-
         }
 
         if (!isRunning()) {

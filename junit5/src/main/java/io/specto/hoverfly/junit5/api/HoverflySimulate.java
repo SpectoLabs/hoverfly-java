@@ -11,6 +11,8 @@ public @interface HoverflySimulate {
 
     HoverflyConfig config() default @HoverflyConfig;
     Source source() default @Source;
+    boolean enableAutoCapture() default false;
+
 
     @interface Source {
         String value() default "";
@@ -20,6 +22,7 @@ public @interface HoverflySimulate {
     enum SourceType {
         DEFAULT_PATH,
         CLASSPATH,
-        URL
+        URL,
+        FILE
     }
 }

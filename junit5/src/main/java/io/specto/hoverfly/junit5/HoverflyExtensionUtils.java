@@ -42,11 +42,9 @@ class HoverflyExtensionUtils {
         }
     }
 
-
-    static SimulationSource getSimulationSource(HoverflySimulate hoverflySimulate) {
+    static SimulationSource getSimulationSource(String value, HoverflySimulate.SourceType type) {
         SimulationSource source = SimulationSource.empty();
-        String value = hoverflySimulate.source().value();
-        switch (hoverflySimulate.source().type()) {
+        switch (type) {
             case DEFAULT_PATH:
                 source = defaultPath(value);
                 break;
@@ -55,6 +53,9 @@ class HoverflyExtensionUtils {
                 break;
             case CLASSPATH:
                 source = SimulationSource.classpath(value);
+                break;
+            case FILE:
+                source = SimulationSource.file(Paths.get(value));
                 break;
         }
         return source;

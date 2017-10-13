@@ -24,11 +24,10 @@ target/
 
 # Test resources which shouldn't be part of SCM
 src/test/resources/hoverfly/recorded-simulation.json
-*scenario.json
 src/test/resources/hoverfly/first-multi-capture**
 src/test/resources/hoverfly/third-multi-capture/
 junit5/src/test/resources/hoverfly/io_specto_hoverfly_junit5_HoverflyDefaultCaptureTest_NestedTest.json
-src/test/resources/hfc-ca-signed.pem
+*scenario.json
 
 # Misc
 requests.db
