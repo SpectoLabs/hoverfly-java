@@ -46,7 +46,7 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
     @Override
     public void beforeEach(ExtensionContext context) throws Exception {
         if (isRunning()) {
-            hoverfly.reset();
+            hoverfly.resetJournal();
             // Reset to per-class global configuration
             hoverfly.resetMode(mode);
             if (mode == HoverflyMode.SIMULATE) {
