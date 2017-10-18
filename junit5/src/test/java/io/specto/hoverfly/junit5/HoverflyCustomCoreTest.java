@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@HoverflyCore(mode = HoverflyMode.CAPTURE, config = @HoverflyConfig(adminPort = 9000, proxyPort = 9001))
+@HoverflyCore(mode = HoverflyMode.CAPTURE, config = @HoverflyConfig(destination = "hoverfly.io"))
 @ExtendWith(HoverflyExtension.class)
 class HoverflyCustomCoreTest {
 

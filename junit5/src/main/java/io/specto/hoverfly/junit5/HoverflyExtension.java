@@ -26,15 +26,15 @@ import static org.junit.platform.commons.support.AnnotationSupport.isAnnotated;
  * and make use of the Hoverfly API directly.
  *
  * {@link HoverflyCore} annotation can be used along with HoverflyExtension to set the mode and customize the configurations.
- * {see HoverflyCore} for more configuration options*
+ * @see HoverflyCore for more configuration options*
  *
  * {@link HoverflySimulate} annotation can be used to instruct Hoverfly to load simulation from a file located at
  * Hoverfly default path (src/test/resources/hoverfly) and file called with fully qualified name of test class, replacing dots (.) and dollar signs ($) to underlines (_).
- * {see HoverflySimulate} for more configuration options
+ * @see HoverflySimulate for more configuration options
  *
  * {@link HoverflyCapture} annotation can be used to config Hoverfly to capture and export simulation to a file located at
  * Hoverfly default path (src/test/resources/hoverfly) and file called with fully qualified name of test class, replacing dots (.) and dollar signs ($) to underlines (_).
- * {see HoverflyCapture} for more configuration options*
+ * @see HoverflyCapture for more configuration options*
  */
 public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, BeforeAllCallback, ParameterResolver {
 

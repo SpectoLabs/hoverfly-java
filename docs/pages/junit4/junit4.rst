@@ -6,6 +6,8 @@ JUnit 4
 
 An easier way to orchestrate Hoverfly is via the JUnit Rule. This is because it will create destroy the process for you automatically, doing any cleanup work and auto-importing / exporting if required.
 
+.. _simulatemode:
+
 Simulate
 --------
 
@@ -14,6 +16,7 @@ Simulate
     @ClassRule
     public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(classpath("simulation.json"));
 
+.. _capturemode:
 Capture
 -------
 
@@ -23,6 +26,8 @@ Capture
     public static HoverflyRule hoverflyRule = HoverflyRule.inCaptureMode("simulation.json");
 
 File is relative to ``src/test/resources/hoverfly``.
+
+.. _multicapture:
 
 Multi-Capture
 -------------
@@ -45,6 +50,8 @@ Multi-Capture
     }
 
 File is relative to ``src/test/resources/hoverfly``.
+
+.. _captureorsimulate:
 
 Capture or Simulate
 -------------------
