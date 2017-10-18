@@ -1,8 +1,8 @@
-.. _junit:
+.. _junit4:
 
 
-JUnit
-=====
+JUnit 4
+=======
 
 An easier way to orchestrate Hoverfly is via the JUnit Rule. This is because it will create destroy the process for you automatically, doing any cleanup work and auto-importing / exporting if required.
 

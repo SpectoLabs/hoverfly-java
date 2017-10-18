@@ -45,5 +45,6 @@ Contents
 
     pages/quickstart/quickstart
     pages/corefunctionality/corefunctionality
-    pages/junit/junit
+    pages/junit4/junit4
+    pages/junit5/junit5
     pages/misc/misc

@@ -22,6 +22,7 @@ for this is https://en.wikipedia.org/wiki/Service_virtualization[Service Virtual
 - Use externally managed Hoverfly cluster for API simulations
 - Request verification
 - Response templating
+- JUnit 5 extension
 
 == Documentation
 
