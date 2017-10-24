@@ -173,6 +173,15 @@ public class Hoverfly implements AutoCloseable {
             useDefaultSslCert = false;
         }
 
+        if (hoverflyConfig.isWebServer()) {
+            commands.add("-webserver");
+        }
+
+        if (hoverflyConfig.isTlsVerificationDisabled()) {
+            commands.add("-tls-verification");
+            commands.add("false");
+        }
+
         try {
             startedProcess = new ProcessExecutor()
                     .command(commands)

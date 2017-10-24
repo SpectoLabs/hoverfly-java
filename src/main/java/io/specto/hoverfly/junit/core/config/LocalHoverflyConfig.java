@@ -24,7 +24,8 @@ public class LocalHoverflyConfig extends HoverflyConfig {
     // TODO should be combined field?
     private String sslCertificatePath;
     private String sslKeyPath;
-
+    private boolean webServer;
+    private boolean tlsVerficationDisabled;
 
     /**
      * Sets the SSL certificate file for overriding default Hoverfly self-signed certificate
@@ -49,10 +50,22 @@ public class LocalHoverflyConfig extends HoverflyConfig {
         return this;
     }
 
+    public LocalHoverflyConfig asWebServer() {
+        this.webServer = true;
+        return this;
+    }
+
+    public LocalHoverflyConfig disableTlsVerification() {
+        this.tlsVerficationDisabled = true;
+        return this;
+    }
+
     @Override
     public HoverflyConfiguration build() {
         HoverflyConfiguration configs = new HoverflyConfiguration(proxyPort, adminPort, proxyLocalHost, destination,
                 proxyCaCert, sslCertificatePath, sslKeyPath, captureHeaders);
+        configs.setWebServer(this.webServer);
+        configs.setTlsVerificationDisabled(this.tlsVerficationDisabled);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }

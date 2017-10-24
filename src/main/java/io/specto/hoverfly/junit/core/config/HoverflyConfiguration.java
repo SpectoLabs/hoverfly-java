@@ -25,6 +25,8 @@ public class HoverflyConfiguration {
     private String adminCertificate;
     private String proxyCaCertificate;
     private List<String> captureHeaders = Collections.emptyList();
+    private boolean webServer = false;
+    private boolean tlsVerificationDisabled = false;
 
     /**
      * Create configurations for external hoverfly
@@ -161,4 +163,19 @@ public class HoverflyConfiguration {
         this.adminPort = adminPort;
     }
 
+    public boolean isWebServer() {
+        return webServer;
+    }
+
+    public void setWebServer(boolean webServer) {
+        this.webServer = webServer;
+    }
+
+    public boolean isTlsVerificationDisabled() {
+        return tlsVerificationDisabled;
+    }
+
+    public void setTlsVerificationDisabled(boolean tlsVerificationDisabled) {
+        this.tlsVerificationDisabled = tlsVerificationDisabled;
+    }
 }

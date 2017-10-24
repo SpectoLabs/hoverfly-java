@@ -21,6 +21,7 @@ public class HoverflyConfigTest {
 
         assertThat(configs.getHost()).isEqualTo("localhost");
         assertThat(configs.getScheme()).isEqualTo("http");
+        assertThat(configs.isWebServer()).isFalse();
         assertThat(configs.getAdminPort()).isGreaterThan(0);
         assertThat(configs.getProxyPort()).isGreaterThan(0);
         assertThat(configs.getSslCertificatePath()).isNull();
@@ -28,8 +29,9 @@ public class HoverflyConfigTest {
 
         assertThat(configs.isRemoteInstance()).isFalse();
         assertThat(configs.isProxyLocalHost()).isFalse();
+        assertThat(configs.isWebServer()).isFalse();
+        assertThat(configs.isTlsVerificationDisabled()).isFalse();
     }
-
 
     @Test
     public void shouldHaveDefaultRemoteSettings() throws Exception {
@@ -128,6 +130,20 @@ public class HoverflyConfigTest {
 
         assertThat(configs.getCaptureHeaders()).hasSize(1);
         assertThat(configs.getCaptureHeaders()).containsOnly("*");
+    }
+
+    @Test
+    public void shouldSetWebServerMode() throws Exception {
+        HoverflyConfiguration configs = configs().asWebServer().build();
+
+        assertThat(configs.isWebServer()).isTrue();
+    }
+
+    @Test
+    public void shouldDisableTlsVerification() throws Exception {
+        HoverflyConfiguration configs = configs().disableTlsVerification().build();
+
+        assertThat(configs.isTlsVerificationDisabled()).isTrue();
     }
 
 }
