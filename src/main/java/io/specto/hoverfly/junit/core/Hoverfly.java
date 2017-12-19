@@ -398,6 +398,7 @@ public class Hoverfly implements AutoCloseable {
 
         proxyConfigurer.restoreProxySystemProperties();
         // TODO: reset default SslContext?
+        sslConfigurer.reset();
         tempFileManager.purge();
     }
 }
