@@ -32,6 +32,7 @@ public abstract class HoverflyConfig {
     protected String destination;
     protected String proxyCaCert;
     protected List<String> captureHeaders;
+    protected boolean plainHttpTunneling;
 
     /**
      * New instance
@@ -127,6 +128,15 @@ public abstract class HoverflyConfig {
         return this;
     }
 
+    /**
+     * Invoke to enable plain http tunneling
+     * By default it is false
+     * @return a config
+     */
+    public HoverflyConfig plainHttpTunneling() {
+        this.plainHttpTunneling = true;
+        return this;
+    }
 
     /**
      * Enable remote Hoverfly configurations

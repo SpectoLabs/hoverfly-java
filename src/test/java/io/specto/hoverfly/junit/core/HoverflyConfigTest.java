@@ -29,6 +29,7 @@ public class HoverflyConfigTest {
 
         assertThat(configs.isRemoteInstance()).isFalse();
         assertThat(configs.isProxyLocalHost()).isFalse();
+        assertThat(configs.isPlainHttpTunneling()).isFalse();
         assertThat(configs.isWebServer()).isFalse();
         assertThat(configs.isTlsVerificationDisabled()).isFalse();
     }
@@ -46,6 +47,7 @@ public class HoverflyConfigTest {
 
         assertThat(configs.isRemoteInstance()).isTrue();
         assertThat(configs.isProxyLocalHost()).isFalse();
+        assertThat(configs.isPlainHttpTunneling()).isFalse();
     }
 
     @Test
@@ -79,6 +81,13 @@ public class HoverflyConfigTest {
         HoverflyConfiguration configs = configs().proxyLocalHost().build();
 
         assertThat(configs.isProxyLocalHost()).isTrue();
+    }
+
+    @Test
+    public void shouldSetPlainHttpTunneling() throws Exception {
+        HoverflyConfiguration configs = configs().plainHttpTunneling().build();
+
+        assertThat(configs.isPlainHttpTunneling()).isTrue();
     }
 
     @Test

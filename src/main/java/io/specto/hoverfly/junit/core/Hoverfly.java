@@ -172,6 +172,9 @@ public class Hoverfly implements AutoCloseable {
             commands.add("ca.key");
             useDefaultSslCert = false;
         }
+        if (hoverflyConfig.isPlainHttpTunneling()) {
+            commands.add("-plain-http-tunneling");
+        }
 
         if (hoverflyConfig.isWebServer()) {
             commands.add("-webserver");

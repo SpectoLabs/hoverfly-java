@@ -63,7 +63,7 @@ public class LocalHoverflyConfig extends HoverflyConfig {
     @Override
     public HoverflyConfiguration build() {
         HoverflyConfiguration configs = new HoverflyConfiguration(proxyPort, adminPort, proxyLocalHost, destination,
-                proxyCaCert, sslCertificatePath, sslKeyPath, captureHeaders);
+                proxyCaCert, sslCertificatePath, sslKeyPath, captureHeaders, plainHttpTunneling);
         configs.setWebServer(this.webServer);
         configs.setTlsVerificationDisabled(this.tlsVerficationDisabled);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();

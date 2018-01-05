@@ -70,7 +70,7 @@ public class RemoteHoverflyConfig extends HoverflyConfig {
             proxyPort = DEFAULT_PROXY_PORT;
         }
         HoverflyConfiguration configs = new HoverflyConfiguration(scheme, host, proxyPort, adminPort, proxyLocalHost,
-                destination, proxyCaCert, authToken, adminCertificate, captureHeaders);
+                destination, proxyCaCert, authToken, adminCertificate, captureHeaders, plainHttpTunneling);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }
