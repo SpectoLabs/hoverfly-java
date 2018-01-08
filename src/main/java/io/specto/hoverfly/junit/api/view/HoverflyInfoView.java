@@ -103,6 +103,7 @@ public class HoverflyInfoView {
         private int modify;
         private int simulate;
         private int synthesize;
+        private int spy;
 
         public Counters() {
         }
@@ -137,6 +138,14 @@ public class HoverflyInfoView {
 
         public void setSynthesize(int synthesize) {
             this.synthesize = synthesize;
+        }
+
+        public int getSpy() {
+            return spy;
+        }
+
+        public void setSpy(int spy) {
+            this.spy = spy;
         }
     }
 }
