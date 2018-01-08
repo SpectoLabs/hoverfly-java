@@ -97,6 +97,7 @@ public class HoverflyInfoView {
         }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private static class Counters {
         private int capture;
         private int modify;

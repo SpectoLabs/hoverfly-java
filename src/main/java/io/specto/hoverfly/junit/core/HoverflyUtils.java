@@ -13,6 +13,7 @@
 package io.specto.hoverfly.junit.core;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.URL;
 import java.util.Optional;
@@ -24,7 +25,7 @@ class HoverflyUtils {
 
 
     static void checkPortInUse(int port) {
-        try (final ServerSocket serverSocket = new ServerSocket(port)) {
+        try (final ServerSocket serverSocket = new ServerSocket(port, 1, InetAddress.getLoopbackAddress())) {
             serverSocket.close();
         } catch (IOException e) {
             throw new IllegalStateException("Port is already in use: " + port);
