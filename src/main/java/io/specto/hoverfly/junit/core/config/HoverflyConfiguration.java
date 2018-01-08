@@ -27,7 +27,7 @@ public class HoverflyConfiguration {
     private List<String> captureHeaders = Collections.emptyList();
     private boolean webServer = false;
     private boolean tlsVerificationDisabled = false;
-    private boolean plainHttpTunneling;
+    private boolean plainHttpTunneling = false;
 
     /**
      * Create configurations for external hoverfly
@@ -41,9 +41,8 @@ public class HoverflyConfiguration {
                           final String proxyCaCertificate,
                           final String authToken,
                           final String adminCertificate,
-                          final List<String> captureHeaders,
-                          final boolean plainHttpTunneling) {
-        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, null, null, captureHeaders, plainHttpTunneling);
+                          final List<String> captureHeaders) {
+        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, null, null, captureHeaders);
         setScheme(scheme);
         setHost(host);
         this.authToken = authToken;
@@ -61,8 +60,7 @@ public class HoverflyConfiguration {
                           final String proxyCaCertificate,
                           final String sslCertificatePath,
                           final String sslKeyPath,
-                          final List<String> captureHeaders,
-                          final boolean plainHttpTunneling) {
+                          final List<String> captureHeaders) {
         this.proxyPort = proxyPort;
         this.adminPort = adminPort;
         this.proxyLocalHost = proxyLocalHost;
@@ -71,7 +69,6 @@ public class HoverflyConfiguration {
         this.sslCertificatePath = sslCertificatePath;
         this.sslKeyPath = sslKeyPath;
         this.captureHeaders = captureHeaders;
-        this.plainHttpTunneling = plainHttpTunneling;
     }
 
     /**
@@ -147,10 +144,6 @@ public class HoverflyConfiguration {
         return captureHeaders;
     }
 
-    public boolean isPlainHttpTunneling() {
-        return plainHttpTunneling;
-    }
-
     void setHost(String host) {
         if (host != null) {
             this.host = host;
@@ -186,4 +179,13 @@ public class HoverflyConfiguration {
     public void setTlsVerificationDisabled(boolean tlsVerificationDisabled) {
         this.tlsVerificationDisabled = tlsVerificationDisabled;
     }
+
+    public boolean isPlainHttpTunneling() {
+        return plainHttpTunneling;
+    }
+
+    public void setPlainHttpTunneling(boolean plainHttpTunneling) {
+        this.plainHttpTunneling = plainHttpTunneling;
+    }
+
 }
