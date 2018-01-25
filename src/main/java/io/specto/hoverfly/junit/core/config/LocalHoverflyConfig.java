@@ -15,6 +15,7 @@ package io.specto.hoverfly.junit.core.config;
 
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
+import io.specto.hoverfly.junit.core.Middleware;
 
 /**
  * Config builder interface for settings specific to {@link Hoverfly} managed internally
@@ -27,6 +28,7 @@ public class LocalHoverflyConfig extends HoverflyConfig {
     private boolean webServer;
     private boolean tlsVerficationDisabled;
     private boolean plainHttpTunneling;
+    private Middleware middleware;
 
     /**
      * Sets the SSL certificate file for overriding default Hoverfly self-signed certificate
@@ -48,6 +50,17 @@ public class LocalHoverflyConfig extends HoverflyConfig {
      */
     public LocalHoverflyConfig sslKeyPath(String sslKeyPath) {
         this.sslKeyPath = sslKeyPath;
+        return this;
+    }
+
+    /**
+     * Sets the middleware for Hoverfly
+     * @param binary absolute or relative path of binary
+     * @param path middleware script file in classpath
+     * @return the {@link LocalHoverflyConfig} for further customizations
+     */
+    public HoverflyConfig localMiddleware(String binary, String path) {
+        this.middleware = new Middleware(binary, path) ;
         return this;
     }
 
@@ -78,6 +91,7 @@ public class LocalHoverflyConfig extends HoverflyConfig {
         configs.setWebServer(this.webServer);
         configs.setTlsVerificationDisabled(this.tlsVerficationDisabled);
         configs.setPlainHttpTunneling(this.plainHttpTunneling);
+        configs.setMiddleware(this.middleware);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }

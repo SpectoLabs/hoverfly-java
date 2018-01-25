@@ -27,12 +27,7 @@ import io.specto.hoverfly.junit.dsl.RequestMatcherBuilder;
 import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
 import io.specto.hoverfly.junit.verification.VerificationCriteria;
 import io.specto.hoverfly.junit.verification.VerificationData;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.zeroturnaround.exec.ProcessExecutor;
-import org.zeroturnaround.exec.StartedProcess;
-
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,7 +35,18 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.StartedProcess;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
@@ -185,6 +191,13 @@ public class Hoverfly implements AutoCloseable {
             commands.add("false");
         }
 
+        if (hoverflyConfig.isMiddlewareEnabled()) {
+            final String path = hoverflyConfig.getMiddleware().getPath();
+            final String scriptName = path.contains(File.separator) ? path.substring(path.lastIndexOf(File.separator)+1) : path;
+            tempFileManager.copyClassPathResource(path, scriptName);
+            commands.add("-middleware");
+            commands.add(hoverflyConfig.getMiddleware().getBinary() + " " + scriptName);
+        }
         try {
             startedProcess = new ProcessExecutor()
                     .command(commands)

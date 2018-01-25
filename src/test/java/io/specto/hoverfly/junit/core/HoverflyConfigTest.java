@@ -155,4 +155,11 @@ public class HoverflyConfigTest {
         assertThat(configs.isTlsVerificationDisabled()).isTrue();
     }
 
+    @Test
+    public void shouldSetMiddleware() {
+        HoverflyConfiguration configs = configs().localMiddleware("python", "foo.py").build();
+
+        assertThat(configs.isMiddlewareEnabled()).isTrue();
+    }
+
 }

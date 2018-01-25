@@ -1,8 +1,11 @@
 package io.specto.hoverfly.junit.core.config;
 
 import io.specto.hoverfly.junit.core.Hoverfly;
-
-import java.util.*;
+import io.specto.hoverfly.junit.core.Middleware;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 
 import static io.specto.hoverfly.junit.core.HoverflyConstants.HTTP;
 import static io.specto.hoverfly.junit.core.HoverflyConstants.LOCALHOST;
@@ -24,6 +27,7 @@ public class HoverflyConfiguration {
     private boolean isRemoteInstance;
     private String adminCertificate;
     private String proxyCaCertificate;
+    private Middleware middleware;
     private List<String> captureHeaders = Collections.emptyList();
     private boolean webServer = false;
     private boolean tlsVerificationDisabled = false;
@@ -188,4 +192,15 @@ public class HoverflyConfiguration {
         this.plainHttpTunneling = plainHttpTunneling;
     }
 
+    public Middleware getMiddleware() {
+        return middleware;
+    }
+
+    public void setMiddleware(Middleware middleware) {
+        this.middleware = middleware;
+    }
+
+    public boolean isMiddlewareEnabled() {
+        return StringUtils.isNotBlank(middleware.getBinary()) && StringUtils.isNotBlank(middleware.getPath());
+    }
 }
