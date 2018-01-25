@@ -1,10 +1,10 @@
 package io.specto.hoverfly.junit.core;
 
-public class Middleware {
+public class LocalMiddleware {
    private final String binary;
    private final String path;
 
-   public Middleware(String binary, String path) {
+   public LocalMiddleware(String binary, String path) {
       this.binary = binary;
       this.path = path;
    }

@@ -1,11 +1,10 @@
 package io.specto.hoverfly.junit.core.config;
 
 import io.specto.hoverfly.junit.core.Hoverfly;
-import io.specto.hoverfly.junit.core.Middleware;
+import io.specto.hoverfly.junit.core.LocalMiddleware;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.apache.commons.lang3.StringUtils;
 
 import static io.specto.hoverfly.junit.core.HoverflyConstants.HTTP;
 import static io.specto.hoverfly.junit.core.HoverflyConstants.LOCALHOST;
@@ -27,7 +26,7 @@ public class HoverflyConfiguration {
     private boolean isRemoteInstance;
     private String adminCertificate;
     private String proxyCaCertificate;
-    private Middleware middleware;
+    private LocalMiddleware localMiddleware;
     private List<String> captureHeaders = Collections.emptyList();
     private boolean webServer = false;
     private boolean tlsVerificationDisabled = false;
@@ -192,15 +191,19 @@ public class HoverflyConfiguration {
         this.plainHttpTunneling = plainHttpTunneling;
     }
 
-    public Middleware getMiddleware() {
-        return middleware;
+    public LocalMiddleware getLocalMiddleware() {
+        return localMiddleware;
     }
 
-    public void setMiddleware(Middleware middleware) {
-        this.middleware = middleware;
+    public void setLocalMiddleware(LocalMiddleware localMiddleware) {
+        this.localMiddleware = localMiddleware;
     }
 
     public boolean isMiddlewareEnabled() {
-        return StringUtils.isNotBlank(middleware.getBinary()) && StringUtils.isNotBlank(middleware.getPath());
+        return isNotBlank(localMiddleware.getBinary()) && isNotBlank(localMiddleware.getPath());
+    }
+
+    private boolean isNotBlank(String str) {
+        return str != null && !str.trim().isEmpty();
     }
 }

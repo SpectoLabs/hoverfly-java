@@ -257,6 +257,21 @@ public class HoverflyTest {
         verify(tempFileManager).copyClassPathResource("ssl/ca.key", "ca.key");
     }
 
+    @Test
+    public void shouldCopyMiddlewareScriptToTempFolderIfLocalMiddlewareEnabled () throws Exception {
+        // Given
+        hoverfly = new Hoverfly(configs()
+           .localMiddleware("python", "middleware/middleware.py"), SIMULATE);
+        TempFileManager tempFileManager = spy(TempFileManager.class);
+        Whitebox.setInternalState(hoverfly, "tempFileManager", tempFileManager);
+
+        // When
+        hoverfly.start();
+
+        // Then
+        verify(tempFileManager).copyClassPathResource("middleware/middleware.py", "middleware.py");
+    }
+
 
     @Test
     public void shouldCopyHoverflyBinaryToTempFolderOnStart() throws Exception {

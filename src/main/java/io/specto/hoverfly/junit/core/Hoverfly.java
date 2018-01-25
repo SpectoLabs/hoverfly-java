@@ -192,11 +192,11 @@ public class Hoverfly implements AutoCloseable {
         }
 
         if (hoverflyConfig.isMiddlewareEnabled()) {
-            final String path = hoverflyConfig.getMiddleware().getPath();
-            final String scriptName = path.contains(File.separator) ? path.substring(path.lastIndexOf(File.separator)+1) : path;
+            final String path = hoverflyConfig.getLocalMiddleware().getPath();
+            final String scriptName = path.contains(File.separator) ? path.substring(path.lastIndexOf(File.separator) + 1) : path;
             tempFileManager.copyClassPathResource(path, scriptName);
             commands.add("-middleware");
-            commands.add(hoverflyConfig.getMiddleware().getBinary() + " " + scriptName);
+            commands.add(hoverflyConfig.getLocalMiddleware().getBinary() + " " + scriptName);
         }
         try {
             startedProcess = new ProcessExecutor()
