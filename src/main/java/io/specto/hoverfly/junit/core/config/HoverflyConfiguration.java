@@ -200,7 +200,7 @@ public class HoverflyConfiguration {
     }
 
     public boolean isMiddlewareEnabled() {
-        return isNotBlank(localMiddleware.getBinary()) && isNotBlank(localMiddleware.getPath());
+        return localMiddleware != null && isNotBlank(localMiddleware.getBinary()) && isNotBlank(localMiddleware.getPath());
     }
 
     private boolean isNotBlank(String str) {
