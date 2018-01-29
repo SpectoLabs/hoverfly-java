@@ -15,7 +15,6 @@ package io.specto.hoverfly.junit.core.config;
 
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
-import io.specto.hoverfly.junit.core.LocalMiddleware;
 
 /**
  * Config builder interface for settings specific to {@link Hoverfly} managed internally

@@ -1,7 +1,6 @@
 package io.specto.hoverfly.junit.core.config;
 
 import io.specto.hoverfly.junit.core.Hoverfly;
-import io.specto.hoverfly.junit.core.LocalMiddleware;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
