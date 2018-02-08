@@ -29,6 +29,11 @@ class ProxyConfigurer {
      * Configures the JVM system properties to use Hoverfly as a proxy
      */
     void setProxySystemProperties() {
+        if (hoverflyConfig.isWebServer()) {
+            // Do nothing if Hoverfly acts as a web server!
+            return;
+        }
+
         keepOriginalProxyProperties(HTTP_NON_PROXY_HOSTS, HTTP_PROXY_HOST, HTTP_PROXY_PORT, HTTPS_PROXY_HOST, HTTPS_PROXY_PORT);
         LOGGER.info("Setting proxy host to {}", hoverflyConfig.getHost());
         System.setProperty(HTTP_PROXY_HOST, hoverflyConfig.getHost());
@@ -57,6 +62,11 @@ class ProxyConfigurer {
     }
 
     void restoreProxySystemProperties() {
+        if (hoverflyConfig.isWebServer()) {
+            // Do nothing if Hoverfly acts as a web server!
+            return;
+        }
+
         for (Map.Entry<String, String> originalProperty : this.originalProxyProperties.entrySet()) {
             final String property = originalProperty.getKey();
             final String originalValue = originalProperty.getValue();
