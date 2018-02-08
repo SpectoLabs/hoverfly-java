@@ -24,7 +24,6 @@ public class LocalHoverflyConfig extends HoverflyConfig {
     // TODO should be combined field?
     private String sslCertificatePath;
     private String sslKeyPath;
-    private boolean webServer;
     private boolean tlsVerificationDisabled;
     private boolean plainHttpTunneling;
     private LocalMiddleware localMiddleware;
@@ -63,11 +62,6 @@ public class LocalHoverflyConfig extends HoverflyConfig {
         return this;
     }
 
-    public LocalHoverflyConfig asWebServer() {
-        this.webServer = true;
-        return this;
-    }
-
     public LocalHoverflyConfig disableTlsVerification() {
         this.tlsVerificationDisabled = true;
         return this;
@@ -86,8 +80,7 @@ public class LocalHoverflyConfig extends HoverflyConfig {
     @Override
     public HoverflyConfiguration build() {
         HoverflyConfiguration configs = new HoverflyConfiguration(proxyPort, adminPort, proxyLocalHost, destination,
-                proxyCaCert, sslCertificatePath, sslKeyPath, captureHeaders, upstreamProxy);
-        configs.setWebServer(this.webServer);
+                proxyCaCert, sslCertificatePath, sslKeyPath, captureHeaders, upstreamProxy, webServer);
         configs.setTlsVerificationDisabled(this.tlsVerificationDisabled);
         configs.setPlainHttpTunneling(this.plainHttpTunneling);
         configs.setLocalMiddleware(this.localMiddleware);

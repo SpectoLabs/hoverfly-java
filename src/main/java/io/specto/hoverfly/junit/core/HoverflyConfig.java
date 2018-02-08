@@ -34,6 +34,7 @@ public abstract class HoverflyConfig {
     protected String destination;
     protected String proxyCaCert;
     protected List<String> captureHeaders;
+    protected boolean webServer;
     protected String upstreamProxy;
 
     /**
@@ -127,6 +128,11 @@ public abstract class HoverflyConfig {
      */
     public HoverflyConfig proxyCaCert(String proxyCaCert) {
         this.proxyCaCert = proxyCaCert;
+        return this;
+    }
+
+    public HoverflyConfig asWebServer() {
+        this.webServer = true;
         return this;
     }
 
