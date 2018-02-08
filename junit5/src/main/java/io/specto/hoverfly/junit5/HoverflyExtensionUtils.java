@@ -4,11 +4,11 @@ import io.specto.hoverfly.junit.core.HoverflyConstants;
 import io.specto.hoverfly.junit.core.SimulationSource;
 import io.specto.hoverfly.junit5.api.HoverflyConfig;
 import io.specto.hoverfly.junit5.api.HoverflySimulate;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
 import static io.specto.hoverfly.junit.core.SimulationSource.defaultPath;
 
 class HoverflyExtensionUtils {
@@ -18,27 +18,20 @@ class HoverflyExtensionUtils {
     static io.specto.hoverfly.junit.core.HoverflyConfig getHoverflyConfigs(HoverflyConfig config) {
 
         if (config != null) {
-            io.specto.hoverfly.junit.core.HoverflyConfig configs = configs()
-                    .sslCertificatePath(config.sslCertificatePath())
-                    .sslKeyPath(config.sslKeyPath())
-                    .adminPort(config.adminPort())
-                    .proxyPort(config.proxyPort())
-                    .destination(config.destination())
-                    .captureHeaders(config.captureHeaders());
+            io.specto.hoverfly.junit.core.HoverflyConfig configs;
 
-            if (config.proxyLocalHost()) {
-                configs.proxyLocalHost();
-            }
-            if (config.captureAllHeaders()) {
-                configs.captureAllHeaders();
-            }
             if (!config.remoteHost().isEmpty()) {
-                configs.remote().host(config.remoteHost());
+                configs = remoteConfigs().host(config.remoteHost());
+            } else {
+                configs = localConfigs()
+                    .sslCertificatePath(config.sslCertificatePath())
+                    .sslKeyPath(config.sslKeyPath());
             }
+            fillHoverflyConfig(configs, config);
             return configs;
 
         } else {
-            return configs();
+            return localConfigs();
         }
     }
 
@@ -71,5 +64,20 @@ class HoverflyExtensionUtils {
             path = HoverflyConstants.DEFAULT_HOVERFLY_EXPORT_PATH;
         }
         return Paths.get(path).resolve(filename);
+    }
+
+    private static void fillHoverflyConfig(io.specto.hoverfly.junit.core.HoverflyConfig configs,
+        HoverflyConfig configParams) {
+        configs
+            .adminPort(configParams.adminPort())
+            .proxyPort(configParams.proxyPort())
+            .destination(configParams.destination())
+            .captureHeaders(configParams.captureHeaders());
+        if (configParams.proxyLocalHost()) {
+            configs.proxyLocalHost();
+        }
+        if (configParams.captureAllHeaders()) {
+            configs.captureAllHeaders();
+        }
     }
 }

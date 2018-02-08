@@ -10,6 +10,10 @@ import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.model.Simulation;
+import java.net.InetSocketAddress;
+import java.net.URL;
+import java.util.List;
+import javax.net.ssl.SSLContext;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -22,12 +26,8 @@ import org.powermock.reflect.Whitebox;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.StartedProcess;
 
-import javax.net.ssl.SSLContext;
-import java.net.InetSocketAddress;
-import java.net.URL;
-import java.util.List;
-
-import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SPY;
@@ -35,7 +35,16 @@ import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 
 public class HoverflyTest {
@@ -47,7 +56,7 @@ public class HoverflyTest {
     @Test
     public void shouldStartHoverflyOnConfiguredPort() throws Exception {
 
-        hoverfly = new Hoverfly(configs().proxyPort(EXPECTED_PROXY_PORT), SIMULATE);
+        hoverfly = new Hoverfly(localConfigs().proxyPort(EXPECTED_PROXY_PORT), SIMULATE);
         hoverfly.start();
         assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(EXPECTED_PROXY_PORT));
         assertThat(hoverfly.getHoverflyConfig().getProxyPort()).isEqualTo(EXPECTED_PROXY_PORT);
@@ -106,7 +115,7 @@ public class HoverflyTest {
         // Given
         startDefaultHoverfly();
 
-        try (Hoverfly portClashHoverfly = new Hoverfly(configs().proxyPort(hoverfly.getHoverflyConfig().getProxyPort()), SIMULATE)) {
+        try (Hoverfly portClashHoverfly = new Hoverfly(localConfigs().proxyPort(hoverfly.getHoverflyConfig().getProxyPort()), SIMULATE)) {
             // When
             Throwable throwable = catchThrowable(portClashHoverfly::start);
 
@@ -122,7 +131,7 @@ public class HoverflyTest {
         // Given
         startDefaultHoverfly();
 
-        try (Hoverfly portClashHoverfly = new Hoverfly(configs().adminPort(hoverfly.getHoverflyConfig().getAdminPort()), SIMULATE)) {
+        try (Hoverfly portClashHoverfly = new Hoverfly(localConfigs().adminPort(hoverfly.getHoverflyConfig().getAdminPort()), SIMULATE)) {
             // When
             Throwable throwable = catchThrowable(portClashHoverfly::start);
 
@@ -209,7 +218,7 @@ public class HoverflyTest {
     @Test
     public void shouldNotSetJVMTrustStoreIfSslCertificatePathExists() throws Exception {
         // Given
-        hoverfly = new Hoverfly(configs()
+        hoverfly = new Hoverfly(localConfigs()
                 .sslCertificatePath("ssl/ca.crt")
                 .sslKeyPath("ssl/ca.key"), SIMULATE);
         SslConfigurer sslConfigurer = mock(SslConfigurer.class);
@@ -225,7 +234,7 @@ public class HoverflyTest {
     @Test
     public void shouldSetSslCertForRemoteInstance() throws Exception {
 
-        hoverfly = new Hoverfly(configs().remote().host("remotehost").proxyCaCert("ssl/ca.crt"), SIMULATE);
+        hoverfly = new Hoverfly(remoteConfigs().host("remotehost").proxyCaCert("ssl/ca.crt"), SIMULATE);
 
         SslConfigurer sslConfigurer = mock(SslConfigurer.class);
         Whitebox.setInternalState(hoverfly, "sslConfigurer", sslConfigurer);
@@ -244,7 +253,7 @@ public class HoverflyTest {
     @Test
     public void shouldResetJournalWhenUsingARemoteHoverflyInstance() throws Exception {
 
-        hoverfly = new Hoverfly(configs().remote(), SIMULATE);
+        hoverfly = new Hoverfly(remoteConfigs(), SIMULATE);
 
         HoverflyClient hoverflyClient = createMockHoverflyClient(hoverfly);
         when(hoverflyClient.getHealth()).thenReturn(true);
@@ -257,7 +266,7 @@ public class HoverflyTest {
     @Test
     public void shouldCopySslCertAndKeyToTempFolderIfPresent () throws Exception {
         // Given
-        hoverfly = new Hoverfly(configs()
+        hoverfly = new Hoverfly(localConfigs()
                 .sslCertificatePath("ssl/ca.crt")
                 .sslKeyPath("ssl/ca.key"), SIMULATE);
         TempFileManager tempFileManager = spy(TempFileManager.class);
@@ -274,7 +283,7 @@ public class HoverflyTest {
     @Test
     public void shouldCopyMiddlewareScriptToTempFolderIfLocalMiddlewareEnabled () throws Exception {
         // Given
-        hoverfly = new Hoverfly(configs()
+        hoverfly = new Hoverfly(localConfigs()
            .localMiddleware("python", "middleware/middleware.py"), SIMULATE);
         TempFileManager tempFileManager = spy(TempFileManager.class);
         Whitebox.setInternalState(hoverfly, "tempFileManager", tempFileManager);
@@ -329,7 +338,7 @@ public class HoverflyTest {
 
     @Test
     public void shouldSetNonProxyHostSystemPropertyToEmptyIfIsProxyLocalHost() throws Exception {
-        hoverfly = new Hoverfly(configs().proxyLocalHost(), SIMULATE);
+        hoverfly = new Hoverfly(localConfigs().proxyLocalHost(), SIMULATE);
         hoverfly.start();
 
         assertThat(System.getProperty("http.nonProxyHosts")).isEqualTo("");
@@ -351,7 +360,7 @@ public class HoverflyTest {
 
     @Test
     public void shouldSetHeadersForCaptureMode() throws Exception {
-        hoverfly = new Hoverfly(configs().captureHeaders("Authorization"), CAPTURE);
+        hoverfly = new Hoverfly(localConfigs().captureHeaders("Authorization"), CAPTURE);
 
         HoverflyClient hoverflyClient = createMockHoverflyClient(hoverfly);
         when(hoverflyClient.getHealth()).thenReturn(true);
@@ -368,7 +377,7 @@ public class HoverflyTest {
 
     @Test
     public void shouldNotSetHeadersForNonCaptureMode() throws Exception {
-        hoverfly = new Hoverfly(configs().captureAllHeaders(), SIMULATE);
+        hoverfly = new Hoverfly(localConfigs().captureAllHeaders(), SIMULATE);
 
         HoverflyClient hoverflyClient = createMockHoverflyClient(hoverfly);
         when(hoverflyClient.getHealth()).thenReturn(true);
@@ -380,7 +389,7 @@ public class HoverflyTest {
 
     @Test
     public void shouldSetUpstreamProxy() {
-        hoverfly = new Hoverfly(configs().upstreamProxy(new InetSocketAddress("127.0.0.1", 8900)), SIMULATE);
+        hoverfly = new Hoverfly(localConfigs().upstreamProxy(new InetSocketAddress("127.0.0.1", 8900)), SIMULATE);
 
         hoverfly.start();
         HoverflyInfoView hoverflyInfo = hoverfly.getHoverflyInfo();

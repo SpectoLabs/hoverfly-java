@@ -16,9 +16,7 @@ package io.specto.hoverfly.junit.core;
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.config.LocalHoverflyConfig;
 import io.specto.hoverfly.junit.core.config.RemoteHoverflyConfig;
-
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -39,9 +37,27 @@ public abstract class HoverflyConfig {
     /**
      * New instance
      * @return a {@link LocalHoverflyConfig} implementation
+     * @deprecated use {@link HoverflyConfig#localConfigs()}
      */
+    @Deprecated
     public static LocalHoverflyConfig configs() {
         return new LocalHoverflyConfig();
+    }
+
+    /**
+     * Creates a new instance of {@link LocalHoverflyConfig}
+     * @return A new instance of {@link LocalHoverflyConfig}
+     */
+    public static LocalHoverflyConfig localConfigs() {
+        return new LocalHoverflyConfig();
+    }
+
+    /**
+     * Creates a new instance of {@link RemoteHoverflyConfig}
+     * @return A new instance of {@link RemoteHoverflyConfig}
+     */
+    public static RemoteHoverflyConfig remoteConfigs() {
+        return new RemoteHoverflyConfig();
     }
 
     /**
@@ -143,7 +159,9 @@ public abstract class HoverflyConfig {
     /**
      * Enable remote Hoverfly configurations
      * @return a {@link RemoteHoverflyConfig} implementation
+     * @deprecated use {@link HoverflyConfig#remoteConfigs()}
      */
+    @Deprecated
     public RemoteHoverflyConfig remote() {
         return new RemoteHoverflyConfig();
     }

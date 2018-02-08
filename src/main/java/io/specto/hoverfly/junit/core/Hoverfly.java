@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.StartedProcess;
 
-import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
 import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
@@ -103,7 +103,7 @@ public class Hoverfly implements AutoCloseable {
      * @param hoverflyMode the mode
      */
     public Hoverfly(HoverflyMode hoverflyMode) {
-        this(configs(), hoverflyMode);
+        this(localConfigs(), hoverflyMode);
     }
 
     /**

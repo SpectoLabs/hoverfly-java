@@ -12,11 +12,19 @@
  */
 package io.specto.hoverfly.junit.rule;
 
-import io.specto.hoverfly.junit.core.*;
+import io.specto.hoverfly.junit.core.Hoverfly;
+import io.specto.hoverfly.junit.core.HoverflyConfig;
+import io.specto.hoverfly.junit.core.HoverflyConstants;
+import io.specto.hoverfly.junit.core.HoverflyMode;
+import io.specto.hoverfly.junit.core.SimulationSource;
+import io.specto.hoverfly.junit.core.SslConfigurer;
 import io.specto.hoverfly.junit.dsl.HoverflyDsl;
 import io.specto.hoverfly.junit.dsl.RequestMatcherBuilder;
 import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
 import io.specto.hoverfly.junit.verification.VerificationCriteria;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -26,16 +34,15 @@ import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
-
-import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static io.specto.hoverfly.junit.core.SimulationSource.empty;
 import static io.specto.hoverfly.junit.core.SimulationSource.file;
-import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.*;
+import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.createTestResourcesHoverflyDirectoryIfNoneExisting;
+import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.fileRelativeToTestResourcesHoverfly;
+import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.isAnnotatedWithRule;
+import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.prettyPrintJson;
 
 
 /**
@@ -109,7 +116,7 @@ public class HoverflyRule extends ExternalResource {
      * @return the rule
      */
     public static HoverflyRule inCaptureOrSimulationMode(String recordFile) {
-        return inCaptureOrSimulationMode(recordFile, configs());
+        return inCaptureOrSimulationMode(recordFile, localConfigs());
     }
 
     /**
@@ -131,7 +138,7 @@ public class HoverflyRule extends ExternalResource {
 
     // TODO default path?
     public static HoverflyRule inCaptureMode() {
-        return inCaptureMode(configs());
+        return inCaptureMode(localConfigs());
     }
 
     public static HoverflyRule inCaptureMode(HoverflyConfig hoverflyConfig) {
@@ -145,7 +152,7 @@ public class HoverflyRule extends ExternalResource {
      * @return the rule
      */
     public static HoverflyRule inCaptureMode(String outputFilename) {
-        return inCaptureMode(outputFilename, configs());
+        return inCaptureMode(outputFilename, localConfigs());
     }
 
     /**
@@ -167,7 +174,7 @@ public class HoverflyRule extends ExternalResource {
      * @return the rule
      */
     public static HoverflyRule inSimulationMode() {
-        return inSimulationMode(configs());
+        return inSimulationMode(localConfigs());
     }
 
     /**
@@ -187,7 +194,7 @@ public class HoverflyRule extends ExternalResource {
      * @return the rule
      */
     public static HoverflyRule inSimulationMode(final SimulationSource simulationSource) {
-        return inSimulationMode(simulationSource, configs());
+        return inSimulationMode(simulationSource, localConfigs());
     }
 
     public static HoverflyRule inSimulationMode(final SimulationSource simulationSource, final HoverflyConfig hoverflyConfig) {

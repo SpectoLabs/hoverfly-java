@@ -1,13 +1,13 @@
 package io.specto.hoverfly.junit.core;
 
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
+import java.net.InetSocketAddress;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
 
-import java.net.InetSocketAddress;
-
-import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -19,7 +19,7 @@ public class HoverflyConfigTest {
     @Test
     public void shouldHaveDefaultSettings() throws Exception {
 
-        HoverflyConfiguration configs = configs().build();
+        HoverflyConfiguration configs = localConfigs().build();
 
         assertThat(configs.getHost()).isEqualTo("localhost");
         assertThat(configs.getScheme()).isEqualTo("http");
@@ -38,7 +38,7 @@ public class HoverflyConfigTest {
 
     @Test
     public void shouldHaveDefaultRemoteSettings() throws Exception {
-        HoverflyConfiguration configs = HoverflyConfig.configs().remote().build();
+        HoverflyConfiguration configs = HoverflyConfig.remoteConfigs().build();
 
         assertThat(configs.getHost()).isEqualTo("localhost");
         assertThat(configs.getScheme()).isEqualTo("http");
@@ -55,8 +55,7 @@ public class HoverflyConfigTest {
     @Test
     public void shouldBeAbleToOverrideHostNameByUseRemoteInstance() throws Exception {
 
-        HoverflyConfiguration configs = configs()
-                .remote()
+        HoverflyConfiguration configs = remoteConfigs()
                 .host("cloud-hoverfly.com")
                 .build();
 
@@ -66,35 +65,22 @@ public class HoverflyConfigTest {
     }
 
     @Test
-    public void remoteHoverflyConfigShouldIgnoreCustomSslCertAndKey() throws Exception {
-        HoverflyConfiguration configs = configs()
-                .sslCertificatePath("ssl/ca.crt")
-                .sslKeyPath("ssl/ca.key").remote()
-                .remote()
-                .build();
-
-        assertThat(configs.getSslCertificatePath()).isNull();
-        assertThat(configs.getSslKeyPath()).isNull();
-
-    }
-
-    @Test
     public void shouldSetProxyLocalHost() throws Exception {
-        HoverflyConfiguration configs = configs().proxyLocalHost().build();
+        HoverflyConfiguration configs = localConfigs().proxyLocalHost().build();
 
         assertThat(configs.isProxyLocalHost()).isTrue();
     }
 
     @Test
     public void shouldSetPlainHttpTunneling() throws Exception {
-        HoverflyConfiguration configs = configs().plainHttpTunneling().build();
+        HoverflyConfiguration configs = localConfigs().plainHttpTunneling().build();
 
         assertThat(configs.isPlainHttpTunneling()).isTrue();
     }
 
     @Test
     public void shouldSetHttpsAdminEndpoint() throws Exception {
-        HoverflyConfiguration configs = configs().remote().withHttpsAdminEndpoint().build();
+        HoverflyConfiguration configs = remoteConfigs().withHttpsAdminEndpoint().build();
 
         assertThat(configs.getScheme()).isEqualTo("https");
         assertThat(configs.getAdminPort()).isEqualTo(443);
@@ -105,7 +91,7 @@ public class HoverflyConfigTest {
     public void shouldSetAuthTokenFromEnvironmentVariable() throws Exception {
 
         envVars.set(HoverflyConstants.HOVERFLY_AUTH_TOKEN, "token-from-env");
-        HoverflyConfiguration configs = configs().remote().withAuthHeader().build();
+        HoverflyConfiguration configs = remoteConfigs().withAuthHeader().build();
 
         assertThat(configs.getAuthToken()).isPresent();
         configs.getAuthToken().ifPresent(token -> assertThat(token).isEqualTo("token-from-env"));
@@ -113,7 +99,7 @@ public class HoverflyConfigTest {
 
     @Test
     public void shouldSetAuthTokenDirectly() throws Exception {
-        HoverflyConfiguration configs = configs().remote().withAuthHeader("some-token").build();
+        HoverflyConfiguration configs = remoteConfigs().withAuthHeader("some-token").build();
 
         assertThat(configs.getAuthToken()).isPresent();
         configs.getAuthToken().ifPresent(token -> assertThat(token).isEqualTo("some-token"));
@@ -121,7 +107,7 @@ public class HoverflyConfigTest {
 
     @Test
     public void shouldSetCaptureHeaders() throws Exception {
-        HoverflyConfiguration configs = configs().captureHeaders("Accept", "Authorization").build();
+        HoverflyConfiguration configs = localConfigs().captureHeaders("Accept", "Authorization").build();
 
         assertThat(configs.getCaptureHeaders()).hasSize(2);
         assertThat(configs.getCaptureHeaders()).containsOnly("Accept", "Authorization");
@@ -129,7 +115,7 @@ public class HoverflyConfigTest {
 
     @Test
     public void shouldSetCaptureOneHeader() throws Exception {
-        HoverflyConfiguration configs = configs().captureHeaders("Accept").build();
+        HoverflyConfiguration configs = localConfigs().captureHeaders("Accept").build();
 
         assertThat(configs.getCaptureHeaders()).hasSize(1);
         assertThat(configs.getCaptureHeaders()).containsOnly("Accept");
@@ -137,7 +123,7 @@ public class HoverflyConfigTest {
 
     @Test
     public void shouldSetCaptureAllHeaders() throws Exception {
-        HoverflyConfiguration configs = configs().captureAllHeaders().build();
+        HoverflyConfiguration configs = localConfigs().captureAllHeaders().build();
 
         assertThat(configs.getCaptureHeaders()).hasSize(1);
         assertThat(configs.getCaptureHeaders()).containsOnly("*");
@@ -145,28 +131,28 @@ public class HoverflyConfigTest {
 
     @Test
     public void shouldSetWebServerMode() throws Exception {
-        HoverflyConfiguration configs = configs().asWebServer().build();
+        HoverflyConfiguration configs = localConfigs().asWebServer().build();
 
         assertThat(configs.isWebServer()).isTrue();
     }
 
     @Test
     public void shouldDisableTlsVerification() throws Exception {
-        HoverflyConfiguration configs = configs().disableTlsVerification().build();
+        HoverflyConfiguration configs = localConfigs().disableTlsVerification().build();
 
         assertThat(configs.isTlsVerificationDisabled()).isTrue();
     }
 
     @Test
     public void shouldSetMiddleware() {
-        HoverflyConfiguration configs = configs().localMiddleware("python", "foo.py").build();
+        HoverflyConfiguration configs = localConfigs().localMiddleware("python", "foo.py").build();
 
         assertThat(configs.isMiddlewareEnabled()).isTrue();
     }
 
     @Test
     public void shouldSetUpstreamProxy() {
-        HoverflyConfiguration configs = configs().upstreamProxy(new InetSocketAddress("127.0.0.1", 8900)).build();
+        HoverflyConfiguration configs = localConfigs().upstreamProxy(new InetSocketAddress("127.0.0.1", 8900)).build();
 
         assertThat(configs.getUpstreamProxy()).isEqualTo("127.0.0.1:8900");
     }

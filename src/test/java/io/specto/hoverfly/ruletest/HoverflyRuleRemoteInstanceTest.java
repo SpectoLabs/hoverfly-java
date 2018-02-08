@@ -1,6 +1,8 @@
 package io.specto.hoverfly.ruletest;
 
 import io.specto.hoverfly.junit.rule.HoverflyRule;
+import java.net.URI;
+import java.net.URISyntaxException;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -10,10 +12,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
 import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -38,8 +37,7 @@ public class HoverflyRuleRemoteInstanceTest {
 
     @ClassRule
     public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(classpath("test-service-https.json"),
-            configs()
-                    .remote()
+            remoteConfigs()
                     .host(REMOTE_HOST)
                     .withHttpsAdminEndpoint()
                     .withAuthHeader()

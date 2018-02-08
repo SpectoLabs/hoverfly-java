@@ -2,10 +2,12 @@ package io.specto.hoverfly.junit.api;
 
 
 import io.specto.hoverfly.junit.rule.HoverflyRule;
-import org.junit.*;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
 
-import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
@@ -18,7 +20,7 @@ public class HoverflyClientTest {
     public EnvironmentVariables envVars = new EnvironmentVariables();
 
     @ClassRule
-    public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(configs().proxyLocalHost());
+    public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(localConfigs().proxyLocalHost());
 
     @Test
     public void shouldBeAbleToCreateNewInstanceOfHoverflyClient() throws Exception {

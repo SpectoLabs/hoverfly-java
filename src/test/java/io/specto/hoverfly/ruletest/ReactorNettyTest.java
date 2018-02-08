@@ -18,7 +18,7 @@ import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 public class ReactorNettyTest {
 
     @ClassRule
-    public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(classpath("test-service.json"), HoverflyConfig.configs().plainHttpTunneling());
+    public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(classpath("test-service.json"), HoverflyConfig.localConfigs().plainHttpTunneling());
 
     @Test
     public void hoverflyProxy() throws Exception {
