@@ -1,6 +1,8 @@
 package io.specto.hoverfly.junit.core;
 
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
+import java.net.URI;
+import java.net.URISyntaxException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,10 +10,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,8 +29,7 @@ public class RemoteHoverflyTest {
     public void setUp() throws Exception {
         remoteHoverfly.start();
         HoverflyConfiguration remoteConfigs = remoteHoverfly.getHoverflyConfig();
-        localHoverflyDelegate = new Hoverfly(configs()
-                .remote()
+        localHoverflyDelegate = new Hoverfly(remoteConfigs()
                 .adminPort(remoteConfigs.getAdminPort())
                 .proxyPort(remoteConfigs.getProxyPort()), SIMULATE);
         localHoverflyDelegate.start();

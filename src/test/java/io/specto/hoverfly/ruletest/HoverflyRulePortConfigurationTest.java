@@ -6,9 +6,8 @@ import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
-import static io.specto.hoverfly.junit.core.SimulationSource.defaultPath;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -20,7 +19,7 @@ public class HoverflyRulePortConfigurationTest {
     // tag::portConfiguration[]
     @ClassRule
     public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(classpath("test-service.json"),
-            configs().proxyPort(EXPECTED_PROXY_PORT).adminPort(EXPECTED_ADMIN_PORT));
+        localConfigs().proxyPort(EXPECTED_PROXY_PORT).adminPort(EXPECTED_ADMIN_PORT));
     // end::portConfiguration[]
 
     private RestTemplate restTemplate = new RestTemplate();

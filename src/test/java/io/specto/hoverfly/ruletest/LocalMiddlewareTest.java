@@ -24,7 +24,7 @@ public class LocalMiddlewareTest {
       service("www.other-anotherservice.com")
          .put("/api/bookings/1").body("{\"flightId\": \"1\", \"class\": \"PREMIUM\"}")
          .willReturn(success())),
-      HoverflyConfig.configs().localMiddleware("python", "middleware/middleware.py")).printSimulationData();
+      HoverflyConfig.localConfigs().localMiddleware("python", "middleware/middleware.py")).printSimulationData();
 
    private final RestTemplate restTemplate = new RestTemplate();
 

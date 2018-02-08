@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.powermock.reflect.Whitebox;
 
-import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
@@ -40,7 +40,7 @@ public class RemoteHoverflyStubTest {
     public void shouldSetSystemPropertiesForRemoteHoverflyInstance() throws Exception {
 
         // Given
-        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().remote().host("hoverfly-cloud"), SIMULATE)) {
+        try (Hoverfly hoverflyUnderTest = new Hoverfly(remoteConfigs().host("hoverfly-cloud"), SIMULATE)) {
 
             // When
             hoverflyUnderTest.start();
@@ -60,7 +60,7 @@ public class RemoteHoverflyStubTest {
     public void shouldSetNonProxyHostsWhenUsingBothRemoteHoverflyInstanceAndProxyLocalHost() throws Exception {
 
         // Given
-        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().remote().host("hoverfly-cloud").proxyLocalHost(), SIMULATE)) {
+        try (Hoverfly hoverflyUnderTest = new Hoverfly(remoteConfigs().host("hoverfly-cloud").proxyLocalHost(), SIMULATE)) {
 
             // When
             hoverflyUnderTest.start();
@@ -74,7 +74,7 @@ public class RemoteHoverflyStubTest {
     public void shouldNotInvokeTempFileManagerWhenUsingRemoteHoverfly() throws Exception {
 
         // Given
-        try (Hoverfly hoverflyUnderTest = new Hoverfly(configs().remote().host("hoverfly-cloud"), SIMULATE)) {
+        try (Hoverfly hoverflyUnderTest = new Hoverfly(remoteConfigs().host("hoverfly-cloud"), SIMULATE)) {
             TempFileManager tempFileManager = mock(TempFileManager.class);
             Whitebox.setInternalState(hoverflyUnderTest, "tempFileManager", tempFileManager);
 

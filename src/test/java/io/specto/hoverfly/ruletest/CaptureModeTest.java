@@ -6,20 +6,23 @@ import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import io.specto.hoverfly.webserver.CaptureModeTestWebServer;
-import org.json.JSONException;
-import org.junit.*;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
-import org.springframework.web.client.RestTemplate;
-
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
+import org.json.JSONException;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.springframework.web.client.RestTemplate;
 
-import static io.specto.hoverfly.junit.core.HoverflyConfig.configs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static java.nio.charset.Charset.defaultCharset;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,7 +35,7 @@ public class CaptureModeTest {
 
     @Rule
     public HoverflyRule hoverflyRule = HoverflyRule.inCaptureMode(RECORDED_SIMULATION_JSON,
-            configs().captureAllHeaders().proxyLocalHost());
+            localConfigs().captureAllHeaders().proxyLocalHost());
 
     private URI webServerBaseUrl;
     private RestTemplate restTemplate = new RestTemplate();
