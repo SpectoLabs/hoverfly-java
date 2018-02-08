@@ -21,7 +21,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HoverflyMetaData {
-    private final String schemaVersion;
+    private String schemaVersion;
 
     public HoverflyMetaData() {
         schemaVersion = "v4";
@@ -30,6 +30,10 @@ public class HoverflyMetaData {
     @JsonCreator
     public HoverflyMetaData(@JsonProperty("schemaVersion") String schemaVersion) {
         this();
+        this.schemaVersion = schemaVersion;
+        if ("v1".equals(schemaVersion)){
+            throw new IllegalArgumentException("The v1 simulation is not supported. Use v2 or newer.");
+        }
     }
 
     public String getSchemaVersion() {
