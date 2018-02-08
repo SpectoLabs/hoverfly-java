@@ -31,18 +31,24 @@ public class Response {
     private final boolean encodedBody;
     private final boolean templated;
     private final Map<String, List<String>> headers;
+    private final Map<String, String> transitionsState;
+    private final List<String> removesState;
 
     @JsonCreator
     public Response(@JsonProperty("status") Integer status,
                     @JsonProperty("body") String body,
                     @JsonProperty("encodedBody") boolean encodedBody,
                     @JsonProperty("templated") boolean templated,
-                    @JsonProperty("headers") Map<String, List<String>> headers) {
+                    @JsonProperty("headers") Map<String, List<String>> headers,
+                    @JsonProperty("transitionsState") Map<String, String> transitionsState,
+                    @JsonProperty("removesState") List<String> removesState) {
         this.status = status;
         this.body = body;
         this.encodedBody = encodedBody;
         this.templated = templated;
         this.headers = headers;
+        this.transitionsState = transitionsState;
+        this.removesState = removesState;
     }
 
     public int getStatus() {
@@ -66,12 +72,22 @@ public class Response {
         return headers;
     }
 
+    public Map<String, String> getTransitionsState() {
+        return transitionsState;
+    }
+
+    public List<String> getRemovesState() {
+        return removesState;
+    }
+
     static class Builder {
         private Integer status;
         private String body;
         private boolean encodedBody;
         private boolean templated;
         private Map<String, List<String>> headers;
+        private Map<String, String> transitionsState;
+        private List<String> removesState;
 
         Builder status(int status) {
             this.status = status;
@@ -98,8 +114,18 @@ public class Response {
             return this;
         }
 
+        Builder transitionsState(Map<String, String> transitionsState) {
+            this.transitionsState = transitionsState;
+            return this;
+        }
+
+        Builder removesState(List<String> removesState) {
+            this.removesState = removesState;
+            return this;
+        }
+
         Response build() {
-            return new Response(status, body, encodedBody, templated, headers);
+            return new Response(status, body, encodedBody, templated, headers, transitionsState, removesState);
         }
     }
 

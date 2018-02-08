@@ -1,0 +1,59 @@
+{
+	"data": {
+		"pairs": [
+			{
+				"response": {
+					"status": 200,
+					"body": "{\"bookingId\":\"1\"}",
+					"encodedBody": false,
+					"headers": {
+						"Content-Type": [
+							"application/json"
+						]
+					},
+					"templated": false,
+					"transitionsState": {
+						"transitionsStateKey" : "transitionsStateValue"
+					},
+					"removesState": [
+						"removesStateKey"
+					]
+				},
+				"request": {
+					"path": {
+						"exactMatch": "/api/bookings/1"
+					},
+					"method": {
+						"exactMatch": "GET"
+					},
+					"destination": {
+						"exactMatch": "www.my-test.com"
+					},
+					"scheme": {
+						"exactMatch": "http"
+					},
+					"query": {
+						"exactMatch": ""
+					},
+					"body": {
+						"exactMatch": ""
+					},
+					"headers": {
+						"Content-Type": [
+							"text/plain; charset=utf-8"
+						]
+					},
+					"requiresState": {
+						"requiresStateKey" : "requiresStateValue"
+					}
+				}
+			}
+		],
+		"globalActions": {
+			"delays": []
+		}
+	},
+	"meta": {
+		"schemaVersion": "v4"
+	}
+}

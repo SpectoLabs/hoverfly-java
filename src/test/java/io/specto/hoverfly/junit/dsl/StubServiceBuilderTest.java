@@ -17,6 +17,7 @@ import static io.specto.hoverfly.junit.dsl.HoverflyDsl.*;
 import static io.specto.hoverfly.junit.dsl.HttpBodyConverter.json;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.*;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -432,6 +433,53 @@ public class StubServiceBuilderTest {
         assertThat(pair.getResponse().isTemplated()).isFalse();
     }
 
+    @Test
+    public void shouldBeAbleToSetTransitionStates() throws Exception {
+
+        final RequestResponsePair pair = service("www.base-url.com")
+            .get("/")
+            .willReturn(success().body("{\"id\":{{ Request.Path.[2] }}")
+                .transitionsState("firstStateKey", "firstStateValue")
+                .transitionsState("secondStateKey", "secondStateValue"))
+            .getRequestResponsePairs()
+            .iterator().next();
+
+        assertThat(pair.getResponse().getTransitionsState())
+            .containsOnly(
+                entry("firstStateKey", "firstStateValue"),
+                entry("secondStateKey", "secondStateValue"));
+    }
+
+    @Test
+    public void shouldBeAbleToSetStatesToRemove() throws Exception {
+
+        final RequestResponsePair pair = service("www.base-url.com")
+            .get("/")
+            .willReturn(success().body("{\"id\":{{ Request.Path.[2] }}")
+                .removesState("firstStateToRemove")
+                .removesState("secondStateToRemove"))
+            .getRequestResponsePairs()
+            .iterator().next();
+
+        assertThat(pair.getResponse().getRemovesState())
+            .containsExactlyInAnyOrder("firstStateToRemove", "secondStateToRemove");
+    }
+
+    @Test
+    public void shouldBeAbleToSetRequiredStates() throws Exception {
+
+        final RequestResponsePair pair = service("https://www.my-test.com")
+            .get("/")
+            .requiresState("firstStateKey", "firstStateValue")
+            .requiresState("secondStateKey", "secondStateValue")
+            .willReturn(response()).getRequestResponsePairs()
+            .iterator().next();
+
+        assertThat(pair.getRequest().getRequiresState())
+            .containsOnly(
+                entry("firstStateKey", "firstStateValue"),
+                entry("secondStateKey", "secondStateValue"));
+    }
 
     public static final class SomeJson {
         private final String firstField;
