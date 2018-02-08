@@ -46,6 +46,7 @@ public class Request {
     @JsonDeserialize(using = FieldMatcherDeserializer.class)
     private final FieldMatcher body;
     private final Map<String, List<String>> headers;
+    private final Map<String, String> requiresState;
 
     private RequestType requestType;
 
@@ -56,7 +57,8 @@ public class Request {
                    String scheme,
                    String query,
                    String body,
-                   Map<String, List<String>> headers) {
+                   Map<String, List<String>> headers,
+                   Map<String, String> requiresState) {
         this.path = fromString(path);
         this.method = fromString(method);
         this.destination = fromString(destination);
@@ -64,6 +66,7 @@ public class Request {
         this.query = fromString(query);
         this.body = fromString(body);
         this.headers = headers;
+        this.requiresState = requiresState;
     }
 
 
@@ -74,7 +77,8 @@ public class Request {
                    @JsonProperty("scheme") FieldMatcher scheme,
                    @JsonProperty("query") FieldMatcher query,
                    @JsonProperty("body") FieldMatcher body,
-                   @JsonProperty("headers") Map<String, List<String>> headers) {
+                   @JsonProperty("headers") Map<String, List<String>> headers,
+                   @JsonProperty("requiresState") Map<String, String> requiresState) {
         this.path = path;
         this.method = method;
         this.destination = destination;
@@ -82,6 +86,7 @@ public class Request {
         this.query = query;
         this.body = body;
         this.headers = headers;
+        this.requiresState = requiresState;
     }
 
     public FieldMatcher getPath() {
@@ -121,6 +126,10 @@ public class Request {
         this.requestType = requestType;
     }
 
+    public Map<String, String> getRequiresState() {
+        return requiresState;
+    }
+
     public static class Builder {
 
         private FieldMatcher path;
@@ -130,6 +139,7 @@ public class Request {
         private FieldMatcher query;
         private FieldMatcher body;
         private Map<String, List<String>> headers;
+        private Map<String, String> requiresState;
 
         public Builder path(FieldMatcher path) {
             this.path = path;
@@ -166,8 +176,13 @@ public class Request {
             return this;
         }
 
+        public Builder requiresState(Map<String, String> requiresState) {
+            this.requiresState = requiresState;
+            return this;
+        }
+
         public Request build() {
-            return new Request(path, method, destination, scheme, query, body, headers);
+            return new Request(path, method, destination, scheme, query, body, headers, requiresState);
         }
     }
 

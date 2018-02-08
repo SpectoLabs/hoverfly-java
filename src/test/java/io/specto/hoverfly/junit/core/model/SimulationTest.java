@@ -2,6 +2,7 @@ package io.specto.hoverfly.junit.core.model;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -26,6 +27,7 @@ public class SimulationTest {
     private URL v1Resource = Resources.getResource("simulations/v1-simulation.json");
     private URL v2Resource = Resources.getResource("simulations/v2-simulation.json");
     private URL v3Resource = Resources.getResource("simulations/v3-simulation.json");
+    private URL v4Resource = Resources.getResource("simulations/v4-simulation.json");
     private URL v2ResourceWithUnknownFields = Resources.getResource("simulations/v2-simulation-with-unknown-fields.json");
     private URL v1ResourceWithLooseMatching = Resources.getResource("simulations/v1-simulation-with-loose-matching.json");
     private URL v1ResourceWithRecording = Resources.getResource("simulations/v1-simulation-with-recording.json");
@@ -56,12 +58,27 @@ public class SimulationTest {
     }
 
     @Test
-    public void shouldSerializeV3Simulation() throws Exception {
-
+    public void shouldSerializeV4Simulation() throws Exception {
+        // given
         Simulation simulation = getLatestSimulation();
 
+        // when
         String actual = objectMapper.writeValueAsString(simulation);
 
+        // then
+        String expected = Resources.toString(v4Resource, Charset.forName("UTF-8"));
+        JSONAssert.assertEquals(expected, actual, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    public void shouldSerializeV3Simulation() throws Exception {
+        // given
+        Simulation simulation = getV3Simulation();
+
+        // when
+        String actual = objectMapper.writeValueAsString(simulation);
+
+        // then
         String expected = Resources.toString(v3Resource, Charset.forName("UTF-8"));
         JSONAssert.assertEquals(expected, actual, JSONCompareMode.STRICT);
     }
@@ -105,37 +122,57 @@ public class SimulationTest {
 
     }
 
-
     private Simulation getLatestSimulation() {
-        HoverflyData data = getTestHoverflyData();
+        Request.Builder requestBuilder = getTestRequestBuilder()
+            .requiresState(ImmutableMap.of("requiresStateKey", "requiresStateValue"));
+        Response.Builder responseBuilder = getTestResponseBuilder()
+            .transitionsState(ImmutableMap.of("transitionsStateKey", "transitionsStateValue"))
+            .removesState(ImmutableList.of("removesStateKey"));
+        HoverflyData data = getTestHoverflyData(requestBuilder, responseBuilder);
         HoverflyMetaData meta = new HoverflyMetaData();
         return new Simulation(data, meta);
     }
 
+    private Simulation getV3Simulation() {
+        HoverflyData data = getTestHoverflyData(getTestRequestBuilder(), getTestResponseBuilder());
+        HoverflyMetaData meta = new HoverflyMetaDataV3();
+        return new Simulation(data, meta);
+    }
+
     private Simulation getV2Simulation() {
-        HoverflyData data = getTestHoverflyData();
+        HoverflyData data = getTestHoverflyData(getTestRequestBuilder(), getTestResponseBuilder());
         HoverflyMetaData meta = new HoverflyMetaData("v2");
         return new Simulation(data, meta);
     }
 
+    private Request.Builder getTestRequestBuilder() {
+        return new Request.Builder()
+            .path(exactlyMatches("/api/bookings/1"))
+            .method(exactlyMatches("GET"))
+            .destination(exactlyMatches("www.my-test.com"))
+            .scheme(exactlyMatches("http"))
+            .body(exactlyMatches(""))
+            .query(exactlyMatches(""))
+            .headers(ImmutableMap.of("Content-Type", Lists.newArrayList("text/plain; charset=utf-8")));
+    }
 
-    private HoverflyData getTestHoverflyData() {
-        Request request = new Request.Builder()
-                .path(exactlyMatches("/api/bookings/1"))
-                .method(exactlyMatches("GET"))
-                .destination(exactlyMatches("www.my-test.com"))
-                .scheme(exactlyMatches("http"))
-                .body(exactlyMatches(""))
-                .query(exactlyMatches(""))
-                .headers(ImmutableMap.of("Content-Type", Lists.newArrayList("text/plain; charset=utf-8")))
-                .build();
-        Response response = new Response.Builder()
-                .status(200)
-                .body("{\"bookingId\":\"1\"}")
-                .encodedBody(false)
-                .headers(ImmutableMap.of("Content-Type", Lists.newArrayList("application/json")))
-                .build();
+    private Response.Builder getTestResponseBuilder() {
+        return new Response.Builder()
+            .status(200)
+            .body("{\"bookingId\":\"1\"}")
+            .encodedBody(false)
+            .headers(ImmutableMap.of("Content-Type", Lists.newArrayList("application/json")));
+    }
+
+    private HoverflyData getTestHoverflyData(Request.Builder testRequestBuilder, Response.Builder testResponseBuilder) {
         return new HoverflyData(
-                Sets.newHashSet(new RequestResponsePair(request, response)), new GlobalActions(Collections.emptyList()));
+            Sets.newHashSet(new RequestResponsePair(testRequestBuilder.build(), testResponseBuilder.build())),
+            new GlobalActions(Collections.emptyList()));
+    }
+
+    private static class HoverflyMetaDataV3 extends HoverflyMetaData {
+        public String getSchemaVersion() {
+            return "v3";
+        }
     }
 }

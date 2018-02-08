@@ -14,6 +14,7 @@ package io.specto.hoverfly.junit.dsl;
 
 import io.specto.hoverfly.junit.core.model.Response;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,8 @@ public class ResponseBuilder {
     private String body = "";
     private int status = 200;
     private boolean templated = true;
+    private final Map<String, String> transitionsState = new HashMap<>();
+    private final List<String> removesState = new ArrayList<>();
 
     private int delay;
     private TimeUnit delayTimeUnit;
@@ -80,11 +83,32 @@ public class ResponseBuilder {
     }
 
     /**
+     * Sets a transition state
+     * @param key state key
+     * @param value state value
+     * @return the {@link ResponseBuilder for further customizations}
+     */
+    public ResponseBuilder transitionsState(final String key, final String value) {
+        this.transitionsState.put(key, value);
+        return this;
+    }
+
+    /**
+     * Sets state to be removed
+     * @param stateToRemove a state to be removed
+     * @return the {@link ResponseBuilder for further customizations}
+     */
+    public ResponseBuilder removesState(final String stateToRemove) {
+        this.removesState.add(stateToRemove);
+        return this;
+    }
+
+    /**
      * Builds a {@link Response}
      * @return the response
      */
     Response build() {
-        return new Response(status, body, false, templated, headers);
+        return new Response(status, body, false, templated, headers, transitionsState, removesState);
     }
 
     public ResponseBuilder body(final HttpBodyConverter httpBodyConverter) {

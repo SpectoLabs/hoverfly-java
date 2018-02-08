@@ -38,6 +38,7 @@ public class RequestMatcherBuilder {
     private final FieldMatcher path;
     private final MultivaluedHashMap<PlainTextFieldMatcher, PlainTextFieldMatcher> queryPatterns = new MultivaluedHashMap<>();
     private final Map<String, List<String>> headers = new HashMap<>();
+    private final Map<String, String> requiresState = new HashMap<>();
     private FieldMatcher query = blankMatcher();
     private FieldMatcher body = blankMatcher();
     private boolean isFuzzyMatchedQuery;
@@ -93,6 +94,17 @@ public class RequestMatcherBuilder {
      */
     public RequestMatcherBuilder header(final String key, final String value) {
         headers.put(key, Collections.singletonList(value));
+        return this;
+    }
+
+    /**
+     * Sets a required state
+     * @param key state key
+     * @param value state value
+     * @return the {@link RequestMatcherBuilder} for further customizations
+     */
+    public RequestMatcherBuilder requiresState(final String key, final String value) {
+        requiresState.put(key, value);
         return this;
     }
 
@@ -155,7 +167,7 @@ public class RequestMatcherBuilder {
             query = isFuzzyMatchedQuery ? wildCardMatches(queryPatterns) : exactlyMatches(queryPatterns);
         }
 
-        return new Request(path, method, destination, scheme, query, body, headers);
+        return new Request(path, method, destination, scheme, query, body, headers, requiresState);
     }
 
     private static class MultivaluedHashMap<K, V> {
