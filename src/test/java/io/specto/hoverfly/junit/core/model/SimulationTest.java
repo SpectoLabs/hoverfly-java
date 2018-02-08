@@ -24,25 +24,24 @@ public class SimulationTest {
     
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    private URL v1Resource = Resources.getResource("simulations/v1-simulation.json");
     private URL v2Resource = Resources.getResource("simulations/v2-simulation.json");
     private URL v3Resource = Resources.getResource("simulations/v3-simulation.json");
     private URL v4Resource = Resources.getResource("simulations/v4-simulation.json");
     private URL v2ResourceWithUnknownFields = Resources.getResource("simulations/v2-simulation-with-unknown-fields.json");
-    private URL v1ResourceWithLooseMatching = Resources.getResource("simulations/v1-simulation-with-loose-matching.json");
-    private URL v1ResourceWithRecording = Resources.getResource("simulations/v1-simulation-with-recording.json");
+    private URL v2ResourceWithLooseMatching = Resources.getResource("simulations/v2-simulation-with-loose-matching.json");
+    private URL v2ResourceWithRecording = Resources.getResource("simulations/v2-simulation-with-recording.json");
 
     @Test
-    public void shouldDeserializeAndUpgradeV1Simulation() throws Exception {
+    public void shouldDeserializeAndUpgradeV2ToV3Simulation() throws Exception {
 
         // Given
-        Simulation expected = getV2Simulation();
+        Simulation expected = getV3Simulation();
 
         // When
-        Simulation actual = objectMapper.readValue(v1Resource, Simulation.class);
+        Simulation actual = objectMapper.readValue(v2Resource, Simulation.class);
 
         // Then
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual.getHoverflyData()).isEqualTo(expected.getHoverflyData());
     }
 
     @Test
@@ -96,9 +95,9 @@ public class SimulationTest {
     }
 
     @Test
-    public void shouldBeAbleToConvertV1LooseMatchingToGlobMatcher() throws Exception {
+    public void shouldBeAbleToConvertV2LooseMatchingToGlobMatcher() throws Exception {
 
-        Simulation actual = objectMapper.readValue(v1ResourceWithLooseMatching, Simulation.class);
+        Simulation actual = objectMapper.readValue(v2ResourceWithLooseMatching, Simulation.class);
 
         Set<RequestResponsePair> pairs = actual.getHoverflyData().getPairs();
 
@@ -111,7 +110,7 @@ public class SimulationTest {
 
     @Test
     public void shouldIgnoreHeadersWhenV1SimulationRequestTypeIsRecording() throws Exception {
-        Simulation actual = objectMapper.readValue(v1ResourceWithRecording, Simulation.class);
+        Simulation actual = objectMapper.readValue(v2ResourceWithRecording, Simulation.class);
 
         Set<RequestResponsePair> pairs = actual.getHoverflyData().getPairs();
 
@@ -135,7 +134,7 @@ public class SimulationTest {
 
     private Simulation getV3Simulation() {
         HoverflyData data = getTestHoverflyData(getTestRequestBuilder(), getTestResponseBuilder());
-        HoverflyMetaData meta = new HoverflyMetaDataV3();
+        HoverflyMetaData meta = new HoverflyMetaData("v3");
         return new Simulation(data, meta);
     }
 
@@ -168,11 +167,5 @@ public class SimulationTest {
         return new HoverflyData(
             Sets.newHashSet(new RequestResponsePair(testRequestBuilder.build(), testResponseBuilder.build())),
             new GlobalActions(Collections.emptyList()));
-    }
-
-    private static class HoverflyMetaDataV3 extends HoverflyMetaData {
-        public String getSchemaVersion() {
-            return "v3";
-        }
     }
 }

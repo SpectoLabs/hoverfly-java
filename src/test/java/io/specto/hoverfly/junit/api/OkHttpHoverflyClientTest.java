@@ -1,6 +1,7 @@
 package io.specto.hoverfly.junit.api;
 
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
@@ -27,6 +28,7 @@ import java.util.List;
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class OkHttpHoverflyClientTest {
 
@@ -82,14 +84,14 @@ public class OkHttpHoverflyClientTest {
     }
 
     @Test
-    public void shouldBeAbleToSetV1Simulation() throws Exception {
-
+    public void shouldThrowExceptionWhenV1SimulationIsUsed() throws Exception {
+        // when
         URL resource = Resources.getResource("simulations/v1-simulation.json");
-        Simulation simulation = objectMapper.readValue(resource, Simulation.class);
-        client.setSimulation(simulation);
 
-        Simulation exportedSimulation = hoverfly.getSimulation();
-        assertThat(exportedSimulation).isEqualTo(simulation);
+        // then
+        assertThatExceptionOfType(JsonMappingException.class)
+            .isThrownBy(() -> objectMapper.readValue(resource, Simulation.class))
+            .withMessageContaining("The v1 simulation is not supported. Use v2 or newer");
     }
 
 
@@ -100,7 +102,7 @@ public class OkHttpHoverflyClientTest {
         client.setSimulation(simulation);
 
         Simulation exportedSimulation = hoverfly.getSimulation();
-        assertThat(exportedSimulation).isEqualTo(simulation);
+        assertThat(exportedSimulation.getHoverflyData()).isEqualTo(simulation.getHoverflyData());
     }
 
     @Test

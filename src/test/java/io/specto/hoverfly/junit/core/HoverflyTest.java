@@ -88,7 +88,7 @@ public class HoverflyTest {
 
         // Then
         Simulation exportedSimulation = hoverfly.getSimulation();
-        assertThat(exportedSimulation).isEqualTo(importedSimulation);
+        assertThat(exportedSimulation.getHoverflyData()).isEqualTo(importedSimulation.getHoverflyData());
     }
 
     @Test
