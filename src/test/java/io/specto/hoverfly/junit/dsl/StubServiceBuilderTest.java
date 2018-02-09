@@ -439,8 +439,8 @@ public class StubServiceBuilderTest {
         final RequestResponsePair pair = service("www.base-url.com")
             .get("/")
             .willReturn(success().body("{\"id\":{{ Request.Path.[2] }}")
-                .transitionsState("firstStateKey", "firstStateValue")
-                .transitionsState("secondStateKey", "secondStateValue"))
+                .andSetState("firstStateKey", "firstStateValue")
+                .andSetState("secondStateKey", "secondStateValue"))
             .getRequestResponsePairs()
             .iterator().next();
 
@@ -456,8 +456,8 @@ public class StubServiceBuilderTest {
         final RequestResponsePair pair = service("www.base-url.com")
             .get("/")
             .willReturn(success().body("{\"id\":{{ Request.Path.[2] }}")
-                .removesState("firstStateToRemove")
-                .removesState("secondStateToRemove"))
+                .andRemoveState("firstStateToRemove")
+                .andRemoveState("secondStateToRemove"))
             .getRequestResponsePairs()
             .iterator().next();
 
@@ -470,8 +470,8 @@ public class StubServiceBuilderTest {
 
         final RequestResponsePair pair = service("https://www.my-test.com")
             .get("/")
-            .requiresState("firstStateKey", "firstStateValue")
-            .requiresState("secondStateKey", "secondStateValue")
+            .withState("firstStateKey", "firstStateValue")
+            .withState("secondStateKey", "secondStateValue")
             .willReturn(response()).getRequestResponsePairs()
             .iterator().next();
 

@@ -22,18 +22,18 @@ public class HoverflyDslWithStateTest {
     public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(dsl(
         service("www.service-with-state.com")
             .get("/api/bookings/create")
-            .willReturn(success().transitionsState("hasBeenAlreadyCreated", "true"))
+            .willReturn(success().andSetState("hasBeenAlreadyCreated", "true"))
 
             .get("/api/bookings/create")
-            .requiresState("hasBeenAlreadyCreated", "true")
+            .withState("hasBeenAlreadyCreated", "true")
             .willReturn(created())
 
             .get("/api/bookings/remove")
-            .requiresState("hasBeenAlreadyCreated", "true")
-            .willReturn(success().removesState("hasBeenAlreadyCreated"))
+            .withState("hasBeenAlreadyCreated", "true")
+            .willReturn(success().andRemoveState("hasBeenAlreadyCreated"))
 
             .get("/remove-without-required-state")
-            .willReturn(success().removesState("hasBeenAlreadyCreated"))
+            .willReturn(success().andRemoveState("hasBeenAlreadyCreated"))
     )).printSimulationData();
 
     private final RestTemplate restTemplate = new RestTemplate();

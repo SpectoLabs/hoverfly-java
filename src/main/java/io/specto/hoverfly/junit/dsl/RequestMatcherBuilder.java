@@ -103,7 +103,7 @@ public class RequestMatcherBuilder {
      * @param value state value
      * @return the {@link RequestMatcherBuilder} for further customizations
      */
-    public RequestMatcherBuilder requiresState(final String key, final String value) {
+    public RequestMatcherBuilder withState(final String key, final String value) {
         requiresState.put(key, value);
         return this;
     }

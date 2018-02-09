@@ -88,7 +88,7 @@ public class ResponseBuilder {
      * @param value state value
      * @return the {@link ResponseBuilder for further customizations}
      */
-    public ResponseBuilder transitionsState(final String key, final String value) {
+    public ResponseBuilder andSetState(final String key, final String value) {
         this.transitionsState.put(key, value);
         return this;
     }
@@ -98,7 +98,7 @@ public class ResponseBuilder {
      * @param stateToRemove a state to be removed
      * @return the {@link ResponseBuilder for further customizations}
      */
-    public ResponseBuilder removesState(final String stateToRemove) {
+    public ResponseBuilder andRemoveState(final String stateToRemove) {
         this.removesState.add(stateToRemove);
         return this;
     }
