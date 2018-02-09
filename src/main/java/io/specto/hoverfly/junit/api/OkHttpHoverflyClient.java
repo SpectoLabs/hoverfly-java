@@ -27,6 +27,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
     private static final String DESTINATION_PATH = "api/v2/hoverfly/destination";
     private static final String MODE_PATH = "api/v2/hoverfly/mode";
     private static final String JOURNAL_PATH = "api/v2/journal";
+    private static final String STATE_PATH = "api/v2/state";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final MediaType JSON = MediaType.parse("application/json");
@@ -120,6 +121,18 @@ class OkHttpHoverflyClient implements HoverflyClient {
         } catch (Exception e) {
             LOGGER.warn("Failed to delete journal: {}", e.getMessage());
             throw new HoverflyClientException("Failed to delete journal: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteStates() {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(STATE_PATH);
+            final Request request = builder.delete().build();
+            exchange(request);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to delete states: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to delete states: " + e.getMessage());
         }
     }
 

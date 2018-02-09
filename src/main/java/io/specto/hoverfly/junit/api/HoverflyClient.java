@@ -26,6 +26,8 @@ public interface HoverflyClient {
 
     void deleteJournal();
 
+    void deleteStates();
+
     HoverflyInfoView getConfigInfo();
 
     void setDestination(String destination);
