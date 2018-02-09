@@ -31,16 +31,13 @@ public class HoverflyDslWithStateTest {
             .get("/api/bookings/remove")
             .withState("hasBeenAlreadyCreated", "true")
             .willReturn(success().andRemoveState("hasBeenAlreadyCreated"))
-
-            .get("/remove-without-required-state")
-            .willReturn(success().andRemoveState("hasBeenAlreadyCreated"))
     )).printSimulationData();
 
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Before
     public void removeState(){
-        restTemplate.getForEntity("http://www.service-with-state.com/remove-without-required-state", Void.class);
+        hoverflyRule.resetStates();
     }
 
     @Test

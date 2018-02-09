@@ -263,6 +263,17 @@ public class Hoverfly implements AutoCloseable {
     }
 
     /**
+     * Deletes all states from Hoverfly
+     */
+    public void resetStates() {
+        try {
+            hoverflyClient.deleteStates();
+        } catch (HoverflyClientException e) {
+            LOGGER.warn("Older version of Hoverfly may not have a delete state API", e);
+        }
+    }
+
+    /**
      * Exports a simulation and stores it on the filesystem at the given path
      *
      * @param path the path on the filesystem to where the simulation should be stored

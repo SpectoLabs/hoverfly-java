@@ -327,6 +327,10 @@ public class HoverflyRule extends ExternalResource {
         hoverfly.resetJournal();
     }
 
+    public void resetStates() {
+        hoverfly.resetStates();
+    }
+
     private void checkMode(HoverflyMode mode) {
         if (hoverflyMode != mode) {
             throw new HoverflyRuleException("Hoverfly must be in " + mode.name() + " mode for this operation.");
