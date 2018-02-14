@@ -1,7 +1,6 @@
 package io.specto.hoverfly.junit.api;
 
 
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
@@ -13,6 +12,9 @@ import io.specto.hoverfly.junit.core.model.FieldMatcher;
 import io.specto.hoverfly.junit.core.model.Journal;
 import io.specto.hoverfly.junit.core.model.Request;
 import io.specto.hoverfly.junit.core.model.Simulation;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.List;
 import org.assertj.core.util.Lists;
 import org.junit.After;
 import org.junit.Before;
@@ -21,14 +23,9 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.List;
-
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class OkHttpHoverflyClientTest {
 
@@ -84,16 +81,14 @@ public class OkHttpHoverflyClientTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenV1SimulationIsUsed() throws Exception {
-        // when
+    public void shouldBeAbleToSetV1Simulation() throws Exception {
         URL resource = Resources.getResource("simulations/v1-simulation.json");
+        Simulation simulation = objectMapper.readValue(resource, Simulation.class);
+        client.setSimulation(simulation);
 
-        // then
-        assertThatExceptionOfType(JsonMappingException.class)
-            .isThrownBy(() -> objectMapper.readValue(resource, Simulation.class))
-            .withMessageContaining("The v1 simulation is not supported. Use v2 or newer");
+        Simulation exportedSimulation = hoverfly.getSimulation();
+        assertThat(exportedSimulation.getHoverflyData()).isEqualTo(simulation.getHoverflyData());
     }
-
 
     @Test
     public void shouldBeAbleToSetV2Simulation() throws Exception {

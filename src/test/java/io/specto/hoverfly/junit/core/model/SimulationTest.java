@@ -24,24 +24,24 @@ public class SimulationTest {
     
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    private URL v1Resource = Resources.getResource("simulations/v1-simulation.json");
     private URL v2Resource = Resources.getResource("simulations/v2-simulation.json");
     private URL v3Resource = Resources.getResource("simulations/v3-simulation.json");
     private URL v4Resource = Resources.getResource("simulations/v4-simulation.json");
     private URL v2ResourceWithUnknownFields = Resources.getResource("simulations/v2-simulation-with-unknown-fields.json");
-    private URL v2ResourceWithLooseMatching = Resources.getResource("simulations/v2-simulation-with-loose-matching.json");
-    private URL v2ResourceWithRecording = Resources.getResource("simulations/v2-simulation-with-recording.json");
+    private URL v1ResourceWithLooseMatching = Resources.getResource("simulations/v1-simulation-with-loose-matching.json");
+    private URL v1ResourceWithRecording = Resources.getResource("simulations/v1-simulation-with-recording.json");
 
     @Test
-    public void shouldDeserializeAndUpgradeV2ToV3Simulation() throws Exception {
-
+    public void shouldDeserializeAndUpgradeV1SimulationToV2() throws Exception {
         // Given
-        Simulation expected = getV3Simulation();
+        Simulation expected = getV2Simulation();
 
         // When
-        Simulation actual = objectMapper.readValue(v2Resource, Simulation.class);
+        Simulation actual = objectMapper.readValue(v1Resource, Simulation.class);
 
         // Then
-        assertThat(actual.getHoverflyData()).isEqualTo(expected.getHoverflyData());
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -95,9 +95,9 @@ public class SimulationTest {
     }
 
     @Test
-    public void shouldBeAbleToConvertV2LooseMatchingToGlobMatcher() throws Exception {
+    public void shouldBeAbleToConvertV1LooseMatchingToGlobMatcher() throws Exception {
 
-        Simulation actual = objectMapper.readValue(v2ResourceWithLooseMatching, Simulation.class);
+        Simulation actual = objectMapper.readValue(v1ResourceWithLooseMatching, Simulation.class);
 
         Set<RequestResponsePair> pairs = actual.getHoverflyData().getPairs();
 
@@ -110,7 +110,7 @@ public class SimulationTest {
 
     @Test
     public void shouldIgnoreHeadersWhenV1SimulationRequestTypeIsRecording() throws Exception {
-        Simulation actual = objectMapper.readValue(v2ResourceWithRecording, Simulation.class);
+        Simulation actual = objectMapper.readValue(v1ResourceWithRecording, Simulation.class);
 
         Set<RequestResponsePair> pairs = actual.getHoverflyData().getPairs();
 

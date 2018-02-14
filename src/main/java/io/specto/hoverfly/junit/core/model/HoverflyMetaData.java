@@ -18,9 +18,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HoverflyMetaData {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HoverflyMetaData.class);
     private String schemaVersion;
 
     public HoverflyMetaData() {
@@ -32,7 +36,8 @@ public class HoverflyMetaData {
         this();
         this.schemaVersion = schemaVersion;
         if ("v1".equals(schemaVersion)){
-            throw new IllegalArgumentException("The v1 simulation is not supported. Use v2 or newer.");
+            LOGGER.info("Upgrading v1 schema version to v2");
+            this.schemaVersion = "v2";
         }
     }
 
