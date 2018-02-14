@@ -17,7 +17,9 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import io.specto.hoverfly.junit.api.HoverflyClient;
 import io.specto.hoverfly.junit.api.HoverflyClientException;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
+import io.specto.hoverfly.junit.api.view.DiffView;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
+import io.specto.hoverfly.junit.api.view.ResponseDiffForRequestView;
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.model.Journal;
 import io.specto.hoverfly.junit.core.model.Request;
@@ -42,7 +44,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.IntStream;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -274,6 +278,17 @@ public class Hoverfly implements AutoCloseable {
     }
 
     /**
+     * Deletes all diffs from Hoverfly
+     */
+    public void resetDiffs() {
+        try {
+            hoverflyClient.cleanDiffs();
+        } catch (HoverflyClientException e) {
+            LOGGER.warn("Older version of Hoverfly may not have a delete diffs API", e);
+        }
+    }
+
+    /**
      * Exports a simulation and stores it on the filesystem at the given path
      *
      * @param path the path on the filesystem to where the simulation should be stored
@@ -362,6 +377,31 @@ public class Hoverfly implements AutoCloseable {
 
     public void verify(RequestMatcherBuilder requestMatcher, VerificationCriteria criteria) {
         verifyRequest(requestMatcher.build(), criteria);
+    }
+
+    public void assertThatNoDiffIsReported(boolean shouldClean) {
+        DiffView diffs = hoverflyClient.getDiffs();
+        if (!diffs.getDiffs().isEmpty()) {
+            StringBuilder message =
+                new StringBuilder("There has been reported a diff in any of the actual and expected responses:\n");
+            diffs.getDiffs()
+                .forEach(diff -> appendMessageForDiff(message, diff));
+            if (shouldClean) {
+                hoverflyClient.cleanDiffs();
+            }
+            Assert.fail(message.toString());
+        }
+    }
+
+    private void appendMessageForDiff(StringBuilder message, ResponseDiffForRequestView diff) {
+        message
+            .append("\nFor the request with the simple definition: " + diff.getRequest().toString())
+            .append(" have been recorded " + diff.getDiffMessages().size() + " diff(s):\n");
+        IntStream.range(0, diff.getDiffMessages().size())
+            .forEach(index ->
+                message
+                    .append("\n" + (index + 1) + ". diff report:\n")
+                    .append(diff.getDiffMessages().get(index) + "\n"));
     }
 
     public void verify(RequestMatcherBuilder requestMatcher) {

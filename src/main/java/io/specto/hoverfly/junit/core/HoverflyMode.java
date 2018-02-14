@@ -22,7 +22,8 @@ public enum HoverflyMode {
     CAPTURE("capture"),
     SPY("spy"),
     SYNTHESIZE("synthesize"),
-    MODIFY("modify");
+    MODIFY("modify"),
+    DIFF("diff");
 
 
     String value;

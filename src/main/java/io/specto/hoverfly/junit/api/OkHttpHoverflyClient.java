@@ -8,6 +8,7 @@ import io.specto.hoverfly.junit.api.command.JournalSearchCommand;
 import io.specto.hoverfly.junit.api.command.ModeCommand;
 import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
+import io.specto.hoverfly.junit.api.view.DiffView;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.*;
@@ -30,6 +31,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
     private static final String MODE_PATH = "api/v2/hoverfly/mode";
     private static final String JOURNAL_PATH = "api/v2/journal";
     private static final String STATE_PATH = "api/v2/state";
+    private static final String DIFF_PATH = "api/v2/diff";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final MediaType JSON = MediaType.parse("application/json");
@@ -137,6 +139,29 @@ class OkHttpHoverflyClient implements HoverflyClient {
         }
     }
 
+    @Override
+    public DiffView getDiffs() {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(DIFF_PATH);
+            final Request request = builder.get().build();
+            return exchange(request, DiffView.class);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to get diffs: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to get diffs: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void cleanDiffs() {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(DIFF_PATH);
+            final Request request = builder.delete().build();
+            exchange(request);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to delete diffs: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to delete diffs: " + e.getMessage());
+        }
+    }
 
     @Override
     public HoverflyInfoView getConfigInfo() {

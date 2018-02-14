@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
+import static io.specto.hoverfly.junit.core.HoverflyMode.DIFF;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static io.specto.hoverfly.junit.core.SimulationSource.empty;
 import static io.specto.hoverfly.junit.core.SimulationSource.file;
@@ -91,8 +92,8 @@ public class HoverflyRule extends ExternalResource {
     private SimulationSource simulationSource;
     private boolean enableSimulationPrint;
 
-    private HoverflyRule(final SimulationSource simulationSource, final HoverflyConfig hoverflyConfig) {
-        this.hoverflyMode = SIMULATE;
+    private HoverflyRule(HoverflyMode hoverflyMode, final SimulationSource simulationSource, final HoverflyConfig hoverflyConfig) {
+        this.hoverflyMode = hoverflyMode;
         this.hoverfly = new Hoverfly(hoverflyConfig, hoverflyMode);
         this.simulationSource = simulationSource;
     }
@@ -198,7 +199,48 @@ public class HoverflyRule extends ExternalResource {
     }
 
     public static HoverflyRule inSimulationMode(final SimulationSource simulationSource, final HoverflyConfig hoverflyConfig) {
-        return new HoverflyRule(simulationSource, hoverflyConfig);
+        return new HoverflyRule(SIMULATE, simulationSource, hoverflyConfig);
+    }
+
+
+    /**
+     * Instantiates a rule which runs {@link Hoverfly} in diff mode with no data
+     *
+     * @return the rule
+     */
+    public static HoverflyRule inDiffMode() {
+        return inDiffMode(localConfigs());
+    }
+
+    /**
+     * Instantiates a rule which runs {@link Hoverfly} in diff mode with no data
+     *
+     * @param hoverflyConfig the config
+     * @return the rule
+     */
+    public static HoverflyRule inDiffMode(final HoverflyConfig hoverflyConfig) {
+        return inDiffMode(empty(), hoverflyConfig);
+    }
+
+    /**
+     * Instantiates a rule which runs {@link Hoverfly} in diff mode
+     *
+     * @param simulationSource the simulation to import the responses will be compared to
+     * @return the rule
+     */
+    public static HoverflyRule inDiffMode(final SimulationSource simulationSource) {
+        return inDiffMode(simulationSource, localConfigs());
+    }
+
+    /**
+     * Instantiates a rule which runs {@link Hoverfly} in diff mode
+     *
+     * @param simulationSource the simulation to import the responses will be compared to
+     * @param hoverflyConfig the config
+     * @return the rule
+     */
+    public static HoverflyRule inDiffMode(final SimulationSource simulationSource, final HoverflyConfig hoverflyConfig) {
+        return new HoverflyRule(DIFF, simulationSource, hoverflyConfig);
     }
 
     /**
@@ -221,7 +263,7 @@ public class HoverflyRule extends ExternalResource {
     protected void before() throws Throwable {
         hoverfly.start();
 
-        if (hoverflyMode == SIMULATE) {
+        if (hoverflyMode == SIMULATE || hoverflyMode == DIFF) {
             importSimulation();
         }
     }
@@ -336,6 +378,29 @@ public class HoverflyRule extends ExternalResource {
 
     public void resetStates() {
         hoverfly.resetStates();
+    }
+
+    public void resetDiffs() {
+        hoverfly.resetDiffs();
+    }
+
+    /**
+     * Asserts that there was no diff between any of the expected responses set by simulations and the actual responses
+     * returned from the real service. When the assertion is done then all available diffs are removed from Hoverfly.
+     */
+    public void assertThatNoDiffIsReported() {
+        assertThatNoDiffIsReported(true);
+    }
+
+    /**
+     * Asserts that there was no diff between any of the expected responses set by simulations and the actual responses
+     * returned from the real service.
+     * The parameter {@code shouldClean} says if all available diffs should be removed when the assertion is done.
+     *
+     * @param shouldClean if all available diffs should be removed when the assertion is done.
+     */
+    public void assertThatNoDiffIsReported(boolean shouldClean) {
+        hoverfly.assertThatNoDiffIsReported(shouldClean);
     }
 
     private void checkMode(HoverflyMode mode) {
