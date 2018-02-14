@@ -49,7 +49,7 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
             hoverfly.resetJournal();
             // Reset to per-class global configuration
             hoverfly.resetMode(mode);
-            if (mode == HoverflyMode.SIMULATE) {
+            if (mode == HoverflyMode.SIMULATE || mode == HoverflyMode.DIFF) {
                 hoverfly.simulate(source);
             }
         }
@@ -107,7 +107,7 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
             hoverfly.start();
         }
 
-        if (mode == HoverflyMode.SIMULATE) {
+        if (mode == HoverflyMode.SIMULATE || mode == HoverflyMode.DIFF) {
             hoverfly.simulate(source);
         }
     }

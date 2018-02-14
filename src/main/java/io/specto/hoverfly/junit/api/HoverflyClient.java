@@ -2,6 +2,7 @@ package io.specto.hoverfly.junit.api;
 
 import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
+import io.specto.hoverfly.junit.api.view.DiffView;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.core.HoverflyConstants;
 import io.specto.hoverfly.junit.core.HoverflyMode;
@@ -30,6 +31,10 @@ public interface HoverflyClient {
     void deleteJournal();
 
     void deleteStates();
+
+    DiffView getDiffs();
+
+    void cleanDiffs();
 
     HoverflyInfoView getConfigInfo();
 
