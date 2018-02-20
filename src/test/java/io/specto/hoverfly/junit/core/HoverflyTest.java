@@ -333,6 +333,9 @@ public class HoverflyTest {
 
     @Test
     public void shouldNotSetSystemPropertiesWhenHoverflyInWebServerMode() {
+        System.clearProperty("http.proxyHost");
+        System.clearProperty("https.proxyHost");
+
         hoverfly = new Hoverfly(localConfigs().asWebServer(), SIMULATE);
         hoverfly.start();
 
