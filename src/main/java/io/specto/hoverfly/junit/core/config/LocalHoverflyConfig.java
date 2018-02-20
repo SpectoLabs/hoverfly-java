@@ -16,6 +16,8 @@ package io.specto.hoverfly.junit.core.config;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
 
+import java.net.InetSocketAddress;
+
 /**
  * Config builder interface for settings specific to {@link Hoverfly} managed internally
  */
@@ -27,6 +29,7 @@ public class LocalHoverflyConfig extends HoverflyConfig {
     private boolean tlsVerificationDisabled;
     private boolean plainHttpTunneling;
     private LocalMiddleware localMiddleware;
+    private String upstreamProxy;
 
     /**
      * Sets the SSL certificate file for overriding default Hoverfly self-signed certificate
@@ -57,7 +60,7 @@ public class LocalHoverflyConfig extends HoverflyConfig {
      * @param path middleware script file in classpath
      * @return the {@link LocalHoverflyConfig} for further customizations
      */
-    public HoverflyConfig localMiddleware(String binary, String path) {
+    public LocalHoverflyConfig localMiddleware(String binary, String path) {
         this.localMiddleware = new LocalMiddleware(binary, path) ;
         return this;
     }
@@ -72,18 +75,31 @@ public class LocalHoverflyConfig extends HoverflyConfig {
      * By default it is false
      * @return a config
      */
-    public HoverflyConfig plainHttpTunneling() {
+    public LocalHoverflyConfig plainHttpTunneling() {
         this.plainHttpTunneling = true;
+        return this;
+    }
+
+    /**
+     * Set upstream proxy for hoverfly to connect to target host
+     * @param proxyAddress socket address of the upstream proxy, eg. 127.0.0.1:8500
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public LocalHoverflyConfig upstreamProxy(InetSocketAddress proxyAddress) {
+        this.upstreamProxy = proxyAddress.getHostString() + ":" + proxyAddress.getPort();
         return this;
     }
 
     @Override
     public HoverflyConfiguration build() {
         HoverflyConfiguration configs = new HoverflyConfiguration(proxyPort, adminPort, proxyLocalHost, destination,
-                proxyCaCert, sslCertificatePath, sslKeyPath, captureHeaders, upstreamProxy, webServer);
+                proxyCaCert, captureHeaders, webServer);
+        configs.setSslCertificatePath(this.sslCertificatePath);
+        configs.setSslKeyPath(this.sslKeyPath);
         configs.setTlsVerificationDisabled(this.tlsVerificationDisabled);
         configs.setPlainHttpTunneling(this.plainHttpTunneling);
         configs.setLocalMiddleware(this.localMiddleware);
+        configs.setUpstreamProxy(this.upstreamProxy);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }

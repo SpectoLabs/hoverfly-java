@@ -28,8 +28,8 @@ public class HoverflyConfiguration {
     private LocalMiddleware localMiddleware;
     private List<String> captureHeaders = Collections.emptyList();
     private boolean webServer;
-    private boolean tlsVerificationDisabled = false;
-    private boolean plainHttpTunneling = false;
+    private boolean tlsVerificationDisabled;
+    private boolean plainHttpTunneling;
     private String upstreamProxy;
 
     /**
@@ -45,9 +45,8 @@ public class HoverflyConfiguration {
                           final String authToken,
                           final String adminCertificate,
                           final List<String> captureHeaders,
-                          final String upstreamProxy,
                           final boolean webServer) {
-        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, null, null, captureHeaders, upstreamProxy, webServer);
+        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, captureHeaders, webServer);
         setScheme(scheme);
         setHost(host);
         this.authToken = authToken;
@@ -63,20 +62,14 @@ public class HoverflyConfiguration {
                           final boolean proxyLocalHost,
                           final String destination,
                           final String proxyCaCertificate,
-                          final String sslCertificatePath,
-                          final String sslKeyPath,
                           final List<String> captureHeaders,
-                          final String upstreamProxy,
                           final boolean webServer) {
         this.proxyPort = proxyPort;
         this.adminPort = adminPort;
         this.proxyLocalHost = proxyLocalHost;
         this.destination = destination;
         this.proxyCaCertificate = proxyCaCertificate;
-        this.sslCertificatePath = sslCertificatePath;
-        this.sslKeyPath = sslKeyPath;
         this.captureHeaders = captureHeaders;
-        this.upstreamProxy = upstreamProxy;
         this.webServer = webServer;
     }
 
@@ -129,6 +122,14 @@ public class HoverflyConfiguration {
         return sslKeyPath;
     }
 
+    public void setSslCertificatePath(String sslCertificatePath) {
+        this.sslCertificatePath = sslCertificatePath;
+    }
+
+    public void setSslKeyPath(String sslKeyPath) {
+        this.sslKeyPath = sslKeyPath;
+    }
+
     public String getDestination() {
         return destination;
     }
@@ -155,6 +156,10 @@ public class HoverflyConfiguration {
 
     public String getUpstreamProxy() {
         return upstreamProxy;
+    }
+
+    public void setUpstreamProxy(String upstreamProxy) {
+        this.upstreamProxy = upstreamProxy;
     }
 
     void setHost(String host) {
