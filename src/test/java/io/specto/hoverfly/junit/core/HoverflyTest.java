@@ -15,6 +15,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -409,17 +410,6 @@ public class HoverflyTest {
         verify(hoverflyClient).deleteJournal();
     }
 
-    @Test
-    public void shouldNotAffectHoverflyHealthCheckWhenSettingProxyLocalhost() throws Exception {
-
-        hoverfly = new Hoverfly(HoverflyMode.SIMULATE);
-        HoverflyConfiguration hoverflyConfig = hoverfly.getHoverflyConfig();
-
-        ProxyConfigurer proxyConfigurer = new ProxyConfigurer(hoverflyConfig);
-        proxyConfigurer.setProxySystemProperties();
-
-        hoverfly.start();
-    }
 
     @After
     public void tearDown() throws Exception {
