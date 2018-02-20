@@ -8,18 +8,12 @@ import io.specto.hoverfly.junit.api.HoverflyClient;
 import io.specto.hoverfly.junit.api.HoverflyClientException;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
-import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.model.Simulation;
-import java.net.InetSocketAddress;
-import java.net.URL;
-import java.util.List;
-import javax.net.ssl.SSLContext;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -27,25 +21,17 @@ import org.powermock.reflect.Whitebox;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.StartedProcess;
 
+import javax.net.ssl.SSLContext;
+import java.net.InetSocketAddress;
+import java.net.URL;
+import java.util.List;
+
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
-import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
-import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
-import static io.specto.hoverfly.junit.core.HoverflyMode.SPY;
+import static io.specto.hoverfly.junit.core.HoverflyMode.*;
 import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.argThat;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.OK;
 
 public class HoverflyTest {
@@ -347,7 +333,7 @@ public class HoverflyTest {
 
     @Test
     public void shouldNotSetSystemPropertiesWhenHoverflyInWebServerMode() {
-        hoverfly = new Hoverfly(configs().asWebServer(), SIMULATE);
+        hoverfly = new Hoverfly(localConfigs().asWebServer(), SIMULATE);
         hoverfly.start();
 
         assertThat(System.getProperty("http.proxyHost")).isNullOrEmpty();
