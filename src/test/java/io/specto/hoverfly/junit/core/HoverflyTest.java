@@ -336,6 +336,15 @@ public class HoverflyTest {
     }
 
     @Test
+    public void shouldNotSetSystemPropertiesWhenHoverflyInWebServerMode() {
+        hoverfly = new Hoverfly(configs().asWebServer(), SIMULATE);
+        hoverfly.start();
+
+        assertThat(System.getProperty("http.proxyHost")).isNullOrEmpty();
+        assertThat(System.getProperty("https.proxyHost")).isNullOrEmpty();
+    }
+
+    @Test
     public void shouldBeAbleToUseHoverflyInTryWithResourceStatement() throws Exception {
         StartedProcess startedProcess = null;
         try (Hoverfly hoverfly = new Hoverfly(SIMULATE)) {
