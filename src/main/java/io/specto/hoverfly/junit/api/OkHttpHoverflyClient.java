@@ -87,9 +87,14 @@ class OkHttpHoverflyClient implements HoverflyClient {
     }
 
     @Override
-    public Journal getJournal() {
+    public Journal getJournal(int offset, int limit) {
         try {
-            final Request.Builder builder = createRequestBuilderWithUrl(JOURNAL_PATH);
+            final Request.Builder builder = new Request.Builder()
+                    .url(baseUrl.newBuilder()
+                            .addPathSegments(JOURNAL_PATH)
+                            .addQueryParameter("offset", String.valueOf(offset))
+                            .addQueryParameter("limit", String.valueOf(limit))
+                            .build());
             final Request request = builder.get().build();
             return exchange(request, Journal.class);
         } catch (Exception e) {

@@ -20,7 +20,7 @@ public interface HoverflyClient {
 
     void deleteSimulation();
 
-    Journal getJournal();
+    Journal getJournal(int offset, int limit);
 
     Journal searchJournal(Request request);
 

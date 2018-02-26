@@ -130,11 +130,11 @@ public class OkHttpHoverflyClientTest {
             // Do nothing just to populate journal
         }
 
-        assertThat(client.getJournal().getEntries()).isNotEmpty();
+        assertThat(client.getJournal(0, 10).getTotal()).isNotZero();
 
         client.deleteJournal();
 
-        assertThat(client.getJournal().getEntries()).isEmpty();
+        assertThat(client.getJournal(0, 10).getTotal()).isZero();
     }
 
     @Test
@@ -150,7 +150,7 @@ public class OkHttpHoverflyClientTest {
         }
 
 
-        Journal journal = client.getJournal();
+        Journal journal = client.getJournal(0, 10);
         String actual = objectMapper.writeValueAsString(journal);
 
         JSONAssert.assertEquals(expected, actual, JSONCompareMode.LENIENT);
