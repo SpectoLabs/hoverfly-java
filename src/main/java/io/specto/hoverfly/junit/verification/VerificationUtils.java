@@ -21,7 +21,7 @@ class VerificationUtils {
         String url = formatUrl(request);
         String headers = formatHeaders(request);
         String body = formatBody(request);
-        String time = entry.getTimeStarted().format(DateTimeFormatter.ISO_DATE_TIME);
+        String time = entry.getTimeStarted().toLocalDateTime().format(DateTimeFormatter.ISO_DATE_TIME);
 
         String requestLog;
         if (StringUtils.isBlank(body)) {

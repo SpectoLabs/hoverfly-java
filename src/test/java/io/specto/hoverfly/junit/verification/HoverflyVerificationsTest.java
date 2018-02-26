@@ -1,6 +1,7 @@
 package io.specto.hoverfly.junit.verification;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.core.model.Journal;
 import io.specto.hoverfly.junit.core.model.JournalEntry;
@@ -25,6 +26,7 @@ public class HoverflyVerificationsTest {
 
     @Before
     public void setUp() throws Exception {
+        objectMapper.registerModule(new JavaTimeModule());
         Journal journal = objectMapper.readValue(resource, Journal.class);
         journalEntry = journal.getEntries().iterator().next();
     }

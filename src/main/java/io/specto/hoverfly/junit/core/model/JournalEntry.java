@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JournalEntry {
@@ -16,9 +18,7 @@ public class JournalEntry {
     private final Response response;
     private final String mode;
 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    private final LocalDateTime timeStarted;
+    private final ZonedDateTime timeStarted;
 
     private final Double latency;
 
@@ -26,7 +26,7 @@ public class JournalEntry {
     public JournalEntry(@JsonProperty("request") RequestDetails request,
                         @JsonProperty("response") Response response,
                         @JsonProperty("mode") String mode,
-                        @JsonProperty("timeStarted") LocalDateTime timeStarted,
+                        @JsonProperty("timeStarted") ZonedDateTime timeStarted,
                         @JsonProperty("latency") Double latency) {
         this.request = request;
         this.response = response;
@@ -48,7 +48,7 @@ public class JournalEntry {
         return mode;
     }
 
-    public LocalDateTime getTimeStarted() {
+    public ZonedDateTime getTimeStarted() {
         return timeStarted;
     }
 
