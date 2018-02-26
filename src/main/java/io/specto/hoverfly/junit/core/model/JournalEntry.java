@@ -20,14 +20,14 @@ public class JournalEntry {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private final LocalDateTime timeStarted;
 
-    private final Integer latency;
+    private final Double latency;
 
     @JsonCreator
     public JournalEntry(@JsonProperty("request") RequestDetails request,
                         @JsonProperty("response") Response response,
                         @JsonProperty("mode") String mode,
                         @JsonProperty("timeStarted") LocalDateTime timeStarted,
-                        @JsonProperty("latency") Integer latency) {
+                        @JsonProperty("latency") Double latency) {
         this.request = request;
         this.response = response;
         this.mode = mode;
@@ -52,7 +52,7 @@ public class JournalEntry {
         return timeStarted;
     }
 
-    public Integer getLatency() {
+    public Double getLatency() {
         return latency;
     }
 }
