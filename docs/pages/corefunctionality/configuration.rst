@@ -9,47 +9,47 @@ You can also set fixed port:
 
 .. code-block:: java
 
-    configs().proxyPort(8080)
+    localConfigs().proxyPort(8080)
 
 
 You can configure Hoverfly to process requests to certain destinations / hostnames
 
 .. code-block:: java
 
-    configs().destination("www.test.com") // only process requests to www.test.com
-    configs().destination("api") // matches destination that contains api, eg. api.test.com
+    localConfigs().destination("www.test.com") // only process requests to www.test.com
+    localConfigs().destination("api") // matches destination that contains api, eg. api.test.com
 
 You can configure Hoverfly to proxy localhost requests. This is useful if the target server you are trying to simulate is running on localhost.
 
 .. code-block:: java
 
-    configs().proxyLocalHost()
+    localConfigs().proxyLocalHost()
 
 You can configure Hoverfly to capture request headers which is turned off by default:
 
 .. code-block:: java
 
-    configs().captureHeaders("Accept", "Authorization")
-    configs().captureAllHeaders()
+    localConfigs().captureHeaders("Accept", "Authorization")
+    localConfigs().captureAllHeaders()
 
 You can configure Hoverfly to run as a web server on default port 8500:
 
 .. code-block:: java
 
-    configs().asWebServer()
+    localConfigs().asWebServer()
 
 You can configure Hoverfly to skip TLS verification. This option allows Hoverfly to perform "insecure" SSL connections to target server that uses invalid certificate (eg. self-signed certificate):
 
 .. code-block:: java
 
-    configs().disableTlsVerification()
+    localConfigs().disableTlsVerification()
 
 
 If you are developing behind a cooperate proxy, you can configure Hoverfly to use an upstream proxy:
 
 .. code-block:: java
 
-    configs().upstreamProxy(new InetSocketAddress("127.0.0.1", 8900))
+    localConfigs().upstreamProxy(new InetSocketAddress("127.0.0.1", 8900))
 
 Middleware
 ----------
@@ -58,7 +58,7 @@ You can configure Hoverfly to use a local middleware (for more details, please c
 
 .. code-block:: java
 
-    configs().localMiddleware("python", "middleware/modify_response.py")
+    localConfigs().localMiddleware("python", "middleware/modify_response.py")
 
 You should provide the absolute or relative path of the binary, in this case, ``python`` for running the python middleware. The second input is the middleware script file in the classpath (eg. ``test/resources`` folder)
 
@@ -74,7 +74,7 @@ Alternatively, you can override the default SSL certificate by providing your ow
 
 .. code-block:: java
 
-    configs()
+    localConfigs()
         .sslCertificatePath("ssl/ca.crt")
         .sslKeyPath("ssl/ca.key");
 
@@ -90,19 +90,15 @@ It is possible to configure Hoverfly to use an existing API simulation managed e
 Hoverfly cluster for sharing API simulations across teams, or a publicly available API sandbox powered by Hoverfly.
 
 
-You can enable this feature easily with the configs fluent builder. The default settings point to localhost on
+You can enable this feature easily with the ``remoteConfigs()`` fluent builder. The default settings point to localhost on
 default admin port 8888 and proxy port 8500.
 
-.. code-block:: java
-
-    configs().remote()
 
 You can point it to other host and ports
 
 .. code-block:: java
 
-    configs()
-        .remote()
+    remoteConfigs()
         .host("10.0.0.1")
         .adminPort(8080)
         .proxyPort(8081)
@@ -113,16 +109,14 @@ You can provide a custom CA certificate for the proxy.
 
 .. code-block:: java
 
-    configs()
-        .remote()
+    remoteConfigs()
         .proxyCaCert("ca.pem") // the name of the file relative to classpath
 
 You can configure Hoverfly to use an HTTPS admin endpoint.
 
 .. code-block:: java
 
-    configs()
-        .remote()
+    remoteConfigs()
         .withHttpsAdminEndpoint()
 
 You can provide the token for the custom Hoverfly authorization header, this will be used for both proxy and admin
@@ -130,10 +124,8 @@ endpoint authentication without the need for username and password.
 
 .. code-block:: java
 
-    configs()
-        .remote()
+    remoteConfigs()
         .withAuthHeader() // this will get auth token from an environment variable named 'HOVERFLY_AUTH_TOKEN'
 
-    configs()
-        .remote()
+    remoteConfigs()
         .withAuthHeader("some.token") // pass in token directly

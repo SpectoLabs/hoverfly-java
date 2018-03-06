@@ -22,6 +22,7 @@ for this is https://en.wikipedia.org/wiki/Service_virtualization[Service Virtual
 - Use externally managed Hoverfly cluster for API simulations
 - Request verification
 - Response templating
+- Stateful simulation
 - http://hoverfly-java.readthedocs.io/en/latest/pages/junit5/junit5.html[JUnit 5 extension^]
 
 == Documentation
@@ -34,7 +35,7 @@ Full documentation is available http://hoverfly-java.readthedocs.io/[here^]
 <dependency>
     <groupId>io.specto</groupId>
     <artifactId>hoverfly-java</artifactId>
-    <version>0.9.3</version>
+    <version>0.10.0</version>
     <scope>test</scope>
 </dependency>
 ```

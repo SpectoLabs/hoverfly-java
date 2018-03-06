@@ -15,6 +15,7 @@ This section describes the core functionality of Hoverfly Java.
     dsl
     matchers
     templating
+    state
     verification
     configuration
     client

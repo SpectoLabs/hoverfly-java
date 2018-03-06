@@ -26,6 +26,7 @@ public class ResponseCreators {
     private static final int SERVER_ERROR = 500;
     private static final int FORBIDDEN = 403;
     private static final int UNAUTHORISED = 401;
+    private static final int NOT_FOUND = 404;
 
     private ResponseCreators() {
     }
@@ -105,6 +106,10 @@ public class ResponseCreators {
      */
     public static ResponseBuilder unauthorised() {
         return response().status(UNAUTHORISED);
+    }
+
+    public static ResponseBuilder notFound() {
+        return response().status(NOT_FOUND);
     }
 
     public static ResponseBuilder success(HttpBodyConverter httpBodyConverter) {
