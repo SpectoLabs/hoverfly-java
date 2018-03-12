@@ -42,7 +42,7 @@ class ProxyConfigurer {
         if (hoverflyConfig.isProxyLocalHost()) {
             System.setProperty(HTTP_NON_PROXY_HOSTS, "");
         } else {
-            System.setProperty(HTTP_NON_PROXY_HOSTS, "local|*.local|169.254/16|*.169.254/16");
+            System.setProperty(HTTP_NON_PROXY_HOSTS, "localhost|127.*|[::1]");
         }
 
         if (hoverflyConfig.isRemoteInstance()) {

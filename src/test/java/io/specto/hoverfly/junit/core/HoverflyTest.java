@@ -319,7 +319,7 @@ public class HoverflyTest {
         assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(hoverfly.getHoverflyConfig().getProxyPort()));
         assertThat(System.getProperty("https.proxyPort")).isEqualTo(String.valueOf(hoverfly.getHoverflyConfig().getProxyPort()));
 
-        assertThat(System.getProperty("http.nonProxyHosts")).isEqualTo("local|*.local|169.254/16|*.169.254/16");
+        assertThat(System.getProperty("http.nonProxyHosts")).isEqualTo("localhost|127.*|[::1]");
 
     }
 
