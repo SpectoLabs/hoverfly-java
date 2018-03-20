@@ -1,5 +1,6 @@
 package io.specto.hoverfly.junit.api;
 
+import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.core.HoverflyConstants;
@@ -21,6 +22,8 @@ public interface HoverflyClient {
     void deleteSimulation();
 
     Journal getJournal(int offset, int limit);
+
+    Journal getJournal(int offset, int limit, SortParams sortParams);
 
     Journal searchJournal(Request request);
 
@@ -108,4 +111,5 @@ public interface HoverflyClient {
             return new OkHttpHoverflyClient(scheme, host, port, authToken);
         }
     }
+
 }

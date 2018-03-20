@@ -3,15 +3,14 @@ package io.specto.hoverfly.junit.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.SimulationSource;
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
-import io.specto.hoverfly.junit.core.model.FieldMatcher;
-import io.specto.hoverfly.junit.core.model.Journal;
-import io.specto.hoverfly.junit.core.model.Request;
-import io.specto.hoverfly.junit.core.model.Simulation;
+import io.specto.hoverfly.junit.core.model.*;
+
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -154,6 +153,26 @@ public class OkHttpHoverflyClientTest {
         String actual = objectMapper.writeValueAsString(journal);
 
         JSONAssert.assertEquals(expected, actual, JSONCompareMode.LENIENT);
+    }
+
+    @Test
+    public void shouldBeAbleToGetJournalWithSortParams() throws Exception {
+
+        RestTemplate restTemplate = new RestTemplate();
+        for (int i = 0; i < 3; i++) {
+            try {
+                restTemplate.getForEntity("http://hoverfly.io", String.class);
+            } catch (Exception ignored) {
+                // Do nothing just to populate journal
+            }
+        }
+
+        Journal journal = client.getJournal(0, 10, new SortParams("timeStarted", SortParams.Direction.DESC));
+
+        assertThat(journal.getTotal()).isEqualTo(3);
+        List<JournalEntry> entries = journal.getEntries();
+        assertThat(entries.get(0).getTimeStarted()).isAfterOrEqualTo(entries.get(1).getTimeStarted());
+        assertThat(entries.get(1).getTimeStarted()).isAfterOrEqualTo(entries.get(2).getTimeStarted());
     }
 
     @Test

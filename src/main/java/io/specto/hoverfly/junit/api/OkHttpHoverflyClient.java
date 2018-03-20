@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.specto.hoverfly.junit.api.command.DestinationCommand;
 import io.specto.hoverfly.junit.api.command.JournalSearchCommand;
 import io.specto.hoverfly.junit.api.command.ModeCommand;
+import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.core.HoverflyMode;
@@ -90,19 +91,12 @@ class OkHttpHoverflyClient implements HoverflyClient {
 
     @Override
     public Journal getJournal(int offset, int limit) {
-        try {
-            final Request.Builder builder = new Request.Builder()
-                    .url(baseUrl.newBuilder()
-                            .addPathSegments(JOURNAL_PATH)
-                            .addQueryParameter("offset", String.valueOf(offset))
-                            .addQueryParameter("limit", String.valueOf(limit))
-                            .build());
-            final Request request = builder.get().build();
-            return exchange(request, Journal.class);
-        } catch (Exception e) {
-            LOGGER.warn("Failed to get journal: {}", e.getMessage());
-            throw new HoverflyClientException("Failed to get journal: " + e.getMessage());
-        }
+        return getJournalInternal(offset, limit, null);
+    }
+
+    @Override
+    public Journal getJournal(int offset, int limit, SortParams sortParams) {
+        return getJournalInternal(offset, limit, sortParams);
     }
 
     @Override
@@ -192,6 +186,26 @@ class OkHttpHoverflyClient implements HoverflyClient {
             LOGGER.debug("Hoverfly healthcheck failed: " + e.getMessage());
         }
         return isHealthy;
+    }
+
+    private Journal getJournalInternal(int offset, int limit, SortParams sortParams) {
+        try {
+            HttpUrl.Builder urlBuilder = baseUrl.newBuilder()
+                    .addPathSegments(JOURNAL_PATH)
+                    .addQueryParameter("offset", String.valueOf(offset))
+                    .addQueryParameter("limit", String.valueOf(limit));
+
+            if (sortParams != null) {
+                urlBuilder.addQueryParameter("sort", sortParams.toString());
+            }
+            final Request.Builder builder = new Request.Builder()
+                    .url(urlBuilder.build());
+            final Request request = builder.get().build();
+            return exchange(request, Journal.class);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to get journal: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to get journal: " + e.getMessage());
+        }
     }
 
     private void putModeRequest(ModeCommand modeCommand) {
