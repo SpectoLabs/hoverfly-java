@@ -42,11 +42,9 @@ public class SimpleRequestDefinitionView {
 
     @Override
     public String toString() {
-        return "[" +
-            "method='" + method + '\'' +
-            ", host='" + host + '\'' +
-            ", path='" + path + '\'' +
-            ", query='" + query + '\'' +
-            ']';
+        return "\n method='" + method + '\'' +
+            "\n host='" + host + '\'' +
+            "\n path='" + path + '\'' +
+            "\n query='" + query + '\'';
     }
 }
