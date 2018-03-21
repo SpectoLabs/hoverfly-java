@@ -395,12 +395,12 @@ public class HoverflyRule extends ExternalResource {
     /**
      * Asserts that there was no diff between any of the expected responses set by simulations and the actual responses
      * returned from the real service.
-     * The parameter {@code shouldClean} says if all available diffs should be removed when the assertion is done.
+     * The parameter {@code shouldResetDiff} says if all available diffs should be removed when the assertion is done.
      *
-     * @param shouldClean if all available diffs should be removed when the assertion is done.
+     * @param shouldResetDiff if all available diffs should be removed when the assertion is done.
      */
-    public void assertThatNoDiffIsReported(boolean shouldClean) {
-        hoverfly.assertThatNoDiffIsReported(shouldClean);
+    public void assertThatNoDiffIsReported(boolean shouldResetDiff) {
+        hoverfly.assertThatNoDiffIsReported(shouldResetDiff);
     }
 
     private void checkMode(HoverflyMode mode) {

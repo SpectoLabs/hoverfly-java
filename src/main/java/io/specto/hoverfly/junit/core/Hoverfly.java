@@ -377,14 +377,14 @@ public class Hoverfly implements AutoCloseable {
         verifyRequest(requestMatcher.build(), criteria);
     }
 
-    public void assertThatNoDiffIsReported(boolean shouldClean) {
+    public void assertThatNoDiffIsReported(boolean shouldResetDiff) {
         DiffView diffs = hoverflyClient.getDiffs();
         if (diffs.getDiffs() != null && !diffs.getDiffs().isEmpty()) {
             StringBuilder message =
                 new StringBuilder("There has been reported a diff in any of the actual and expected responses:\n");
             diffs.getDiffs()
                 .forEach(diff -> message.append(diff.createDiffMessage()));
-            if (shouldClean) {
+            if (shouldResetDiff) {
                 hoverflyClient.cleanDiffs();
             }
             Assert.fail(message.toString());
