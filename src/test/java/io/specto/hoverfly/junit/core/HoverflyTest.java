@@ -408,6 +408,47 @@ public class HoverflyTest {
         verify(hoverflyClient).deleteJournal();
     }
 
+    @Test
+    public void shouldBeAbleToSetDiffMode() {
+        // given
+        hoverfly = new Hoverfly(SPY);
+        hoverfly.start();
+
+        // when
+        hoverfly.setMode(DIFF);
+
+        // then
+        assertThat(hoverfly.getMode()).isEqualTo(DIFF);
+    }
+
+    @Test
+    public void shouldImportExpectedSimulationInDiffMode() throws Exception {
+        // given
+        startDefaultHoverfly();
+        URL resource = Resources.getResource("test-service.json");
+        Simulation importedSimulation = mapper.readValue(resource, Simulation.class);
+
+        // when
+        hoverfly.simulate(classpath("test-service.json"));
+
+        // then
+        Simulation exportedSimulation = hoverfly.getSimulation();
+        assertThat(exportedSimulation.getHoverflyData()).isEqualTo(importedSimulation.getHoverflyData());
+    }
+
+    @Test
+    public void shouldTolerateFailureOnResetDiff() throws Exception {
+        // given
+        hoverfly = new Hoverfly(DIFF);
+        HoverflyClient hoverflyClient = createMockHoverflyClient(hoverfly);
+        doThrow(HoverflyClientException.class).when(hoverflyClient).cleanDiffs();
+
+        // when
+        hoverfly.resetDiffs();
+
+        // then
+        verify(hoverflyClient).cleanDiffs();
+    }
 
     @After
     public void tearDown() throws Exception {
