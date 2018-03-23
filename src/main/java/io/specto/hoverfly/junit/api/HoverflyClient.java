@@ -1,8 +1,10 @@
 package io.specto.hoverfly.junit.api;
 
+
 import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
+import io.specto.hoverfly.junit.api.view.StateView;
 import io.specto.hoverfly.junit.core.HoverflyConstants;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.Journal;
@@ -29,7 +31,31 @@ public interface HoverflyClient {
 
     void deleteJournal();
 
-    void deleteStates();
+    /**
+     * Deletes all state from Hoverfly.
+     */
+    void deleteState();
+
+    /**
+     * Gets the state from Hoverfly.
+     *
+     * @return the {@link StateView}
+     */
+    StateView getState();
+
+    /**
+     * Deletes all state from Hoverfly and then sets the state with the specified {@link StateView}.
+     *
+     * @param stateView the {@link StateView}
+     */
+    void setState(StateView stateView);
+
+    /**
+     * Updates state in Hoverfly. Will update each state key referenced in the specified {@link StateView}.
+     *
+     * @param stateView the {@link StateView}
+     */
+    void updateState(StateView stateView);
 
     HoverflyInfoView getConfigInfo();
 

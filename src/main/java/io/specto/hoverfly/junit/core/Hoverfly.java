@@ -12,12 +12,31 @@
  */
 package io.specto.hoverfly.junit.core;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.specto.hoverfly.junit.api.HoverflyClient;
 import io.specto.hoverfly.junit.api.HoverflyClientException;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
+import io.specto.hoverfly.junit.api.view.StateView;
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.model.Journal;
 import io.specto.hoverfly.junit.core.model.Request;
@@ -27,21 +46,6 @@ import io.specto.hoverfly.junit.dsl.RequestMatcherBuilder;
 import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
 import io.specto.hoverfly.junit.verification.VerificationCriteria;
 import io.specto.hoverfly.junit.verification.VerificationData;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -263,13 +267,57 @@ public class Hoverfly implements AutoCloseable {
     }
 
     /**
-     * Deletes all states from Hoverfly
+     * Deletes all state from Hoverfly
      */
-    public void resetStates() {
+    public void resetState() {
         try {
-            hoverflyClient.deleteStates();
+            hoverflyClient.deleteState();
         } catch (HoverflyClientException e) {
             LOGGER.warn("Older version of Hoverfly may not have a delete state API", e);
+        }
+    }
+
+    /**
+     * Get all state from Hoverfly
+     *
+     * @return the state
+     */
+    public Map<String, String> getState() {
+        try {
+            final StateView stateView = hoverflyClient.getState();
+            if (stateView == null) {
+                return Collections.emptyMap();
+            }
+            return stateView.getState();
+        } catch (HoverflyClientException e) {
+            LOGGER.warn("Older version of Hoverfly may not have a get state API", e);
+            return Collections.emptyMap();
+        }
+    }
+
+    /**
+     * Deletes all state from Hoverfly and then sets the state.
+     *
+     * @param state the state to set
+     */
+    public void setState(final Map<String, String> state) {
+        try {
+            hoverflyClient.setState(new StateView(state));
+        } catch (HoverflyClientException e) {
+            LOGGER.warn("Older version of Hoverfly may not have a set state API", e);
+        }
+    }
+
+    /**
+     *  Updates state in Hoverfly.
+     *
+     *  @param state the state to update with
+     */
+    public void updateState(final Map<String, String> state) {
+        try {
+            hoverflyClient.updateState(new StateView(state));
+        } catch (HoverflyClientException e) {
+            LOGGER.warn("Older version of Hoverfly may not have a update state API", e);
         }
     }
 

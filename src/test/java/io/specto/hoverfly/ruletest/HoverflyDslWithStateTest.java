@@ -37,7 +37,7 @@ public class HoverflyDslWithStateTest {
 
     @Before
     public void removeState(){
-        hoverflyRule.resetStates();
+        hoverflyRule.resetState();
     }
 
     @Test

@@ -12,6 +12,11 @@
  */
 package io.specto.hoverfly.junit.rule;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.Optional;
+
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
 import io.specto.hoverfly.junit.core.HoverflyConstants;
@@ -22,9 +27,6 @@ import io.specto.hoverfly.junit.dsl.HoverflyDsl;
 import io.specto.hoverfly.junit.dsl.RequestMatcherBuilder;
 import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
 import io.specto.hoverfly.junit.verification.VerificationCriteria;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -334,8 +336,38 @@ public class HoverflyRule extends ExternalResource {
         hoverfly.resetJournal();
     }
 
-    public void resetStates() {
-        hoverfly.resetStates();
+    /**
+     * Deletes all state from Hoverfly
+     */
+    public void resetState() {
+        hoverfly.resetState();
+    }
+
+    /**
+     * Get all state from Hoverfly
+     *
+     * @return the state
+     */
+    public Map<String, String> getState() {
+        return hoverfly.getState();
+    }
+
+    /**
+     * Deletes all state from Hoverfly and then sets the state.
+     *
+     * @param state the new state
+     */
+    public void setState(final Map<String, String> state) {
+        hoverfly.setState(state);
+    }
+
+    /**
+     *  Updates state in Hoverfly.
+     *
+     *  @param state the state to update with
+     */
+    public void updateState(final Map<String, String> state) {
+        hoverfly.updateState(state);
     }
 
     private void checkMode(HoverflyMode mode) {

@@ -1,19 +1,25 @@
 package io.specto.hoverfly.junit.api;
 
 
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.List;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
+import io.specto.hoverfly.junit.api.view.StateView;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.SimulationSource;
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
-import io.specto.hoverfly.junit.core.model.*;
-
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.List;
+import io.specto.hoverfly.junit.core.model.FieldMatcher;
+import io.specto.hoverfly.junit.core.model.Journal;
+import io.specto.hoverfly.junit.core.model.JournalEntry;
+import io.specto.hoverfly.junit.core.model.Request;
+import io.specto.hoverfly.junit.core.model.Simulation;
 import org.assertj.core.util.Lists;
 import org.junit.After;
 import org.junit.Before;
@@ -67,6 +73,47 @@ public class OkHttpHoverflyClientTest {
         client.setMode(CAPTURE);
 
         assertThat(hoverfly.getMode()).isEqualTo(CAPTURE);
+    }
+
+    @Test
+    public void shouldBeAbleToSetAndGetState() throws Exception {
+        final StateView setStateView = new StateView(ImmutableMap.of("key1", "value1", "key2", "value2"));
+        client.setState(setStateView);
+
+        StateView resultStateView = client.getState();
+
+        assertThat(resultStateView)
+                .as("get returns the state which have just been set.")
+                .isEqualTo(setStateView);
+    }
+
+    @Test
+    public void shouldBeAbleToSetAndUpdateAndGetState() throws Exception {
+        final StateView setStateView = new StateView(ImmutableMap.of("key1", "value1", "key2", "value2"));
+        client.setState(setStateView);
+
+        final StateView updateStateView = new StateView(ImmutableMap.of("key2", "value4", "key3", "value3"));
+        client.updateState(updateStateView);
+
+        StateView resultStateView = client.getState();
+
+        assertThat(resultStateView)
+                .as("get returns the state which have just been updated.")
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("state", ImmutableMap.of("key1", "value1", "key2", "value4", "key3", "value3"));
+    }
+
+    @Test
+    public void shouldBeAbleToSetAndDeleteState() throws Exception {
+        final StateView setStateView = new StateView(ImmutableMap.of("key1", "value1", "key2", "value2"));
+        client.setState(setStateView);
+        client.deleteState();
+
+        StateView resultStateView = client.getState();
+
+        assertThat(resultStateView.getState())
+                .as("get returns an empty state after delete.")
+                .isNotNull().isEmpty();
     }
 
 

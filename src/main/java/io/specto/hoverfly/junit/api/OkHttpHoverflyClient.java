@@ -1,5 +1,7 @@
 package io.specto.hoverfly.junit.api;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -9,15 +11,18 @@ import io.specto.hoverfly.junit.api.command.ModeCommand;
 import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
+import io.specto.hoverfly.junit.api.view.StateView;
 import io.specto.hoverfly.junit.core.HoverflyMode;
-import io.specto.hoverfly.junit.core.model.*;
-import okhttp3.*;
+import io.specto.hoverfly.junit.core.model.Journal;
+import io.specto.hoverfly.junit.core.model.Simulation;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 class OkHttpHoverflyClient implements HoverflyClient {
 
@@ -126,7 +131,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
     }
 
     @Override
-    public void deleteStates() {
+    public void deleteState() {
         try {
             final Request.Builder builder = createRequestBuilderWithUrl(STATE_PATH);
             final Request request = builder.delete().build();
@@ -134,6 +139,44 @@ class OkHttpHoverflyClient implements HoverflyClient {
         } catch (Exception e) {
             LOGGER.warn("Failed to delete states: {}", e.getMessage());
             throw new HoverflyClientException("Failed to delete states: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public StateView getState() {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(STATE_PATH);
+            final Request request = builder.get().build();
+            return exchange(request, StateView.class);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to get state: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to get state: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void setState(final StateView stateView) {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(STATE_PATH);
+            final RequestBody body = createRequestBody(stateView);
+            final Request request = builder.put(body).build();
+            exchange(request);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to set states: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to set states: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void updateState(final StateView stateView) {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(STATE_PATH);
+            final RequestBody body = createRequestBody(stateView);
+            final Request request = builder.patch(body).build();
+            exchange(request);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to update states: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to update states: " + e.getMessage());
         }
     }
 
