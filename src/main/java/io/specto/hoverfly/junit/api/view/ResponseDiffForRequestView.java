@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ResponseDiffForRequestView {
@@ -24,13 +23,12 @@ public class ResponseDiffForRequestView {
             .append("\nFor the request with the simple definition:\n" + getRequest().toString())
             .append("\n\nhave been recorded " + getDiffReports().size() + " diff(s):\n");
 
-        IntStream.range(0, getDiffReports().size())
-            .forEach(index -> {
-                DiffReport diffReport = getDiffReports().get(index);
-                message
-                    .append(String.format("\n%s. diff report at %s:\n", (index + 1), diffReport.getTimestamp()))
-                    .append(diffReport.createDiffMessage() + "\n");
-            });
+        for (int i = 0; i < getDiffReports().size(); i++) {
+            DiffReport diffReport = getDiffReports().get(i);
+            message
+                .append(String.format("\n%s. diff report at %s:\n", i + 1, diffReport.getTimestamp()))
+                .append(diffReport.createDiffMessage() + "\n");
+        }
         return message.toString();
     }
 
