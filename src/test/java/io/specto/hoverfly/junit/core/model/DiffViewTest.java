@@ -2,8 +2,11 @@ package io.specto.hoverfly.junit.core.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import io.specto.hoverfly.junit.api.view.DiffReport;
 import io.specto.hoverfly.junit.api.view.DiffView;
+import io.specto.hoverfly.junit.api.view.ResponseDiffForRequestView;
 import java.net.URL;
+import java.util.List;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,7 +17,7 @@ public class DiffViewTest {
     private URL recordedDiffsJson = Resources.getResource("diff/recorded-diffs.json");
 
     @Test
-    public void shouldDeserializeDiffJsonAndCreateDiffMessage() throws Exception {
+    public void shouldDeserializeDiffJson() throws Exception {
         // Given
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -23,13 +26,30 @@ public class DiffViewTest {
 
         // Then
         assertThat(actual.getDiffs()).hasSize(2);
-        assertThat(actual.getDiffs().get(0).getDiffReports()).hasSize(2);
-        assertThat(actual.getDiffs().get(0).getDiffReports().get(0).getEntries()).hasSize(2);
-        assertThat(actual.getDiffs().get(0).getDiffReports().get(1).getEntries()).hasSize(2);
-        assertThat(actual.getDiffs().get(1).getDiffReports()).hasSize(1);
-        assertThat(actual.getDiffs().get(1).getDiffReports().get(0).getEntries()).hasSize(2);
 
-        assertThat(actual.getDiffs().get(0).createDiffMessage())
+        List<DiffReport> firstReqDiffs = actual.getDiffs().get(0).getDiffReports();
+        assertThat(firstReqDiffs).hasSize(2);
+        assertThat(firstReqDiffs.get(0).getEntries()).hasSize(2);
+        assertThat(firstReqDiffs.get(1).getEntries()).hasSize(2);
+        
+        List<DiffReport> secondReqDiffs = actual.getDiffs().get(1).getDiffReports();
+        assertThat(secondReqDiffs).hasSize(1);
+        assertThat(secondReqDiffs.get(0).getEntries()).hasSize(2);
+    }
+
+    @Test
+    public void shouldCreateDiffMessage() throws Exception {
+        // Given
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // When
+        DiffView actual = objectMapper.readValue(recordedDiffsJson, DiffView.class);
+
+        // Then
+        assertThat(actual.getDiffs()).hasSize(2);
+
+        ResponseDiffForRequestView firstReqReport = actual.getDiffs().get(0);
+        assertThat(firstReqReport.createDiffMessage())
             .contains("first/path")
             .contains("have been recorded 2 diff(s)")
             .contains("at 2018-03-15T15:44:00+01:00")
@@ -39,7 +59,8 @@ public class DiffViewTest {
             .contains("first actual message on the first path")
             .contains("second actual message on the first path");
 
-        assertThat(actual.getDiffs().get(1).createDiffMessage())
+        ResponseDiffForRequestView secondReqReport = actual.getDiffs().get(1);
+        assertThat(secondReqReport.createDiffMessage())
             .contains("second/path")
             .contains("have been recorded 1 diff(s)")
             .contains("at 2018-03-15T15:44:00+01:00")
