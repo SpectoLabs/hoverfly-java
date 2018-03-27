@@ -1,0 +1,69 @@
+{
+  "diff":[
+    {
+      "request":{
+        "method":"GET",
+        "host":"my.server.com",
+        "path":"/users/cool-user",
+        "query":"first/path"
+      },
+      "diffReports":[
+        {
+          "timestamp":"2018-03-15T15:44:00+01:00",
+          "diffEntries":[
+            {
+              "field":"header/Status",
+              "expected":"[404 Not Found]",
+              "actual":"[200 OK]"
+            },
+            {
+              "field":"body/message",
+              "expected":"expected message",
+              "actual":"first actual message on the first path"
+            }
+          ]
+        },
+        {
+          "timestamp":"2018-03-15T15:45:00+01:00",
+          "diffEntries":[
+            {
+              "field":"header/Status",
+              "expected":"[404 Not Found]",
+              "actual":"[200 OK]"
+            },
+            {
+              "field":"body/message",
+              "expected":"expected message",
+              "actual":"second actual message on the first path"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "request":{
+        "method":"GET",
+        "host":"my.server.com",
+        "path":"/users/cool-user",
+        "query":"second/path"
+      },
+      "diffReports":[
+        {
+          "timestamp":"2018-03-15T15:44:00+01:00",
+          "diffEntries":[
+            {
+              "field":"header/Status",
+              "expected":"[404 Not Found]",
+              "actual":"[200 OK]"
+            },
+            {
+              "field":"body/message",
+              "expected":"expected message",
+              "actual":"first actual message on the second path"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

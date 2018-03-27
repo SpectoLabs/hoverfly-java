@@ -47,6 +47,7 @@ import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
 import io.specto.hoverfly.junit.verification.VerificationCriteria;
 import io.specto.hoverfly.junit.verification.VerificationData;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -320,6 +321,17 @@ public class Hoverfly implements AutoCloseable {
             LOGGER.warn("Older version of Hoverfly may not have a update state API", e);
         }
     }
+  
+    /**
+     * Deletes all diffs from Hoverfly
+     */
+    public void resetDiffs() {
+        try {
+            hoverflyClient.cleanDiffs();
+        } catch (HoverflyClientException e) {
+            LOGGER.warn("Older version of Hoverfly may not have a delete diffs API", e);
+        }
+    }
 
     /**
      * Exports a simulation and stores it on the filesystem at the given path
@@ -410,6 +422,20 @@ public class Hoverfly implements AutoCloseable {
 
     public void verify(RequestMatcherBuilder requestMatcher, VerificationCriteria criteria) {
         verifyRequest(requestMatcher.build(), criteria);
+    }
+
+    public void assertThatNoDiffIsReported(boolean shouldResetDiff) {
+        DiffView diffs = hoverflyClient.getDiffs();
+        if (diffs.getDiffs() != null && !diffs.getDiffs().isEmpty()) {
+            StringBuilder message =
+                new StringBuilder("There has been reported a diff in any of the actual and expected responses:\n");
+            diffs.getDiffs()
+                .forEach(diff -> message.append(diff.createDiffMessage()));
+            if (shouldResetDiff) {
+                hoverflyClient.cleanDiffs();
+            }
+            Assert.fail(message.toString());
+        }
     }
 
     public void verify(RequestMatcherBuilder requestMatcher) {
