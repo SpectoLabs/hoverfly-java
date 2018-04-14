@@ -41,6 +41,27 @@ If you are using `OkHttpClient <http://square.github.io/okhttp/>`_ to make HTTPS
             .sslSocketFactory(sslConfigurer.getSslContext().getSocketFactory(), sslConfigurer.getTrustManager())
             .build();
 
+Spock Framework
+---------------
+
+If you are testing with BDD and `Spock Framework <http://spockframework.org/>`_, you could also use Hoverfly-Java JUnit Rule. Just initialize a `HoverflyRule` in the Specification, and annotate it with `@ClassRule` and `@Shared` which indicates the `HoverflyRule` is shared among all the feature methods:
+
+.. code-block:: java
+
+    class MySpec extends Specification {
+
+        @Shared
+        @ClassRule
+        HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode()
+
+        // Feature methods
+
+        def setup() {
+            // Reset the journal before each feature if you need to do a verification
+            hoverflyRule.resetJournal()
+        }
+    }
+
 
 Legacy Schema Migration
 -----------------------
