@@ -120,7 +120,7 @@ public class StubServiceBuilderTest {
         // Then
         assertThat(pairs).hasSize(1);
         FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
-        assertThat(query.getGlobMatch()).isEqualTo("*=bar");
+        assertThat(query.getRegexMatch()).isEqualTo(".*=bar");
         assertThat(query.getExactMatch()).isNull();
     }
 
@@ -146,7 +146,7 @@ public class StubServiceBuilderTest {
         // Then
         assertThat(pairs).hasSize(1);
         FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
-        assertThat(query.getGlobMatch()).isEqualTo("*token=*");
+        assertThat(query.getRegexMatch()).isEqualTo(".*token$=.*");
         assertThat(query.getExactMatch()).isNull();
     }
 
@@ -188,7 +188,7 @@ public class StubServiceBuilderTest {
         // Then
         assertThat(pairs).hasSize(1);
         FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
-        assertThat(query.getGlobMatch()).isEqualTo("page=*&size=*");
+        assertThat(query.getRegexMatch()).isEqualTo("page=.*&size=.*");
     }
 
     @Test
@@ -202,7 +202,7 @@ public class StubServiceBuilderTest {
         // Then
         assertThat(pairs).hasSize(1);
         FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
-        assertThat(query.getGlobMatch()).isEqualTo("page=*&category=food");
+        assertThat(query.getRegexMatch()).isEqualTo("page=.*&category=food");
     }
 
     @Test
@@ -216,7 +216,7 @@ public class StubServiceBuilderTest {
         // Then
         assertThat(pairs).hasSize(1);
         FieldMatcher query = Iterables.getLast(pairs).getRequest().getQuery();
-        assertThat(query.getGlobMatch()).isEqualTo("page=*&size=*");
+        assertThat(query.getRegexMatch()).isEqualTo("page=.*&size=.*");
     }
 
     @Test

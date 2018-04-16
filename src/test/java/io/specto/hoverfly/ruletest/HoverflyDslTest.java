@@ -1,7 +1,6 @@
 package io.specto.hoverfly.ruletest;
 
 import io.specto.hoverfly.junit.rule.HoverflyRule;
-import org.apache.commons.lang3.time.StopWatch;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
 
 import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
@@ -52,26 +50,8 @@ public class HoverflyDslTest {
                     .willReturn(success("{\"bookingId\":\"2\",\"origin\":\"London\",\"destination\":\"New York\",\"class\":\"BUSINESS\",\"time\":\"2011-09-01T12:30\",\"_links\":{\"self\":{\"href\":\"http://localhost/api/bookings/2\"}}}", "application/json"))
 
                     .patch("/api/bookings/1").body("{\"class\": \"BUSINESS\"}")
-                    .willReturn(noContent()),
+                    .willReturn(noContent())
 
-            service("www.slow-service.com")
-                    .get("/api/bookings")
-                    .willReturn(success())
-
-                    .andDelay(3, TimeUnit.SECONDS).forAll(),
-
-            service("www.other-slow-service.com")
-                    .get("/api/bookings")
-                    .willReturn(success())
-
-                    .post("/api/bookings")
-                    .willReturn(success())
-
-                    .andDelay(3, TimeUnit.SECONDS).forMethod("POST"),
-
-            service("www.not-so-slow-service.com")
-                    .get("/api/bookings")
-                    .willReturn(success().withDelay(1, TimeUnit.SECONDS))
     )).printSimulationData();
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -145,59 +125,6 @@ public class HoverflyDslTest {
         assertThat(bookFlightResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
-    @Test
-    public void shouldBeAbleToDelayRequestByHost() {
 
-        // When
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        final ResponseEntity<Void> bookingResponse = restTemplate.getForEntity("http://www.slow-service.com/api/bookings", Void.class);
-        stopWatch.stop();
-        long time = stopWatch.getTime();
 
-        // Then
-        assertThat(bookingResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(TimeUnit.MILLISECONDS.toSeconds(time)).isGreaterThanOrEqualTo(3L);
-    }
-
-    @Test
-    public void shouldBeAbleToDelayRequestByHttpMethod() {
-
-        // When
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        final ResponseEntity<Void> postResponse = restTemplate.postForEntity("http://www.other-slow-service.com/api/bookings", null, Void.class);
-        stopWatch.stop();
-        long postTime = stopWatch.getTime();
-
-        // Then
-        assertThat(postResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(TimeUnit.MILLISECONDS.toSeconds(postTime)).isGreaterThanOrEqualTo(3L);
-
-        // When
-        stopWatch.reset();
-        stopWatch.start();
-        final ResponseEntity<Void> getResponse = restTemplate.getForEntity("http://www.other-slow-service.com/api/bookings", Void.class);
-        stopWatch.stop();
-        long getTime = stopWatch.getTime();
-
-        // Then
-        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(TimeUnit.MILLISECONDS.toSeconds(getTime)).isLessThan(3L);
-    }
-
-    @Test
-    public void shouldBeAbleToDelayRequest() {
-
-        // When
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        final ResponseEntity<Void> getResponse = restTemplate.getForEntity("http://www.not-so-slow-service.com/api/bookings", Void.class);
-        stopWatch.stop();
-        long getTime = stopWatch.getTime();
-
-        // Then
-        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(TimeUnit.MILLISECONDS.toSeconds(getTime)).isLessThan(3L).isGreaterThanOrEqualTo(1L);
-    }
 }

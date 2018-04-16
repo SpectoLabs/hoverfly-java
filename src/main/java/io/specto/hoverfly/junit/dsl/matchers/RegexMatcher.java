@@ -2,19 +2,19 @@ package io.specto.hoverfly.junit.dsl.matchers;
 
 import io.specto.hoverfly.junit.core.model.FieldMatcher;
 
-class GlobMatcher implements PlainTextFieldMatcher {
+class RegexMatcher implements PlainTextFieldMatcher {
 
     private FieldMatcher fieldMatcher;
 
     private String pattern;
 
-    private GlobMatcher(String pattern) {
+    private RegexMatcher(String pattern) {
         this.pattern = pattern;
-        this.fieldMatcher = FieldMatcher.wildCardMatches(pattern);
+        this.fieldMatcher = new FieldMatcher.Builder().regexMatch(pattern).build();
     }
 
-    static GlobMatcher newInstance(String pattern) {
-        return new GlobMatcher(pattern);
+    static RegexMatcher newInstance(String pattern) {
+        return new RegexMatcher(pattern);
     }
 
     @Override
@@ -29,6 +29,6 @@ class GlobMatcher implements PlainTextFieldMatcher {
 
     @Override
     public RequestMatcherType getType() {
-        return RequestMatcherType.GLOB_MATCH;
+        return RequestMatcherType.REGEX_MATCH;
     }
 }

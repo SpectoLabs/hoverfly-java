@@ -26,4 +26,9 @@ public class ExactMatcher implements PlainTextFieldMatcher {
     public String getPattern() {
         return pattern;
     }
+
+    @Override
+    public RequestMatcherType getType() {
+        return RequestMatcherType.EXACT_MATCH;
+    }
 }

@@ -4,4 +4,6 @@ public interface PlainTextFieldMatcher extends RequestFieldMatcher {
 
     String getPattern();
 
+    RequestMatcherType getType();
+
 }

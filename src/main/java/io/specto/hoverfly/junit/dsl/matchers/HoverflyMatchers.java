@@ -10,7 +10,6 @@ import java.io.IOException;
 
 public class HoverflyMatchers {
 
-    private static final String WILDCARD = "*";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final XmlMapper XML_MAPPER = new XmlMapper();
 
@@ -25,19 +24,19 @@ public class HoverflyMatchers {
     }
 
     public static PlainTextFieldMatcher startsWith(String value) {
-        return GlobMatcher.newInstance(value + WILDCARD);
+        return RegexMatcher.newInstance(String.format("^%s.*", value));
     }
 
     public static PlainTextFieldMatcher endsWith(String value) {
-        return GlobMatcher.newInstance(WILDCARD + value);
+        return RegexMatcher.newInstance(String.format(".*%s$", value));
     }
 
     public static PlainTextFieldMatcher contains(String value) {
-        return GlobMatcher.newInstance(WILDCARD + value + WILDCARD);
+        return RegexMatcher.newInstance(String.format(".*%s.*", value));
     }
 
     public static PlainTextFieldMatcher any() {
-        return GlobMatcher.newInstance(WILDCARD);
+        return RegexMatcher.newInstance(".*");
     }
 
     public static RequestFieldMatcher equalsToJson(String value) {
