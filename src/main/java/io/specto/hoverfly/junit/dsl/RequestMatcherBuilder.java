@@ -15,9 +15,7 @@ package io.specto.hoverfly.junit.dsl;
 import io.specto.hoverfly.junit.core.model.FieldMatcher;
 import io.specto.hoverfly.junit.core.model.Request;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
-import io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers;
-import io.specto.hoverfly.junit.dsl.matchers.PlainTextFieldMatcher;
-import io.specto.hoverfly.junit.dsl.matchers.RequestFieldMatcher;
+import io.specto.hoverfly.junit.dsl.matchers.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,6 +23,8 @@ import java.util.stream.Collectors;
 import static io.specto.hoverfly.junit.core.model.FieldMatcher.*;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.equalsTo;
+import static io.specto.hoverfly.junit.dsl.matchers.RequestMatcherType.GLOB_MATCH;
+import static io.specto.hoverfly.junit.dsl.matchers.RequestMatcherType.REGEX_MATCH;
 
 /**
  * A builder for {@link Request}
@@ -36,12 +36,13 @@ public class RequestMatcherBuilder {
     private final FieldMatcher scheme;
     private final FieldMatcher destination;
     private final FieldMatcher path;
-    private final MultivaluedHashMap<PlainTextFieldMatcher, PlainTextFieldMatcher> queryPatterns = new MultivaluedHashMap<>();
+    private final List<String> exactMatchQueries = new ArrayList<>();
+    private final List<String> globMatchQueries = new ArrayList<>();
+    private final List<String> regexMatchQueries = new ArrayList<>();
     private final Map<String, List<String>> headers = new HashMap<>();
     private final Map<String, String> requiresState = new HashMap<>();
     private FieldMatcher query = blankMatcher();
     private FieldMatcher body = blankMatcher();
-    private boolean isFuzzyMatchedQuery;
 
 
     RequestMatcherBuilder(final StubServiceBuilder invoker,
@@ -120,7 +121,7 @@ public class RequestMatcherBuilder {
         }
 
         for(Object value : values) {
-            queryPatterns.add(equalsTo(key), equalsTo(value));
+            exactMatchQueries.add(String.format("%s=%s", key, value));
         }
         return this;
     }
@@ -135,8 +136,14 @@ public class RequestMatcherBuilder {
 
 
     public RequestMatcherBuilder queryParam(final PlainTextFieldMatcher key, final PlainTextFieldMatcher value) {
-        isFuzzyMatchedQuery = true;
-        queryPatterns.add(key, value);
+
+        // TODO should throw exception if both regex and glob matchers are used here
+        String queryParams = String.format("%s=%s", key.getPattern(), value.getPattern());
+        if (key.getType() == GLOB_MATCH || value.getType() == GLOB_MATCH) {
+            globMatchQueries.add(queryParams);
+        } else if (key.getType() == REGEX_MATCH || value.getType() == REGEX_MATCH) {
+            regexMatchQueries.add(queryParams);
+        }
         return this;
     }
 
@@ -160,38 +167,32 @@ public class RequestMatcherBuilder {
 
     public Request build() {
 
-        if (!this.queryPatterns.isEmpty()) {
-            String queryPatterns = this.queryPatterns.entrySet().stream()
-                    .flatMap(e -> e.getValue().stream().map(v -> e.getKey().getPattern() + "=" + v.getPattern()))
-                    .collect(Collectors.joining("&"));
-            query = isFuzzyMatchedQuery ? wildCardMatches(queryPatterns) : exactlyMatches(queryPatterns);
+        // Only create query matchers if it is not ignored (set to null)
+        if (query != null) {
+            query = buildQuery();
         }
 
         return new Request(path, method, destination, scheme, query, body, headers, requiresState);
     }
 
-    private static class MultivaluedHashMap<K, V> {
-        private Map<K, List<V>> elements = new LinkedHashMap<>();
+    private FieldMatcher buildQuery() {
+        Builder builder = new Builder();
+        if (globMatchQueries.isEmpty() && regexMatchQueries.isEmpty()) {
+            builder.exactMatch(exactMatchQueries.stream().collect(Collectors.joining("&")));
+        } else {
+            if (!globMatchQueries.isEmpty()) {
 
-        private void add(K key, V value) {
-            List<V> values;
-            if (elements.containsKey(key)) {
-                values = elements.get(key);
-            } else {
-                values = new ArrayList<>();
-                elements.put(key, values);
+                globMatchQueries.addAll(exactMatchQueries);
+                builder.globMatch(globMatchQueries.stream().collect(Collectors.joining("&")));
             }
-            values.add(value);
+
+            if (!regexMatchQueries.isEmpty()) {
+                regexMatchQueries.addAll(exactMatchQueries);
+                builder.regexMatch(regexMatchQueries.stream().collect(Collectors.joining("&")));
+            }
         }
 
-        private Set<Map.Entry<K, List<V>>> entrySet() {
-            return elements.entrySet();
-        }
-
-        private boolean isEmpty() {
-            return elements.isEmpty();
-        }
-
+        return builder.build();
     }
 
 }

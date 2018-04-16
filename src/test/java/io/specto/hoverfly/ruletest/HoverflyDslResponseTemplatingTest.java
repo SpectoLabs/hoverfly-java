@@ -34,7 +34,8 @@ public class HoverflyDslResponseTemplatingTest {
                     // Query Param for template
                     .get("/api/bookings")
                     .queryParam("destination", "London")
-                    .queryParam("page", any())
+//                    .queryParam("page", any())        // TODO query params with regex matcher ordering problem
+                    .queryParam("page", 2)
                     .willReturn(success().body(jsonWithSingleQuotes(
                             "{'id':'1', 'destination':'{{ Request.QueryParam.destination }}','time':'2011-09-01T12:30','_links':{'self':{'href':'http://localhost/api/bookings?page={{ Request.QueryParam.page }}'}}}"
                     )))

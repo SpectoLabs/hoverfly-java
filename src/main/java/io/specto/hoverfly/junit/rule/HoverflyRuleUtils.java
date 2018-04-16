@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.Rule;
 import org.junit.runner.Description;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;

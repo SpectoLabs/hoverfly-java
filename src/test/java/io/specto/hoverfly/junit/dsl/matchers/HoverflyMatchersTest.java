@@ -22,36 +22,36 @@ public class HoverflyMatchersTest {
     }
 
     @Test
-    public void startsWithShouldCreateGlobMatcher() {
+    public void startsWithShouldCreateRegexMatcher() {
         PlainTextFieldMatcher matcher = HoverflyMatchers.startsWith("foo");
 
-        assertThat(matcher).isInstanceOf(GlobMatcher.class);
-        assertThat(matcher.getPattern()).isEqualTo("foo*");
+        assertThat(matcher).isInstanceOf(RegexMatcher.class);
+        assertThat(matcher.getPattern()).isEqualTo("^foo.*");
     }
 
 
     @Test
-    public void endsWithShouldCreateGlobMatcher() {
+    public void endsWithShouldCreateRegexMatcher() {
         PlainTextFieldMatcher matcher = HoverflyMatchers.endsWith("foo");
 
-        assertThat(matcher).isInstanceOf(GlobMatcher.class);
-        assertThat(matcher.getPattern()).isEqualTo("*foo");
+        assertThat(matcher).isInstanceOf(RegexMatcher.class);
+        assertThat(matcher.getPattern()).isEqualTo(".*foo$");
     }
 
     @Test
-    public void containsShouldCreateGlobMatcher() {
+    public void containsShouldCreateRegexMatcher() {
         PlainTextFieldMatcher matcher = HoverflyMatchers.contains("foo");
 
-        assertThat(matcher).isInstanceOf(GlobMatcher.class);
-        assertThat(matcher.getPattern()).isEqualTo("*foo*");
+        assertThat(matcher).isInstanceOf(RegexMatcher.class);
+        assertThat(matcher.getPattern()).isEqualTo(".*foo.*");
     }
 
     @Test
-    public void anyShouldCreateGlobMatcher() {
+    public void anyShouldCreateRegexMatcher() {
         PlainTextFieldMatcher matcher = HoverflyMatchers.any();
 
-        assertThat(matcher).isInstanceOf(GlobMatcher.class);
-        assertThat(matcher.getPattern()).isEqualTo("*");
+        assertThat(matcher).isInstanceOf(RegexMatcher.class);
+        assertThat(matcher.getPattern()).isEqualTo(".*");
     }
 
     @Test
