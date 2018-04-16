@@ -13,7 +13,7 @@ public class HoverflyMatchersTest {
 
 
     @Test
-    public void matchesShouldCreateGlobMatcher() throws Exception {
+    public void matchesShouldCreateGlobMatcher() {
 
         PlainTextFieldMatcher matcher = HoverflyMatchers.matches("fo*o");
 
@@ -22,7 +22,7 @@ public class HoverflyMatchersTest {
     }
 
     @Test
-    public void startsWithShouldCreateGlobMatcher() throws Exception {
+    public void startsWithShouldCreateGlobMatcher() {
         PlainTextFieldMatcher matcher = HoverflyMatchers.startsWith("foo");
 
         assertThat(matcher).isInstanceOf(GlobMatcher.class);
@@ -31,7 +31,7 @@ public class HoverflyMatchersTest {
 
 
     @Test
-    public void endsWithShouldCreateGlobMatcher() throws Exception {
+    public void endsWithShouldCreateGlobMatcher() {
         PlainTextFieldMatcher matcher = HoverflyMatchers.endsWith("foo");
 
         assertThat(matcher).isInstanceOf(GlobMatcher.class);
@@ -39,7 +39,7 @@ public class HoverflyMatchersTest {
     }
 
     @Test
-    public void containsShouldCreateGlobMatcher() throws Exception {
+    public void containsShouldCreateGlobMatcher() {
         PlainTextFieldMatcher matcher = HoverflyMatchers.contains("foo");
 
         assertThat(matcher).isInstanceOf(GlobMatcher.class);
@@ -47,7 +47,7 @@ public class HoverflyMatchersTest {
     }
 
     @Test
-    public void anyShouldCreateGlobMatcher() throws Exception {
+    public void anyShouldCreateGlobMatcher() {
         PlainTextFieldMatcher matcher = HoverflyMatchers.any();
 
         assertThat(matcher).isInstanceOf(GlobMatcher.class);
@@ -55,7 +55,7 @@ public class HoverflyMatchersTest {
     }
 
     @Test
-    public void shouldCreateJsonMatcherFromString() throws Exception {
+    public void shouldCreateJsonMatcherFromString() {
         FieldMatcher actual = HoverflyMatchers.equalsToJson("{\"flightId\":\"1\",\"class\":\"PREMIUM\"}").getFieldMatcher();
 
         FieldMatcher expected = new FieldMatcher.Builder().jsonMatch("{\"flightId\":\"1\",\"class\":\"PREMIUM\"}").build();
@@ -64,7 +64,7 @@ public class HoverflyMatchersTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfInputStringIsInvalidJsonFormat() throws Exception {
+    public void shouldThrowExceptionIfInputStringIsInvalidJsonFormat() {
 
         assertThatThrownBy(() -> HoverflyMatchers.equalsToJson("{\"flightId\":\"1\",\"class\":\"PREMIUM\""))
                 .isInstanceOf(HoverflyDslException.class)
@@ -86,7 +86,7 @@ public class HoverflyMatchersTest {
     }
 
     @Test
-    public void shouldCreateXmlMatcherFromString() throws Exception {
+    public void shouldCreateXmlMatcherFromString() {
         FieldMatcher actual = HoverflyMatchers.equalsToXml("<?xml version=\"1.0\" encoding=\"UTF-8\" ?> <flightId>1</flightId> <class>PREMIUM</class>").getFieldMatcher();
 
         FieldMatcher expected = new FieldMatcher.Builder().xmlMatch("<?xml version=\"1.0\" encoding=\"UTF-8\" ?> <flightId>1</flightId> <class>PREMIUM</class>").build();
@@ -95,7 +95,7 @@ public class HoverflyMatchersTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfInputStringIsInvalidXmlFormat() throws Exception {
+    public void shouldThrowExceptionIfInputStringIsInvalidXmlFormat() {
 
         assertThatThrownBy(() -> HoverflyMatchers.equalsToXml("{\"flightId\":\"1\",\"class\":\"PREMIUM\""))
                 .isInstanceOf(HoverflyDslException.class)

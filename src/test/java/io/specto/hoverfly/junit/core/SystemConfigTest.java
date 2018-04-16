@@ -14,7 +14,7 @@ public class SystemConfigTest {
     private SystemConfig systemConfig;
 
     @Test
-    public void shouldGetHoverflyBinaryNameForHostSystem() throws Exception {
+    public void shouldGetHoverflyBinaryNameForHostSystem() {
 
         systemConfig = new SystemConfig(LINUX, ARCH_AMD64);
 
@@ -22,7 +22,7 @@ public class SystemConfigTest {
     }
 
     @Test
-    public void shouldGeHoverlyBinaryNameForWindowsSystem() throws Exception {
+    public void shouldGeHoverlyBinaryNameForWindowsSystem() {
 
         systemConfig = new SystemConfig(WINDOWS, ARCH_386);
 

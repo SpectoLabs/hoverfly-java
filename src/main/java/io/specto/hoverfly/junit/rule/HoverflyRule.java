@@ -42,10 +42,7 @@ import static io.specto.hoverfly.junit.core.HoverflyMode.DIFF;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static io.specto.hoverfly.junit.core.SimulationSource.empty;
 import static io.specto.hoverfly.junit.core.SimulationSource.file;
-import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.createTestResourcesHoverflyDirectoryIfNoneExisting;
-import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.fileRelativeToTestResourcesHoverfly;
-import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.isAnnotatedWithRule;
-import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.prettyPrintJson;
+import static io.specto.hoverfly.junit.rule.HoverflyRuleUtils.*;
 
 
 /**
@@ -131,9 +128,9 @@ public class HoverflyRule extends ExternalResource {
      * @return the rule
      */
     public static HoverflyRule inCaptureOrSimulationMode(String recordFile, HoverflyConfig hoverflyConfig) {
-        final Path path = fileRelativeToTestResourcesHoverfly(recordFile);
-        if (Files.exists(path) && Files.isRegularFile(path)) {
-            return inSimulationMode(file(path), hoverflyConfig);
+        Optional<Path> path = findResourceOnClasspath(recordFile);
+        if (path.isPresent() && Files.isRegularFile(path.get())) {
+            return inSimulationMode(file(path.get()), hoverflyConfig);
         } else {
             return inCaptureMode(recordFile, hoverflyConfig);
         }
@@ -262,7 +259,7 @@ public class HoverflyRule extends ExternalResource {
      * Starts an instance of Hoverfly
      */
     @Override
-    protected void before() throws Throwable {
+    protected void before() {
         hoverfly.start();
 
         if (hoverflyMode == SIMULATE || hoverflyMode == DIFF) {
@@ -446,7 +443,7 @@ public class HoverflyRule extends ExternalResource {
             simulationSource = empty();
         }
 
-        hoverfly.importSimulation(simulationSource);
+        hoverfly.simulate(simulationSource);
 
         if (enableSimulationPrint) {
             prettyPrintJson(simulationSource.getSimulation());

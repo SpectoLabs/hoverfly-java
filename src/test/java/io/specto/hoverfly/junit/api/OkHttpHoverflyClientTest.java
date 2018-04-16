@@ -40,19 +40,19 @@ public class OkHttpHoverflyClientTest {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         startDefaultHoverfly();
         HoverflyConfiguration hoverflyConfig = hoverfly.getHoverflyConfig();
         client = new OkHttpHoverflyClient(hoverflyConfig.getScheme(), hoverflyConfig.getHost(), hoverflyConfig.getAdminPort(), null);
     }
 
     @Test
-    public void shouldBeAbleToHealthcheck() throws Exception {
+    public void shouldBeAbleToHealthcheck() {
         assertThat(client.getHealth()).isTrue();
     }
 
     @Test
-    public void shouldBeAbleToGetConfigInfo() throws Exception {
+    public void shouldBeAbleToGetConfigInfo() {
         HoverflyInfoView configInfo = client.getConfigInfo();
 
         assertThat(configInfo.getMode()).isEqualTo(SIMULATE.getValue());
@@ -61,7 +61,7 @@ public class OkHttpHoverflyClientTest {
     }
 
     @Test
-    public void shouldBeAbleToSetDestination() throws Exception {
+    public void shouldBeAbleToSetDestination() {
         client.setDestination("www.test.com");
 
         assertThat(hoverfly.getHoverflyInfo().getDestination()).isEqualTo("www.test.com");
@@ -69,14 +69,14 @@ public class OkHttpHoverflyClientTest {
 
 
     @Test
-    public void shouldBeAbleToSetMode() throws Exception {
+    public void shouldBeAbleToSetMode() {
         client.setMode(CAPTURE);
 
         assertThat(hoverfly.getMode()).isEqualTo(CAPTURE);
     }
 
     @Test
-    public void shouldBeAbleToSetAndGetState() throws Exception {
+    public void shouldBeAbleToSetAndGetState() {
         final StateView setStateView = new StateView(ImmutableMap.of("key1", "value1", "key2", "value2"));
         client.setState(setStateView);
 
@@ -88,7 +88,7 @@ public class OkHttpHoverflyClientTest {
     }
 
     @Test
-    public void shouldBeAbleToSetAndUpdateAndGetState() throws Exception {
+    public void shouldBeAbleToSetAndUpdateAndGetState() {
         final StateView setStateView = new StateView(ImmutableMap.of("key1", "value1", "key2", "value2"));
         client.setState(setStateView);
 
@@ -104,7 +104,7 @@ public class OkHttpHoverflyClientTest {
     }
 
     @Test
-    public void shouldBeAbleToSetAndDeleteState() throws Exception {
+    public void shouldBeAbleToSetAndDeleteState() {
         final StateView setStateView = new StateView(ImmutableMap.of("key1", "value1", "key2", "value2"));
         client.setState(setStateView);
         client.deleteState();
@@ -118,7 +118,7 @@ public class OkHttpHoverflyClientTest {
 
 
     @Test
-    public void shouldBeAbleToSetCaptureModeWithArguments() throws Exception {
+    public void shouldBeAbleToSetCaptureModeWithArguments() {
         client.setMode(CAPTURE, new ModeArguments(Lists.newArrayList("Content-Type", "Authorization")));
 
         List<String> headersWhitelist = hoverfly.getHoverflyInfo().getModeArguments().getHeadersWhitelist();
@@ -147,7 +147,7 @@ public class OkHttpHoverflyClientTest {
     }
 
     @Test
-    public void shouldBeAbleToGetSimulation() throws Exception {
+    public void shouldBeAbleToGetSimulation() {
         Simulation simulation = hoverfly.getSimulation();
 
         assertThat(simulation).isEqualTo(SimulationSource.empty().getSimulation());
@@ -166,7 +166,7 @@ public class OkHttpHoverflyClientTest {
     }
 
     @Test
-    public void shouldBeAbleToDeleteJournal() throws Exception {
+    public void shouldBeAbleToDeleteJournal() {
 
         try {
 
@@ -203,7 +203,7 @@ public class OkHttpHoverflyClientTest {
     }
 
     @Test
-    public void shouldBeAbleToGetJournalWithSortParams() throws Exception {
+    public void shouldBeAbleToGetJournalWithSortParams() {
 
         RestTemplate restTemplate = new RestTemplate();
         for (int i = 0; i < 3; i++) {
@@ -223,7 +223,7 @@ public class OkHttpHoverflyClientTest {
     }
 
     @Test
-    public void shouldBeAbleToSearchJournal() throws Exception {
+    public void shouldBeAbleToSearchJournal() {
         RestTemplate restTemplate = new RestTemplate();
         try {
             restTemplate.getForEntity("http://hoverfly.io", String.class);
@@ -249,7 +249,7 @@ public class OkHttpHoverflyClientTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (hoverfly != null) {
             hoverfly.close();
         }

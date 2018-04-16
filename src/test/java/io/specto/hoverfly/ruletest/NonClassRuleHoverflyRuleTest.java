@@ -56,7 +56,7 @@ public class NonClassRuleHoverflyRuleTest {
     }
 
     @Test
-    public void shouldLogWarning() throws Exception {
+    public void shouldLogWarning() {
         verify(appender, atLeastOnce()).doAppend(logCaptor.capture());
         LoggingEvent loggingEvent = logCaptor.getValue();
         assertThat(loggingEvent.getLevel()).isEqualTo(Level.WARN);
@@ -79,7 +79,7 @@ public class NonClassRuleHoverflyRuleTest {
     }
 
     @Test
-    public void shouldWorkWithJerseyClient() throws Exception {
+    public void shouldWorkWithJerseyClient() {
 
         // Given
         WebResource resource = jerseyClient.resource("https://www.my-test.com/api/bookings/1");

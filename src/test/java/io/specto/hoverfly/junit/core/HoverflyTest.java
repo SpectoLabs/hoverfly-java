@@ -41,7 +41,7 @@ public class HoverflyTest {
     private ObjectMapper mapper = new ObjectMapper();
 
     @Test
-    public void shouldStartHoverflyOnConfiguredPort() throws Exception {
+    public void shouldStartHoverflyOnConfiguredPort() {
 
         hoverfly = new Hoverfly(localConfigs().proxyPort(EXPECTED_PROXY_PORT), SIMULATE);
         hoverfly.start();
@@ -50,7 +50,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldDeleteTempFilesWhenStoppingHoverfly() throws Exception {
+    public void shouldDeleteTempFilesWhenStoppingHoverfly() {
         // Given
         hoverfly = new Hoverfly(SIMULATE);
         TempFileManager tempFileManager = spy(TempFileManager.class);
@@ -88,7 +88,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenExportSimulationWithoutPath() throws Exception {
+    public void shouldThrowExceptionWhenExportSimulationWithoutPath() {
 
         hoverfly = new Hoverfly(CAPTURE);
 
@@ -98,7 +98,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenProxyPortIsAlreadyInUse() throws Exception {
+    public void shouldThrowExceptionWhenProxyPortIsAlreadyInUse() {
         // Given
         startDefaultHoverfly();
 
@@ -114,7 +114,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenAdminPortIsAlreadyInUse() throws Exception {
+    public void shouldThrowExceptionWhenAdminPortIsAlreadyInUse() {
         // Given
         startDefaultHoverfly();
 
@@ -189,7 +189,7 @@ public class HoverflyTest {
 
 
     @Test
-    public void shouldSetTrustStoreWhenStartingHoverfly() throws Exception {
+    public void shouldSetTrustStoreWhenStartingHoverfly() {
         // Given
         hoverfly = new Hoverfly(SIMULATE);
         SslConfigurer sslConfigurer = mock(SslConfigurer.class);
@@ -203,7 +203,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldNotSetJVMTrustStoreIfSslCertificatePathExists() throws Exception {
+    public void shouldNotSetJVMTrustStoreIfSslCertificatePathExists() {
         // Given
         hoverfly = new Hoverfly(localConfigs()
                 .sslCertificatePath("ssl/ca.crt")
@@ -219,7 +219,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldSetSslCertForRemoteInstance() throws Exception {
+    public void shouldSetSslCertForRemoteInstance() {
 
         hoverfly = new Hoverfly(remoteConfigs().host("remotehost").proxyCaCert("ssl/ca.crt"), SIMULATE);
 
@@ -238,7 +238,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldResetJournalWhenUsingARemoteHoverflyInstance() throws Exception {
+    public void shouldResetJournalWhenUsingARemoteHoverflyInstance() {
 
         hoverfly = new Hoverfly(remoteConfigs(), SIMULATE);
 
@@ -251,7 +251,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldCopySslCertAndKeyToTempFolderIfPresent () throws Exception {
+    public void shouldCopySslCertAndKeyToTempFolderIfPresent () {
         // Given
         hoverfly = new Hoverfly(localConfigs()
                 .sslCertificatePath("ssl/ca.crt")
@@ -268,7 +268,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldCopyMiddlewareScriptToTempFolderIfLocalMiddlewareEnabled () throws Exception {
+    public void shouldCopyMiddlewareScriptToTempFolderIfLocalMiddlewareEnabled () {
         // Given
         hoverfly = new Hoverfly(localConfigs()
            .localMiddleware("python", "middleware/middleware.py"), SIMULATE);
@@ -284,7 +284,7 @@ public class HoverflyTest {
 
 
     @Test
-    public void shouldCopyHoverflyBinaryToTempFolderOnStart() throws Exception {
+    public void shouldCopyHoverflyBinaryToTempFolderOnStart() {
 
         // Given
         hoverfly = new Hoverfly(SIMULATE);
@@ -299,7 +299,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldValidateHoverflyConfigBeforeStart() throws Exception {
+    public void shouldValidateHoverflyConfigBeforeStart() {
 
         hoverfly = new Hoverfly(SIMULATE);
 
@@ -309,7 +309,7 @@ public class HoverflyTest {
 
 
     @Test
-    public void shouldSetSystemPropertiesForLocalHoverflyInstance() throws Exception {
+    public void shouldSetSystemPropertiesForLocalHoverflyInstance() {
 
         startDefaultHoverfly();
 
@@ -324,7 +324,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldSetNonProxyHostSystemPropertyToEmptyIfIsProxyLocalHost() throws Exception {
+    public void shouldSetNonProxyHostSystemPropertyToEmptyIfIsProxyLocalHost() {
         hoverfly = new Hoverfly(localConfigs().proxyLocalHost(), SIMULATE);
         hoverfly.start();
 
@@ -344,7 +344,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldBeAbleToUseHoverflyInTryWithResourceStatement() throws Exception {
+    public void shouldBeAbleToUseHoverflyInTryWithResourceStatement() {
         StartedProcess startedProcess = null;
         try (Hoverfly hoverfly = new Hoverfly(SIMULATE)) {
 
@@ -358,7 +358,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldSetHeadersForCaptureMode() throws Exception {
+    public void shouldSetHeadersForCaptureMode() {
         hoverfly = new Hoverfly(localConfigs().captureHeaders("Authorization"), CAPTURE);
 
         HoverflyClient hoverflyClient = createMockHoverflyClient(hoverfly);
@@ -375,7 +375,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldNotSetHeadersForNonCaptureMode() throws Exception {
+    public void shouldNotSetHeadersForNonCaptureMode() {
         hoverfly = new Hoverfly(localConfigs().captureAllHeaders(), SIMULATE);
 
         HoverflyClient hoverflyClient = createMockHoverflyClient(hoverfly);
@@ -397,7 +397,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldTolerateFailureOnResetJournal() throws Exception {
+    public void shouldTolerateFailureOnResetJournal() {
 
         hoverfly = new Hoverfly(SIMULATE);
         HoverflyClient hoverflyClient = createMockHoverflyClient(hoverfly);
@@ -437,7 +437,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldTolerateFailureOnResetDiff() throws Exception {
+    public void shouldTolerateFailureOnResetDiff() {
         // given
         hoverfly = new Hoverfly(DIFF);
         HoverflyClient hoverflyClient = createMockHoverflyClient(hoverfly);
@@ -451,7 +451,7 @@ public class HoverflyTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (hoverfly != null) {
             hoverfly.close();
         }

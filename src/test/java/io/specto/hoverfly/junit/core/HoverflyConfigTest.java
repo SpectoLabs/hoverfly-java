@@ -17,7 +17,7 @@ public class HoverflyConfigTest {
     public EnvironmentVariables envVars = new EnvironmentVariables();
 
     @Test
-    public void shouldHaveDefaultSettings() throws Exception {
+    public void shouldHaveDefaultSettings() {
 
         HoverflyConfiguration configs = localConfigs().build();
 
@@ -37,7 +37,7 @@ public class HoverflyConfigTest {
     }
 
     @Test
-    public void shouldHaveDefaultRemoteSettings() throws Exception {
+    public void shouldHaveDefaultRemoteSettings() {
         HoverflyConfiguration configs = HoverflyConfig.remoteConfigs().build();
 
         assertThat(configs.getHost()).isEqualTo("localhost");
@@ -53,7 +53,7 @@ public class HoverflyConfigTest {
     }
 
     @Test
-    public void shouldBeAbleToOverrideHostNameByUseRemoteInstance() throws Exception {
+    public void shouldBeAbleToOverrideHostNameByUseRemoteInstance() {
 
         HoverflyConfiguration configs = remoteConfigs()
                 .host("cloud-hoverfly.com")
@@ -65,21 +65,21 @@ public class HoverflyConfigTest {
     }
 
     @Test
-    public void shouldSetProxyLocalHost() throws Exception {
+    public void shouldSetProxyLocalHost() {
         HoverflyConfiguration configs = localConfigs().proxyLocalHost().build();
 
         assertThat(configs.isProxyLocalHost()).isTrue();
     }
 
     @Test
-    public void shouldSetPlainHttpTunneling() throws Exception {
+    public void shouldSetPlainHttpTunneling() {
         HoverflyConfiguration configs = localConfigs().plainHttpTunneling().build();
 
         assertThat(configs.isPlainHttpTunneling()).isTrue();
     }
 
     @Test
-    public void shouldSetHttpsAdminEndpoint() throws Exception {
+    public void shouldSetHttpsAdminEndpoint() {
         HoverflyConfiguration configs = remoteConfigs().withHttpsAdminEndpoint().build();
 
         assertThat(configs.getScheme()).isEqualTo("https");
@@ -88,7 +88,7 @@ public class HoverflyConfigTest {
     }
 
     @Test
-    public void shouldSetAuthTokenFromEnvironmentVariable() throws Exception {
+    public void shouldSetAuthTokenFromEnvironmentVariable() {
 
         envVars.set(HoverflyConstants.HOVERFLY_AUTH_TOKEN, "token-from-env");
         HoverflyConfiguration configs = remoteConfigs().withAuthHeader().build();
@@ -98,7 +98,7 @@ public class HoverflyConfigTest {
     }
 
     @Test
-    public void shouldSetAuthTokenDirectly() throws Exception {
+    public void shouldSetAuthTokenDirectly() {
         HoverflyConfiguration configs = remoteConfigs().withAuthHeader("some-token").build();
 
         assertThat(configs.getAuthToken()).isPresent();
@@ -106,7 +106,7 @@ public class HoverflyConfigTest {
     }
 
     @Test
-    public void shouldSetCaptureHeaders() throws Exception {
+    public void shouldSetCaptureHeaders() {
         HoverflyConfiguration configs = localConfigs().captureHeaders("Accept", "Authorization").build();
 
         assertThat(configs.getCaptureHeaders()).hasSize(2);
@@ -114,7 +114,7 @@ public class HoverflyConfigTest {
     }
 
     @Test
-    public void shouldSetCaptureOneHeader() throws Exception {
+    public void shouldSetCaptureOneHeader() {
         HoverflyConfiguration configs = localConfigs().captureHeaders("Accept").build();
 
         assertThat(configs.getCaptureHeaders()).hasSize(1);
@@ -122,7 +122,7 @@ public class HoverflyConfigTest {
     }
 
     @Test
-    public void shouldSetCaptureAllHeaders() throws Exception {
+    public void shouldSetCaptureAllHeaders() {
         HoverflyConfiguration configs = localConfigs().captureAllHeaders().build();
 
         assertThat(configs.getCaptureHeaders()).hasSize(1);
@@ -130,14 +130,14 @@ public class HoverflyConfigTest {
     }
 
     @Test
-    public void shouldSetWebServerMode() throws Exception {
+    public void shouldSetWebServerMode() {
         HoverflyConfiguration configs = localConfigs().asWebServer().build();
 
         assertThat(configs.isWebServer()).isTrue();
     }
 
     @Test
-    public void shouldDisableTlsVerification() throws Exception {
+    public void shouldDisableTlsVerification() {
         HoverflyConfiguration configs = localConfigs().disableTlsVerification().build();
 
         assertThat(configs.isTlsVerificationDisabled()).isTrue();

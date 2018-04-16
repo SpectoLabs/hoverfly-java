@@ -4,7 +4,6 @@ import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import io.specto.hoverfly.models.SimpleBooking;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -103,7 +102,7 @@ public class HoverflyDslMatcherTest {
     )).printSimulationData();
 
     @Test
-    public void shouldBeAbleToQueryBookingsUsingHoverfly() throws Exception {
+    public void shouldBeAbleToQueryBookingsUsingHoverfly() {
         // When
         URI uri = UriComponentsBuilder.fromHttpUrl("http://www.my-test.com")
                 .path("/api/bookings/1")
@@ -117,7 +116,7 @@ public class HoverflyDslMatcherTest {
     }
 
     @Test
-    public void shouldFailToQueryBookingsIfUnexpectedQueryParamIsPresent() throws Exception {
+    public void shouldFailToQueryBookingsIfUnexpectedQueryParamIsPresent() {
         // When
         URI uri = UriComponentsBuilder.fromHttpUrl("http://www.my-test.com")
                 .path("/api/bookings/1")
@@ -136,7 +135,7 @@ public class HoverflyDslMatcherTest {
     }
 
     @Test
-    public void shouldQueryBookingWithAnyQueryParams() throws Exception {
+    public void shouldQueryBookingWithAnyQueryParams() {
         // When
         URI uri = UriComponentsBuilder.fromHttpUrl("http://www.my-test.com")
                 .path("/api/bookings/online")
@@ -152,7 +151,7 @@ public class HoverflyDslMatcherTest {
     }
 
     @Test
-    public void shouldReturn200ForAnyGetRequestWhenUsingAnyMatcher() throws Exception {
+    public void shouldReturn200ForAnyGetRequestWhenUsingAnyMatcher() {
         URI uri = UriComponentsBuilder.fromHttpUrl("http://www.always-success.com")
                 .path("/any/api/anything")
                 .build()
@@ -164,7 +163,7 @@ public class HoverflyDslMatcherTest {
     }
 
     @Test
-    public void shouldIgnoreHttpSchemeWhenItIsNotSet() throws Exception {
+    public void shouldIgnoreHttpSchemeWhenItIsNotSet() {
         URI uri = UriComponentsBuilder.fromHttpUrl("https://www.always-success.com")
                 .path("/any/api/anything")
                 .build()
@@ -176,7 +175,7 @@ public class HoverflyDslMatcherTest {
     }
 
     @Test
-    public void shouldReturn500WhenSendingRequestWithAnyMethodToTheBookingIsDownService() throws Exception {
+    public void shouldReturn500WhenSendingRequestWithAnyMethodToTheBookingIsDownService() {
         URI uri = UriComponentsBuilder.fromHttpUrl("http://www.booking-is-down.com")
                 .path("/api/bookings/12345")
                 .build()
@@ -194,7 +193,7 @@ public class HoverflyDslMatcherTest {
 
 
     @Test
-    public void shouldQueryBookingWithFuzzyQueryParameters() throws Exception {
+    public void shouldQueryBookingWithFuzzyQueryParameters() {
 
         // When
         URI uri = UriComponentsBuilder.fromHttpUrl("http://www.my-test.com")

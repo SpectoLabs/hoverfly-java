@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GlobMatcherTest {
 
     @Test
-    public void shouldGetFieldMatcher() throws Exception {
+    public void shouldGetFieldMatcher() {
 
         GlobMatcher matcher = GlobMatcher.newInstance("fo*o");
 

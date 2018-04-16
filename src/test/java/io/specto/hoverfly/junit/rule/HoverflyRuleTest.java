@@ -10,7 +10,6 @@ import java.nio.file.Path;
 
 import static io.specto.hoverfly.junit.core.SimulationSource.empty;
 import static org.assertj.core.api.Java6Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class HoverflyRuleTest {
@@ -18,7 +17,7 @@ public class HoverflyRuleTest {
     private HoverflyRule hoverflyRule;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
     }
 
     @Test
@@ -28,7 +27,7 @@ public class HoverflyRuleTest {
 
         hoverflyRule.before();
 
-        verify(mockHoverfly).importSimulation(empty());
+        verify(mockHoverfly).simulate(empty());
     }
 
     @Test
@@ -43,7 +42,7 @@ public class HoverflyRuleTest {
 
 
     @Test
-    public void shouldThrowExceptionWhenCallingSimulateOnHoverflyRuleInCaptureMode() throws Exception {
+    public void shouldThrowExceptionWhenCallingSimulateOnHoverflyRuleInCaptureMode() {
         hoverflyRule = HoverflyRule.inCaptureMode();
         Hoverfly mockHoverfly = getHoverflyMock(hoverflyRule);
 
@@ -55,7 +54,7 @@ public class HoverflyRuleTest {
 
 
     @Test
-    public void shouldThrowExceptionWhenCallingCaptureOnHoverflyRuleInSimulateMode() throws Exception {
+    public void shouldThrowExceptionWhenCallingCaptureOnHoverflyRuleInSimulateMode() {
         hoverflyRule = HoverflyRule.inSimulationMode();
         Hoverfly mockHoverfly = getHoverflyMock(hoverflyRule);
 
@@ -67,7 +66,7 @@ public class HoverflyRuleTest {
 
 
     @Test
-    public void shouldAlwaysShutdownHoverflyEvenTeardownOperationsFailed() throws Exception {
+    public void shouldAlwaysShutdownHoverflyEvenTeardownOperationsFailed() {
         hoverflyRule = HoverflyRule.inCaptureMode();
         Hoverfly mockHoverfly = getHoverflyMock(hoverflyRule);
         doThrow(RuntimeException.class).when(mockHoverfly).exportSimulation(any(Path.class));
@@ -78,7 +77,7 @@ public class HoverflyRuleTest {
     }
 
     @Test
-    public void shouldCallResetBeforeCapture() throws Exception {
+    public void shouldCallResetBeforeCapture() {
         hoverflyRule = HoverflyRule.inCaptureMode();
         Hoverfly mockHoverfly = getHoverflyMock(hoverflyRule);
 
@@ -88,7 +87,7 @@ public class HoverflyRuleTest {
     }
 
     @Test
-    public void shouldCallResetJournalBeforeSimulate() throws Exception {
+    public void shouldCallResetJournalBeforeSimulate() {
         hoverflyRule = HoverflyRule.inSimulationMode();
         Hoverfly mockHoverfly = getHoverflyMock(hoverflyRule);
 

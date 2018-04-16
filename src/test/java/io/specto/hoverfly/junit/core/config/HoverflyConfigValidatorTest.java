@@ -15,12 +15,12 @@ public class HoverflyConfigValidatorTest {
     private HoverflyConfigValidator validator;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         validator = new HoverflyConfigValidator();
     }
 
     @Test
-    public void shouldProvideDefaultPortForRemoteHoverflyInstanceIfNotConfigured() throws Exception {
+    public void shouldProvideDefaultPortForRemoteHoverflyInstanceIfNotConfigured() {
 
         HoverflyConfiguration validated = remoteConfigs().build();
 
@@ -30,7 +30,7 @@ public class HoverflyConfigValidatorTest {
     }
 
     @Test
-    public void shouldAssignPortForLocalHoverflyInstanceIfNotConfigured() throws Exception {
+    public void shouldAssignPortForLocalHoverflyInstanceIfNotConfigured() {
 
         HoverflyConfiguration validated = localConfigs().build();
 
@@ -40,7 +40,7 @@ public class HoverflyConfigValidatorTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfOnlySslKeyIsConfigured() throws Exception {
+    public void shouldThrowExceptionIfOnlySslKeyIsConfigured() {
 
         assertThatThrownBy(() -> localConfigs().sslKeyPath("ssl/ca.key").build())
                 .isInstanceOf(IllegalArgumentException.class)
@@ -48,7 +48,7 @@ public class HoverflyConfigValidatorTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfOnlySslCertIsConfigured() throws Exception {
+    public void shouldThrowExceptionIfOnlySslCertIsConfigured() {
 
         assertThatThrownBy(() -> localConfigs().sslCertificatePath("ssl/ca.crt").build())
                 .isInstanceOf(IllegalArgumentException.class)
@@ -57,7 +57,7 @@ public class HoverflyConfigValidatorTest {
     }
 
     @Test
-    public void shouldRemoveHttpSchemaFromRemoteInstanceHostName() throws Exception {
+    public void shouldRemoveHttpSchemaFromRemoteInstanceHostName() {
 
         HoverflyConfiguration validated = remoteConfigs().host("http://100.100.100.1").build();
 
@@ -65,7 +65,7 @@ public class HoverflyConfigValidatorTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenHoverflyConfigIsNull() throws Exception {
+    public void shouldThrowExceptionWhenHoverflyConfigIsNull() {
 
         assertThatThrownBy(() -> validator.validate(null))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -74,7 +74,7 @@ public class HoverflyConfigValidatorTest {
     }
 
     @Test
-    public void shouldSetDefaultHttpsAdminPortTo443() throws Exception {
+    public void shouldSetDefaultHttpsAdminPortTo443() {
 
         HoverflyConfiguration validated = remoteConfigs().host("remote-host.hoverfly.io").withHttpsAdminEndpoint().build();
 
@@ -82,7 +82,7 @@ public class HoverflyConfigValidatorTest {
     }
 
     @Test
-    public void shouldNotChangeUserDefinedHttpsAdminPort() throws Exception {
+    public void shouldNotChangeUserDefinedHttpsAdminPort() {
         HoverflyConfiguration validated = remoteConfigs()
                 .host("remote-host.hoverfly.io")
                 .withHttpsAdminEndpoint()
@@ -93,7 +93,7 @@ public class HoverflyConfigValidatorTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfProxyCaCertDoesNotExist() throws Exception {
+    public void shouldThrowExceptionIfProxyCaCertDoesNotExist() {
 
         assertThatThrownBy(() -> remoteConfigs().proxyCaCert("some-cert.pem").build())
             .isInstanceOf(IllegalArgumentException.class)

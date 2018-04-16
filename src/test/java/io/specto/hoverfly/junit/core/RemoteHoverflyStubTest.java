@@ -21,7 +21,7 @@ public class RemoteHoverflyStubTest {
     private Hoverfly remoteHoverflyStub;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         remoteHoverflyStub = new Hoverfly(SIMULATE);
         remoteHoverflyStub.start();
 
@@ -37,7 +37,7 @@ public class RemoteHoverflyStubTest {
     }
 
     @Test
-    public void shouldSetSystemPropertiesForRemoteHoverflyInstance() throws Exception {
+    public void shouldSetSystemPropertiesForRemoteHoverflyInstance() {
 
         // Given
         try (Hoverfly hoverflyUnderTest = new Hoverfly(remoteConfigs().host("hoverfly-cloud"), SIMULATE)) {
@@ -57,7 +57,7 @@ public class RemoteHoverflyStubTest {
     }
 
     @Test
-    public void shouldSetNonProxyHostsWhenUsingBothRemoteHoverflyInstanceAndProxyLocalHost() throws Exception {
+    public void shouldSetNonProxyHostsWhenUsingBothRemoteHoverflyInstanceAndProxyLocalHost() {
 
         // Given
         try (Hoverfly hoverflyUnderTest = new Hoverfly(remoteConfigs().host("hoverfly-cloud").proxyLocalHost(), SIMULATE)) {
@@ -71,7 +71,7 @@ public class RemoteHoverflyStubTest {
     }
 
     @Test
-    public void shouldNotInvokeTempFileManagerWhenUsingRemoteHoverfly() throws Exception {
+    public void shouldNotInvokeTempFileManagerWhenUsingRemoteHoverfly() {
 
         // Given
         try (Hoverfly hoverflyUnderTest = new Hoverfly(remoteConfigs().host("hoverfly-cloud"), SIMULATE)) {
@@ -87,7 +87,7 @@ public class RemoteHoverflyStubTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
 
         if(remoteHoverflyStub != null) {
             remoteHoverflyStub.close();

@@ -15,15 +15,17 @@ package io.specto.hoverfly.junit.rule;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import io.specto.hoverfly.junit.core.HoverflyConstants;
 import org.junit.Rule;
 import org.junit.runner.Description;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import static io.specto.hoverfly.junit.core.HoverflyConstants.DEFAULT_HOVERFLY_EXPORT_PATH;
 
@@ -39,6 +41,18 @@ class HoverflyRuleUtils {
      */
     static Path fileRelativeToTestResourcesHoverfly(String fileName) {
         return Paths.get(DEFAULT_HOVERFLY_EXPORT_PATH).resolve(fileName);
+    }
+
+    static Optional<Path> findResourceOnClasspath(String resourceName) {
+        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        return Optional.ofNullable(classLoader.getResource(resourceName))
+                .map(url -> {
+                    try {
+                        return Paths.get(url.toURI());
+                    } catch (URISyntaxException e) {
+                        throw new IllegalArgumentException("Resource not found with name: " + resourceName);
+                    }
+                });
     }
 
     /**

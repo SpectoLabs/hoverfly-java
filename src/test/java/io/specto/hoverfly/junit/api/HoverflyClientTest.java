@@ -23,7 +23,7 @@ public class HoverflyClientTest {
     public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(localConfigs().proxyLocalHost());
 
     @Test
-    public void shouldBeAbleToCreateNewInstanceOfHoverflyClient() throws Exception {
+    public void shouldBeAbleToCreateNewInstanceOfHoverflyClient() {
 
         hoverflyRule.simulate(dsl(
                 service("localhost:9999")
@@ -38,7 +38,7 @@ public class HoverflyClientTest {
     }
 
     @Test
-    public void shouldBeAbleToCreateHoverflyClientWithAuthToken() throws Exception {
+    public void shouldBeAbleToCreateHoverflyClientWithAuthToken() {
         envVars.set("HOVERFLY_AUTH_TOKEN", "some-token");
         hoverflyRule.simulate(dsl(
                 service("http://remote.host:12345")
@@ -56,7 +56,7 @@ public class HoverflyClientTest {
     }
 
     @Test
-    public void shouldCreateDefaultClient() throws Exception {
+    public void shouldCreateDefaultClient() {
         hoverflyRule.simulate(dsl(
                 service("localhost:8888")
                     .get("/api/health")

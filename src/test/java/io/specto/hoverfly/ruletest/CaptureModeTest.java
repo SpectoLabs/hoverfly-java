@@ -65,7 +65,7 @@ public class CaptureModeTest {
     }
 
     @Test
-    public void shouldRecordInteractions() throws Exception {
+    public void shouldRecordInteractions() {
         // When
         restTemplate.getForObject(webServerBaseUrl, String.class);
     }
@@ -73,7 +73,7 @@ public class CaptureModeTest {
 
     @Test
     @Ignore("Currently Not Supported")
-    public void shouldRecordOtherInteractions() throws Exception {
+    public void shouldRecordOtherInteractions() {
         // When
         restTemplate.getForObject(webServerBaseUrl.toString() + "/other", String.class);
     }

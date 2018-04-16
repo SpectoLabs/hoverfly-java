@@ -6,7 +6,6 @@ import io.specto.hoverfly.junit.core.model.RequestDetails;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 

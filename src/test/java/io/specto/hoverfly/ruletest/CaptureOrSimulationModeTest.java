@@ -20,7 +20,7 @@ public class CaptureOrSimulationModeTest {
     @Test
     public void shouldInstantiateHoverflyInSimulationModeInCaseOfPreviousRecord() {
 
-        final HoverflyRule hoverflyRule = HoverflyRule.inCaptureOrSimulationMode("test-service-below-hoverfly-dir.json");
+        final HoverflyRule hoverflyRule = HoverflyRule.inCaptureOrSimulationMode("hoverfly/test-service-below-hoverfly-dir.json");
 
         assertThat(hoverflyRule.getHoverflyMode()).isEqualTo(HoverflyMode.SIMULATE);
     }

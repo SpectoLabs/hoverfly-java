@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HoverflyUtilsTest {
 
     @Test
-    public void shouldGetClasspathResource() throws Exception {
+    public void shouldGetClasspathResource() {
 
         URL resourceUrl = HoverflyUtils.findResourceOnClasspath("ssl/ca.crt");
 

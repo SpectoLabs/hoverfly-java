@@ -32,13 +32,13 @@ public class HoverflyVerificationsTest {
     }
 
     @Test
-    public void shouldVerifyByNumberOfTimes() throws Exception {
+    public void shouldVerifyByNumberOfTimes() {
         VerificationData data = new VerificationData(new Journal(Lists.newArrayList(journalEntry), 0, 25, 1));
         HoverflyVerifications.times(1).verify(request, data);
     }
 
     @Test
-    public void shouldThrowExceptionWhenVerifyWithTimesFailed() throws Exception {
+    public void shouldThrowExceptionWhenVerifyWithTimesFailed() {
         VerificationData data = new VerificationData(new Journal(Collections.emptyList(), 0, 251, 0));
         assertThatThrownBy(() -> HoverflyVerifications.times(1).verify(request, data))
                 .isInstanceOf(HoverflyVerificationError.class)
@@ -48,7 +48,7 @@ public class HoverflyVerificationsTest {
 
 
     @Test
-    public void shouldThrowHoverflyVerificationExceptionIfJournalIsNull() throws Exception {
+    public void shouldThrowHoverflyVerificationExceptionIfJournalIsNull() {
         VerificationData data = new VerificationData();
         assertThatThrownBy(() -> HoverflyVerifications.times(1).verify(request, data))
                 .isInstanceOf(HoverflyVerificationError.class)
@@ -57,13 +57,13 @@ public class HoverflyVerificationsTest {
 
 
     @Test
-    public void shouldVerifyRequestNeverMade() throws Exception {
+    public void shouldVerifyRequestNeverMade() {
         VerificationData data = new VerificationData(new Journal(Collections.emptyList(), 0, 25, 0));
         HoverflyVerifications.never().verify(request, data);
     }
 
     @Test
-    public void shouldThrowExceptionIfVerifyWithNeverFailed() throws Exception {
+    public void shouldThrowExceptionIfVerifyWithNeverFailed() {
         VerificationData data = new VerificationData(new Journal(Lists.newArrayList(journalEntry), 0, 25, 1));
         assertThatThrownBy(() -> HoverflyVerifications.never().verify(request, data))
                 .isInstanceOf(HoverflyVerificationError.class)
@@ -73,7 +73,7 @@ public class HoverflyVerificationsTest {
 
 
     @Test
-    public void shouldVerifyWithAtLeastNumberOfTimes() throws Exception {
+    public void shouldVerifyWithAtLeastNumberOfTimes() {
         VerificationData data = new VerificationData(new Journal(Lists.newArrayList(journalEntry, journalEntry, journalEntry), 0, 25, 3));
 
         HoverflyVerifications.atLeast(3).verify(request, data);
@@ -83,7 +83,7 @@ public class HoverflyVerificationsTest {
 
 
     @Test
-    public void shouldThrowExceptionWhenVerifyWithAtLeastTwoTimesButOnlyOneRequestWasMade() throws Exception {
+    public void shouldThrowExceptionWhenVerifyWithAtLeastTwoTimesButOnlyOneRequestWasMade() {
 
         VerificationData data = new VerificationData(new Journal(Lists.newArrayList(journalEntry), 0, 25, 1));
         assertThatThrownBy(() -> HoverflyVerifications.atLeast(2).verify(request, data))
@@ -93,14 +93,14 @@ public class HoverflyVerificationsTest {
     }
 
     @Test
-    public void shouldVerifyWithAtLeastOnce() throws Exception {
+    public void shouldVerifyWithAtLeastOnce() {
         VerificationData data = new VerificationData(new Journal(Lists.newArrayList(journalEntry, journalEntry, journalEntry), 0, 25, 3));
 
         HoverflyVerifications.atLeastOnce().verify(request, data);
     }
 
     @Test
-    public void shouldVerifyWithAtMostNumberOfTimes() throws Exception {
+    public void shouldVerifyWithAtMostNumberOfTimes() {
         VerificationData data = new VerificationData(new Journal(Lists.newArrayList(journalEntry, journalEntry, journalEntry), 0, 25, 3));
 
         HoverflyVerifications.atMost(3).verify(request, data);
@@ -108,7 +108,7 @@ public class HoverflyVerificationsTest {
 
 
     @Test
-    public void shouldVerifyWithAmostThreeRequestsButOnlyTwoRequestsWereMade() throws Exception {
+    public void shouldVerifyWithAmostThreeRequestsButOnlyTwoRequestsWereMade() {
         VerificationData data = new VerificationData(new Journal(Lists.newArrayList(journalEntry, journalEntry), 0, 25, 2));
 
         HoverflyVerifications.atMost(3).verify(request, data);
@@ -116,7 +116,7 @@ public class HoverflyVerificationsTest {
 
 
     @Test
-    public void shouldThrowExceptionWhenVerifyWithAtMostTwoTimesButThreeRequestsWereMade() throws Exception {
+    public void shouldThrowExceptionWhenVerifyWithAtMostTwoTimesButThreeRequestsWereMade() {
         VerificationData data = new VerificationData(new Journal(Lists.newArrayList(journalEntry, journalEntry, journalEntry), 0, 25, 3));
         assertThatThrownBy(() -> HoverflyVerifications.atMost(2).verify(request, data))
                 .isInstanceOf(HoverflyVerificationError.class)

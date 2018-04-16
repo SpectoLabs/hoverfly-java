@@ -9,10 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,7 +21,7 @@ public class JournalTest {
     private URL resource = Resources.getResource("sample-journal.json");
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         objectMapper.registerModule(new JavaTimeModule());
     }
 

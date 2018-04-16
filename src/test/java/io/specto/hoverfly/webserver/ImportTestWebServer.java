@@ -45,7 +45,7 @@ public class ImportTestWebServer extends AbstractHandler {
     public void handle(String target,
                        Request baseRequest,
                        HttpServletRequest request,
-                       HttpServletResponse response) throws IOException, ServletException {
+                       HttpServletResponse response) throws IOException {
 
         // Declare response encoding and types
         response.setContentType("application/json; charset=utf-8");

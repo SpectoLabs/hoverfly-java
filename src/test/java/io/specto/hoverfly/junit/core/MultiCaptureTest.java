@@ -58,7 +58,7 @@ public class MultiCaptureTest {
     }
 
     @Test
-    public void shouldRecordMultipleScenariosInDifferentDirectories() throws Exception {
+    public void shouldRecordMultipleScenariosInDifferentDirectories() {
         // Given
         hoverflyRule.capture("first-multi-capture/first-multi-capture-scenario.json");
 

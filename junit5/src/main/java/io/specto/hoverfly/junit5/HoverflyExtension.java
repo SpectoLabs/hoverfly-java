@@ -44,7 +44,7 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
     private Path capturePath;
 
     @Override
-    public void beforeEach(ExtensionContext context) throws Exception {
+    public void beforeEach(ExtensionContext context) {
         if (isRunning()) {
             hoverfly.resetJournal();
             // Reset to per-class global configuration
@@ -56,7 +56,7 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
     }
 
     @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
+    public void beforeAll(ExtensionContext context) {
 
         AnnotatedElement annotatedElement = context.getElement().orElseThrow(() -> new IllegalStateException("No test class found."));
 
@@ -114,7 +114,7 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
 
 
     @Override
-    public void afterAll(ExtensionContext context) throws Exception {
+    public void afterAll(ExtensionContext context) {
         if (isRunning()) {
             try {
                 if (this.capturePath != null) {

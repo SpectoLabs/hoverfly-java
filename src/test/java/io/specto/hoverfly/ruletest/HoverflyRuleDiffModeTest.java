@@ -40,7 +40,7 @@ public class HoverflyRuleDiffModeTest {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Test
-    public void shouldRecordDiffAndDiffAssertionFail() throws Exception {
+    public void shouldRecordDiffAndDiffAssertionFail() {
         // when
         ResponseEntity<Void> response =
             restTemplate.getForEntity(String.format("http://localhost:%s/api/v2/state", ADMIN_PROXY_PORT), Void.class);
@@ -51,12 +51,12 @@ public class HoverflyRuleDiffModeTest {
     }
 
     @Test
-    public void shouldRecordDiffAndDiffAssertionRuleFail() throws Exception {
+    public void shouldRecordDiffAndDiffAssertionRuleFail() {
         verifyExceptionThrownByDiffAssertionRule(true, "assertStateApi");
     }
 
     @Test
-    public void shouldRecordNoDiffWhenResponsesAreSameAndDiffAssertionShouldNotFail() throws Exception {
+    public void shouldRecordNoDiffWhenResponsesAreSameAndDiffAssertionShouldNotFail() {
         // when
         ResponseEntity<Void> response =
             restTemplate.getForEntity(String.format("http://localhost:%s/api/health", ADMIN_PROXY_PORT), Void.class);
@@ -67,12 +67,12 @@ public class HoverflyRuleDiffModeTest {
     }
 
     @Test
-    public void shouldRecordNoDiffWhenResponsesAreSameAndDiffAssertionRuleShouldNotFail() throws Exception {
+    public void shouldRecordNoDiffWhenResponsesAreSameAndDiffAssertionRuleShouldNotFail() {
         verifyExceptionThrownByDiffAssertionRule(false, "assertHealthApi");
     }
 
     @Test
-    public void diffAssertionShouldResetAllRecordedDiffs() throws Exception {
+    public void diffAssertionShouldResetAllRecordedDiffs() {
         // given
         restTemplate.getForEntity(String.format("http://localhost:%s/api/v2/state", ADMIN_PROXY_PORT), Void.class);
 
@@ -84,13 +84,13 @@ public class HoverflyRuleDiffModeTest {
     }
 
     @Test
-    public void diffAssertionRuleShouldResetAllRecordedDiffs() throws Exception {
+    public void diffAssertionRuleShouldResetAllRecordedDiffs() {
         verifyExceptionThrownByDiffAssertionRule(true, "assertStateApi");
         hoverflyRule.assertThatNoDiffIsReported();
     }
 
     @Test
-    public void ShouldResetAllRecordedDiffs() throws Exception {
+    public void ShouldResetAllRecordedDiffs() {
         // given
         restTemplate.getForEntity(String.format("http://localhost:%s/api/v2/state", ADMIN_PROXY_PORT), Void.class);
 
@@ -102,7 +102,7 @@ public class HoverflyRuleDiffModeTest {
     }
 
     @Test
-    public void diffAssertionShouldNotResetRecordedDiffs() throws Exception {
+    public void diffAssertionShouldNotResetRecordedDiffs() {
         // given
         restTemplate.getForEntity(String.format("http://localhost:%s/api/v2/state", ADMIN_PROXY_PORT), Void.class);
 
@@ -167,7 +167,7 @@ public class HoverflyRuleDiffModeTest {
         }
 
         @Test
-        public void assertStateApi() throws Exception {
+        public void assertStateApi() {
             ResponseEntity<Void> response =
                 restTemplate.getForEntity(String.format("http://localhost:%s/api/v2/state", ADMIN_PROXY_PORT),
                     Void.class);
@@ -175,7 +175,7 @@ public class HoverflyRuleDiffModeTest {
         }
 
         @Test
-        public void assertHealthApi() throws Exception {
+        public void assertHealthApi() {
             ResponseEntity<Void> response =
                 restTemplate.getForEntity(String.format("http://localhost:%s/api/health", ADMIN_PROXY_PORT), Void.class);
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

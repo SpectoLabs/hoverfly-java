@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ExactMatcherTest {
 
     @Test
-    public void shouldCreateExactMatcher() throws Exception {
+    public void shouldCreateExactMatcher() {
         FieldMatcher expected = new FieldMatcher.Builder().exactMatch("match.me").build();
 
         FieldMatcher actual = ExactMatcher.newInstance("match.me").getFieldMatcher();

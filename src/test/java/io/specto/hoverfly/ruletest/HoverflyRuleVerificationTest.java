@@ -50,12 +50,12 @@ public class HoverflyRuleVerificationTest {
     )).printSimulationData();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         hoverflyRule.resetJournal();
     }
 
     @Test
-    public void shouldVerifyRequestHasBeenMadeExactlyOnce() throws Exception {
+    public void shouldVerifyRequestHasBeenMadeExactlyOnce() {
 
         ResponseEntity<SimpleBooking> response = getBookings();
 
@@ -67,7 +67,7 @@ public class HoverflyRuleVerificationTest {
     }
 
     @Test
-    public void shouldVerifyRequestHasNeverBeenMade() throws Exception {
+    public void shouldVerifyRequestHasNeverBeenMade() {
 
         ResponseEntity<SimpleBooking> response = getBookings();
 
@@ -87,7 +87,7 @@ public class HoverflyRuleVerificationTest {
     }
 
     @Test
-    public void shouldVerifyNeverRequestedForAService() throws Exception {
+    public void shouldVerifyNeverRequestedForAService() {
 
         ResponseEntity<SimpleBooking> response = getBookings();
 
@@ -106,7 +106,7 @@ public class HoverflyRuleVerificationTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfVerifyAllFailed() throws Exception {
+    public void shouldThrowExceptionIfVerifyAllFailed() {
 
        assertThatThrownBy(() -> hoverflyRule.verifyAll())
                .isInstanceOf(HoverflyVerificationError.class)

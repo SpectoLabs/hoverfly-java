@@ -19,14 +19,14 @@ public class SystemConfigFactoryTest {
     private SystemInfo systemInfo;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         factory = new SystemConfigFactory();
         systemInfo = mock(SystemInfo.class);
         Whitebox.setInternalState(factory, "systemInfo", systemInfo);
     }
 
     @Test
-    public void shouldCreateSystemConfigForWindows() throws Exception {
+    public void shouldCreateSystemConfigForWindows() {
 
         when(systemInfo.isOsWindows()).thenReturn(true);
 
@@ -36,7 +36,7 @@ public class SystemConfigFactoryTest {
     }
 
     @Test
-    public void shouldCreateSystemConfigForLinux() throws Exception {
+    public void shouldCreateSystemConfigForLinux() {
 
         when(systemInfo.isOsLinux()).thenReturn(true);
 
@@ -46,7 +46,7 @@ public class SystemConfigFactoryTest {
     }
 
     @Test
-    public void shouldCreateSystemConfigForMac() throws Exception {
+    public void shouldCreateSystemConfigForMac() {
 
         when(systemInfo.isOsMac()).thenReturn(true);
 
@@ -56,7 +56,7 @@ public class SystemConfigFactoryTest {
     }
 
     @Test
-    public void shouldCreateSystemConfigWith32BitArchType() throws Exception {
+    public void shouldCreateSystemConfigWith32BitArchType() {
 
         when(systemInfo.isOsMac()).thenReturn(true);
         when(systemInfo.is64BitSystem()).thenReturn(false);
@@ -67,7 +67,7 @@ public class SystemConfigFactoryTest {
     }
 
     @Test
-    public void shouldCreateSystemConfigWith64BitArchType() throws Exception {
+    public void shouldCreateSystemConfigWith64BitArchType() {
 
         when(systemInfo.isOsMac()).thenReturn(true);
         when(systemInfo.is64BitSystem()).thenReturn(true);
@@ -78,7 +78,7 @@ public class SystemConfigFactoryTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenOsTypeIsNotSupported() throws Exception {
+    public void shouldThrowExceptionWhenOsTypeIsNotSupported() {
 
         when(systemInfo.isOsWindows()).thenReturn(false);
         when(systemInfo.isOsLinux()).thenReturn(false);

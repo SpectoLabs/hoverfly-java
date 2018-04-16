@@ -23,12 +23,12 @@ public class TempFileManagerTest {
     private String systemTempDir = System.getProperty("java.io.tmpdir");
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         tempFileManager = new TempFileManager();
     }
 
     @Test
-    public void shouldLazilyInitializedTempDirectory() throws Exception {
+    public void shouldLazilyInitializedTempDirectory() {
         assertThat(tempFileManager.getTempDirectory()).isNull();
 
         tempFileManager.copyHoverflyBinary(new SystemConfigFactory().createSystemConfig());
@@ -41,7 +41,7 @@ public class TempFileManagerTest {
 
 
     @Test
-    public void shouldPurgeAllCreatedTempFiles() throws Exception {
+    public void shouldPurgeAllCreatedTempFiles() {
         Path tempResourcePath = tempFileManager.copyClassPathResource("ssl/ca.crt", "ca.crt");
 
         tempFileManager.purge();
@@ -88,7 +88,7 @@ public class TempFileManagerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         tempFileManager.purge();
 
     }

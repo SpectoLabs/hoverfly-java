@@ -21,7 +21,7 @@ public class ReactorNettyTest {
     public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(classpath("test-service.json"), HoverflyConfig.localConfigs().plainHttpTunneling());
 
     @Test
-    public void hoverflyProxy() throws Exception {
+    public void hoverflyProxy() {
         Mono<HttpClientResponse> remote = HttpClient.create(o -> o.httpProxy(ops -> ops
                 .address(new InetSocketAddress("localhost", hoverflyRule.getProxyPort()))
         ))

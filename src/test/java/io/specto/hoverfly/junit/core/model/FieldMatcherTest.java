@@ -12,7 +12,7 @@ public class FieldMatcherTest {
 
 
     @Test
-    public void shouldGetMatchPatternFromOneOfThePlainTextMatchers() throws Exception {
+    public void shouldGetMatchPatternFromOneOfThePlainTextMatchers() {
         fieldMatcher = FieldMatcher.exactlyMatches("/api/v1");
 
         assertThat(fieldMatcher.getMatchPattern()).isEqualTo("/api/v1");
@@ -20,7 +20,7 @@ public class FieldMatcherTest {
 
 
     @Test
-    public void shouldThrowExceptionWhenNoneOfThePlainTextMatcherIsSet() throws Exception {
+    public void shouldThrowExceptionWhenNoneOfThePlainTextMatcherIsSet() {
         fieldMatcher = new FieldMatcher.Builder().build();
 
         assertThatThrownBy(() -> fieldMatcher.getMatchPattern())

@@ -40,7 +40,7 @@ public class HttpClientsTest {
     }
 
     @Test
-    public void shouldWorkWithSpringWebRestTemplate() throws Exception {
+    public void shouldWorkWithSpringWebRestTemplate() {
         // Given
         RestTemplate restTemplate = new RestTemplate();
 

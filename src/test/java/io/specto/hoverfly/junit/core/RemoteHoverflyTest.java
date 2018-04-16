@@ -26,14 +26,14 @@ public class RemoteHoverflyTest {
     private RestTemplate restTemplate = new RestTemplate();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         remoteHoverfly.start();
         HoverflyConfiguration remoteConfigs = remoteHoverfly.getHoverflyConfig();
         localHoverflyDelegate = new Hoverfly(remoteConfigs()
                 .adminPort(remoteConfigs.getAdminPort())
                 .proxyPort(remoteConfigs.getProxyPort()), SIMULATE);
         localHoverflyDelegate.start();
-        localHoverflyDelegate.importSimulation(classpath("test-service-https.json"));
+        localHoverflyDelegate.simulate(classpath("test-service-https.json"));
     }
 
     @Test
@@ -52,7 +52,7 @@ public class RemoteHoverflyTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (remoteHoverfly != null) {
             remoteHoverfly.close();
         }

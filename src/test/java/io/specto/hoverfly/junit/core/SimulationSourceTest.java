@@ -31,12 +31,12 @@ public class SimulationSourceTest {
     private static URL url;
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         url = ImportTestWebServer.run();
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown() {
         ImportTestWebServer.terminate();
     }
 
@@ -49,7 +49,7 @@ public class SimulationSourceTest {
     }
 
     @Test
-    public void shouldCreateSimulationFromClasspath() throws Exception {
+    public void shouldCreateSimulationFromClasspath() {
 
         // When
         Simulation actual = SimulationSource.classpath("test-service.json").getSimulation();
@@ -71,7 +71,7 @@ public class SimulationSourceTest {
 
 
     @Test
-    public void shouldCreateSimulationFromUrl() throws Exception {
+    public void shouldCreateSimulationFromUrl() {
 
         // When
         Simulation actual = SimulationSource.url(url).getSimulation();
@@ -82,7 +82,7 @@ public class SimulationSourceTest {
     }
 
     @Test
-    public void shouldCreateSimulationFromUrlString() throws Exception {
+    public void shouldCreateSimulationFromUrlString() {
 
         // When
         Simulation actual = SimulationSource.url(url.toString()).getSimulation();
@@ -93,7 +93,7 @@ public class SimulationSourceTest {
     }
 
     @Test
-    public void shouldCreateSimulationFromDsl() throws Exception {
+    public void shouldCreateSimulationFromDsl() {
 
         // When
         SimulationSource simulationSource = SimulationSource.dsl(
@@ -115,7 +115,7 @@ public class SimulationSourceTest {
     public void shouldCreateSimulationFromFile() throws Exception {
 
         // When
-        Simulation actual = SimulationSource.file(Paths.get("src/test/resources", "test-service.json")).getSimulation();
+        Simulation actual = SimulationSource.file(Paths.get(Resources.getResource("test-service.json").toURI())).getSimulation();
 
         // Then
         assertThat(actual).isNotNull();
@@ -123,7 +123,7 @@ public class SimulationSourceTest {
     }
 
     @Test
-    public void shouldCreateSimulationFromSimulationObject() throws Exception {
+    public void shouldCreateSimulationFromSimulationObject() {
 
         // Given
         Simulation expected = new Simulation(new HoverflyData(emptySet(), new GlobalActions(emptyList())), new HoverflyMetaData());
@@ -136,12 +136,12 @@ public class SimulationSourceTest {
     }
 
     @Test
-    public void shouldCreateEmptySimulation() throws Exception {
+    public void shouldCreateEmptySimulation() {
         assertThat(SimulationSource.empty().getSimulation());
     }
 
     @Test
-    public void shouldThrowExceptionWhenSimulationDataFormatIsNotRecognized() throws Exception {
+    public void shouldThrowExceptionWhenSimulationDataFormatIsNotRecognized() {
 
         // When
         Throwable throwable = catchThrowable(() -> SimulationSource.classpath("simulations/legacy-simulation.json").getSimulation());
@@ -154,7 +154,7 @@ public class SimulationSourceTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenUrlStringIsInvalid() throws Exception {
+    public void shouldThrowExceptionWhenUrlStringIsInvalid() {
 
         // When
         Throwable throwable = catchThrowable(() -> SimulationSource.url("http://foo.com").getSimulation());
@@ -166,7 +166,7 @@ public class SimulationSourceTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenUrlIsInvalid() throws Exception {
+    public void shouldThrowExceptionWhenUrlIsInvalid() {
 
         // When
         Throwable throwable = catchThrowable(() -> SimulationSource.url(new URL("http://foo.com")).getSimulation());
@@ -178,7 +178,7 @@ public class SimulationSourceTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenFilePathIsInvalid() throws Exception {
+    public void shouldThrowExceptionWhenFilePathIsInvalid() {
 
         // When
         Throwable throwable = catchThrowable(() -> SimulationSource.file(Paths.get("foo")).getSimulation());

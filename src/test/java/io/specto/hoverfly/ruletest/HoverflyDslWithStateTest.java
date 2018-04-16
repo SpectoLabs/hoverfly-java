@@ -41,7 +41,7 @@ public class HoverflyDslWithStateTest {
     }
 
     @Test
-    public void shouldBeAbleToSetState() throws Exception {
+    public void shouldBeAbleToSetState() {
         // When
         final ResponseEntity<Void> okResponse =
             restTemplate.getForEntity("http://www.service-with-state.com/api/bookings/create", Void.class);
@@ -54,7 +54,7 @@ public class HoverflyDslWithStateTest {
     }
 
     @Test
-    public void shouldBeAbleToSetAndThenRemoveState() throws Exception {
+    public void shouldBeAbleToSetAndThenRemoveState() {
         // given
         restTemplate.getForEntity("http://www.service-with-state.com/api/bookings/create", Void.class);
 
@@ -70,7 +70,7 @@ public class HoverflyDslWithStateTest {
     }
 
     @Test
-    public void shouldThrowAnExceptionWhenRequiredStateIsNotSet() throws Exception {
+    public void shouldThrowAnExceptionWhenRequiredStateIsNotSet() {
         // Then
         assertThatExceptionOfType(HttpServerErrorException.class).isThrownBy(
             () -> restTemplate.getForEntity("http://www.service-with-state.com/api/bookings/remove", Void.class))

@@ -105,7 +105,7 @@ public class HoverflyDslTest {
     }
 
     @Test
-    public void shouldBeAbleToQueryBookingsUsingHoverfly() throws Exception {
+    public void shouldBeAbleToQueryBookingsUsingHoverfly() {
         // When
         URI uri = UriComponentsBuilder.fromHttpUrl("http://www.other-anotherservice.com")
                 .path("/api/bookings")
@@ -146,7 +146,7 @@ public class HoverflyDslTest {
     }
 
     @Test
-    public void shouldBeAbleToDelayRequestByHost() throws Exception {
+    public void shouldBeAbleToDelayRequestByHost() {
 
         // When
         StopWatch stopWatch = new StopWatch();
@@ -161,7 +161,7 @@ public class HoverflyDslTest {
     }
 
     @Test
-    public void shouldBeAbleToDelayRequestByHttpMethod() throws Exception {
+    public void shouldBeAbleToDelayRequestByHttpMethod() {
 
         // When
         StopWatch stopWatch = new StopWatch();
@@ -187,7 +187,7 @@ public class HoverflyDslTest {
     }
 
     @Test
-    public void shouldBeAbleToDelayRequest() throws Exception {
+    public void shouldBeAbleToDelayRequest() {
 
         // When
         StopWatch stopWatch = new StopWatch();

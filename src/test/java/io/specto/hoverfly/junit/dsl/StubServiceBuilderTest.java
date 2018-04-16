@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 public class StubServiceBuilderTest {
 
     @Test
-    public void shouldExtractHttpsUrlScheme() throws Exception {
+    public void shouldExtractHttpsUrlScheme() {
 
         final Set<RequestResponsePair> pairs = service("https://www.my-test.com").get("/").willReturn(response()).getRequestResponsePairs();
 
@@ -35,7 +35,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldIgnoreSchemeIfItIsNotSet() throws Exception {
+    public void shouldIgnoreSchemeIfItIsNotSet() {
         final Set<RequestResponsePair> pairs = service("www.my-test.com").get("/").willReturn(response()).getRequestResponsePairs();
 
         assertThat(pairs).hasSize(1);
@@ -46,7 +46,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldExtractHttpScheme() throws Exception {
+    public void shouldExtractHttpScheme() {
         final Set<RequestResponsePair> pairs = service("http://www.my-test.com").get("/").willReturn(response()).getRequestResponsePairs();
 
         assertThat(pairs).hasSize(1);
@@ -81,7 +81,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildAnyMethodRequest() throws Exception {
+    public void shouldBuildAnyMethodRequest() {
         final Set<RequestResponsePair> pairs = service("www.base-url.com").anyMethod("/").willReturn(response()).getRequestResponsePairs();
 
         // Then
@@ -90,7 +90,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildAnyMethodRequestWithPathMatcher() throws Exception {
+    public void shouldBuildAnyMethodRequestWithPathMatcher() {
         final Set<RequestResponsePair> pairs = service("www.base-url.com").anyMethod(matches("/api/*/booking")).willReturn(response()).getRequestResponsePairs();
 
         // Then
@@ -99,7 +99,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildExactQueryMatcher() throws Exception {
+    public void shouldBuildExactQueryMatcher() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/").queryParam("foo", "bar")
                 .willReturn(response()).getRequestResponsePairs();
@@ -112,7 +112,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildQueryMatcherWithFuzzyKey() throws Exception {
+    public void shouldBuildQueryMatcherWithFuzzyKey() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/").queryParam(any(), "bar")
                 .willReturn(response()).getRequestResponsePairs();
@@ -125,7 +125,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildQueryMatcherWithFuzzyValue() throws Exception {
+    public void shouldBuildQueryMatcherWithFuzzyValue() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/").queryParam("foo", matches("b*r"))
                 .willReturn(response()).getRequestResponsePairs();
@@ -138,7 +138,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildQueryMatcherWithFuzzyKeyAndValue() throws Exception {
+    public void shouldBuildQueryMatcherWithFuzzyKeyAndValue() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/").queryParam(endsWith("token"), any())
                 .willReturn(response()).getRequestResponsePairs();
@@ -151,7 +151,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildExactQueryWithMultipleKeyValuePairs() throws Exception {
+    public void shouldBuildExactQueryWithMultipleKeyValuePairs() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
                 .queryParam("page", 1)
@@ -165,7 +165,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildExactQueryForKeyWithMultipleValues() throws Exception {
+    public void shouldBuildExactQueryForKeyWithMultipleValues() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
                 .queryParam("category", "food", "drink")
@@ -178,7 +178,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildQueryWithMultipleFuzzyMatchers() throws Exception {
+    public void shouldBuildQueryWithMultipleFuzzyMatchers() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
                 .queryParam("page", any())
@@ -192,7 +192,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildQueryWithBothExactAndFuzzyMatchers() throws Exception {
+    public void shouldBuildQueryWithBothExactAndFuzzyMatchers() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
                 .queryParam("page", any())
@@ -206,7 +206,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildQueryParamMatcherThatIgnoresValue() throws Exception {
+    public void shouldBuildQueryParamMatcherThatIgnoresValue() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
                 .queryParam("page")
@@ -220,7 +220,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildAnyQueryMatcher() throws Exception {
+    public void shouldBuildAnyQueryMatcher() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
                 .anyQueryParams()
@@ -233,7 +233,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildEmptyQueryMatcherWhenQueryParamIsNotSet() throws Exception {
+    public void shouldBuildEmptyQueryMatcherWhenQueryParamIsNotSet() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
                 .willReturn(response()).getRequestResponsePairs();
@@ -245,7 +245,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldNotEncodeSpacesInQueryParams() throws Exception {
+    public void shouldNotEncodeSpacesInQueryParams() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
                 .queryParam("destination", "New York")
@@ -259,7 +259,7 @@ public class StubServiceBuilderTest {
 
 
     @Test
-    public void shouldBuildAnyBodyMatcher() throws Exception {
+    public void shouldBuildAnyBodyMatcher() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").post("/")
                 .anyBody()
@@ -272,7 +272,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildEmptyBodyMatcherWhenBodyIsNotSet() throws Exception {
+    public void shouldBuildEmptyBodyMatcherWhenBodyIsNotSet() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").post("/")
                 .willReturn(response()).getRequestResponsePairs();
@@ -325,7 +325,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildTemplatedResponseByDefault() throws Exception {
+    public void shouldBuildTemplatedResponseByDefault() {
 
         final RequestResponsePair pair = service("www.base-url.com")
                 .get("/")
@@ -337,7 +337,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBeAbleToDisableTemplatedResponse() throws Exception {
+    public void shouldBeAbleToDisableTemplatedResponse() {
 
         final RequestResponsePair pair = service("www.base-url.com")
                 .get("/")
@@ -349,7 +349,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBeAbleToSetTransitionStates() throws Exception {
+    public void shouldBeAbleToSetTransitionStates() {
 
         final RequestResponsePair pair = service("www.base-url.com")
             .get("/")
@@ -366,7 +366,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBeAbleToSetStatesToRemove() throws Exception {
+    public void shouldBeAbleToSetStatesToRemove() {
 
         final RequestResponsePair pair = service("www.base-url.com")
             .get("/")
@@ -381,7 +381,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBeAbleToSetRequiredStates() throws Exception {
+    public void shouldBeAbleToSetRequiredStates() {
 
         final RequestResponsePair pair = service("https://www.my-test.com")
             .get("/")
