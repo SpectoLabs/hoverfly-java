@@ -22,6 +22,14 @@ public class HoverflyMatchersTest {
     }
 
     @Test
+    public void goRegexMatchesShouldCreateRegexMatcher() {
+        PlainTextFieldMatcher matcher = HoverflyMatchers.matchesGoRegex("r([a-z]+)go");
+
+        assertThat(matcher).isInstanceOf(RegexMatcher.class);
+        assertThat(matcher.getPattern()).isEqualTo("r([a-z]+)go");
+    }
+
+    @Test
     public void startsWithShouldCreateRegexMatcher() {
         PlainTextFieldMatcher matcher = HoverflyMatchers.startsWith("foo");
 
