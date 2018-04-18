@@ -1,6 +1,6 @@
 plugins {
     id 'net.researchgate.release' version '2.4.0'
-    id "de.undercouch.download" version "3.1.2"
+    id "de.undercouch.download" version "3.4.2"
     id "com.github.hierynomus.license" version "0.14.0"
     id 'com.github.ben-manes.versions' version '0.14.0'
     id 'java'
@@ -163,42 +163,58 @@ task wrapper(type: Wrapper) {
 import de.undercouch.gradle.tasks.download.Download
 import java.util.regex.Pattern
 
-task downloadHoverflyDistributions(type: Download) {
-    def downloadUrl = 'https://github.com/SpectoLabs/hoverfly/releases/download'
-    def version = project.property('hoverfly-version')
-    println "Checking out Hoverfly $version"
-    src([
-            "$downloadUrl/$version/hoverfly_bundle_linux_386.zip",
-            "$downloadUrl/$version/hoverfly_bundle_linux_amd64.zip",
-            "$downloadUrl/$version/hoverfly_bundle_OSX_amd64.zip",
-            "$downloadUrl/$version/hoverfly_bundle_windows_386.zip",
-            "$downloadUrl/$version/hoverfly_bundle_windows_amd64.zip"
-    ])
-    dest "$buildDir/tmp/dist"
-    onlyIfNewer true
-}
+task (updateHoverflyBinaries) {
+    doLast {
+        def downloadUrl = 'https://github.com/SpectoLabs/hoverfly/releases/download'
+        def version = 'v0.16.0'
+        def downloadDir = "$buildDir/tmp/dist-${version}"
+        println "Downloading Hoverfly $version if needed"
+        download {
+            src([
+                    "$downloadUrl/$version/hoverfly_bundle_linux_386.zip",
+                    "$downloadUrl/$version/hoverfly_bundle_linux_amd64.zip",
+                    "$downloadUrl/$version/hoverfly_bundle_OSX_amd64.zip",
+                    "$downloadUrl/$version/hoverfly_bundle_windows_386.zip",
+                    "$downloadUrl/$version/hoverfly_bundle_windows_amd64.zip"
+            ])
+            dest "$downloadDir"
+            onlyIfNewer true
+            quiet true
+        }
+        println "Unzipping Hoverfly ${version} binaries"
 
-
-task updateHoverflyBinaries(dependsOn: downloadHoverflyDistributions) {
-    def distDir = file(downloadHoverflyDistributions.dest)
-    def extractBinary = { FileTree zip ->
-        copy {
-            from zip
-            into 'src/main/resources/binaries'
-            rename { String filename ->
-                def p1 = Pattern.compile('hoverfly(.*)')
-                def m1 = p1.matcher(filename)
-                def extension = m1.find() ? m1.group(1) : ''
-                def p2 = Pattern.compile('hoverfly_bundle(.+?)\\.zip')
-                def m2 = p2.matcher(zip.asPath)
-                def type = m2.find() ? m2.group(1) : ''
-                filename = 'hoverfly' + type + extension
+        def distDir = file("$downloadDir")
+        def extractBinary = { FileTree zip ->
+            copy {
+                from zip
+                into 'src/main/resources/binaries'
+                rename { String filename ->
+                    def p1 = Pattern.compile('hoverfly(.*)')
+                    def m1 = p1.matcher(filename)
+                    def extension = m1.find() ? m1.group(1) : ''
+                    def p2 = Pattern.compile('hoverfly_bundle(.+?)\\.zip')
+                    def m2 = p2.matcher(zip.asPath)
+                    def type = m2.find() ? m2.group(1) : ''
+                    filename = 'hoverfly' + type + extension
+                }
             }
         }
-    }
 
-    distDir.listFiles()
-            .findAll { it.name.endsWith('.zip') }
-            .collect { zipTree(it).matching { include 'hoverfly*' } }
-            .each { zip -> extractBinary(zip) }
+        distDir.listFiles()
+                .findAll { it.name.endsWith('.zip') }
+                .collect { zipTree(it).matching { include 'hoverfly*' } }
+                .each { zip -> extractBinary(zip) }
+    }
+}
+
+task (cleanHoverflyBinaries, type: Delete) {
+    delete fileTree(dir: 'src/main/resources/binaries')
+}
+
+processResources {
+    dependsOn updateHoverflyBinaries
+}
+
+clean {
+    dependsOn cleanHoverflyBinaries
 }
