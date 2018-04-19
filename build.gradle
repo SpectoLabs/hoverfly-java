@@ -166,22 +166,21 @@ import java.util.regex.Pattern
 task (updateHoverflyBinaries) {
     doLast {
         def downloadUrl = 'https://github.com/SpectoLabs/hoverfly/releases/download'
-        def version = 'v0.16.0'
-        def downloadDir = "$buildDir/tmp/dist-${version}"
-        println "Downloading Hoverfly $version if needed"
+        def downloadDir = "$buildDir/tmp/dist-${hoverfly_binary_version}"
+        println "Downloading Hoverfly $hoverfly_binary_version if needed"
         download {
             src([
-                    "$downloadUrl/$version/hoverfly_bundle_linux_386.zip",
-                    "$downloadUrl/$version/hoverfly_bundle_linux_amd64.zip",
-                    "$downloadUrl/$version/hoverfly_bundle_OSX_amd64.zip",
-                    "$downloadUrl/$version/hoverfly_bundle_windows_386.zip",
-                    "$downloadUrl/$version/hoverfly_bundle_windows_amd64.zip"
+                    "$downloadUrl/$hoverfly_binary_version/hoverfly_bundle_linux_386.zip",
+                    "$downloadUrl/$hoverfly_binary_version/hoverfly_bundle_linux_amd64.zip",
+                    "$downloadUrl/$hoverfly_binary_version/hoverfly_bundle_OSX_amd64.zip",
+                    "$downloadUrl/$hoverfly_binary_version/hoverfly_bundle_windows_386.zip",
+                    "$downloadUrl/$hoverfly_binary_version/hoverfly_bundle_windows_amd64.zip"
             ])
             dest "$downloadDir"
             onlyIfNewer true
             quiet true
         }
-        println "Unzipping Hoverfly ${version} binaries"
+        println "Unzipping Hoverfly ${hoverfly_binary_version} binaries"
 
         def distDir = file("$downloadDir")
         def extractBinary = { FileTree zip ->
@@ -213,8 +212,4 @@ task (cleanHoverflyBinaries, type: Delete) {
 
 processResources {
     dependsOn updateHoverflyBinaries
-}
-
-clean {
-    dependsOn cleanHoverflyBinaries
 }
