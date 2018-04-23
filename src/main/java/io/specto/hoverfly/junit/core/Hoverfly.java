@@ -14,6 +14,7 @@ package io.specto.hoverfly.junit.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -84,6 +86,9 @@ public class Hoverfly implements AutoCloseable {
     private StartedProcess startedProcess;
     private boolean useDefaultSslCert = true;
 
+    // Visible for testing
+    Optional<Thread> shutdownThread = Optional.empty();
+
     /**
      * Instantiates {@link Hoverfly}
      *
@@ -121,7 +126,8 @@ public class Hoverfly implements AutoCloseable {
      */
     public void start() {
 
-        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+        shutdownThread = Optional.of(new Thread(this::close));
+        Runtime.getRuntime().addShutdownHook(shutdownThread.get());
 
         if (startedProcess != null) {
             LOGGER.warn("Local Hoverfly is already running.");
@@ -197,6 +203,12 @@ public class Hoverfly implements AutoCloseable {
             commands.add("false");
         }
 
+        if (hoverflyConfig.getHoverflyLogger().isPresent()) {
+            commands.add("-logs");
+            commands.add("json");
+        }
+
+
         if (hoverflyConfig.isMiddlewareEnabled()) {
             final String path = hoverflyConfig.getLocalMiddleware().getPath();
             final String scriptName = path.contains(File.separator) ? path.substring(path.lastIndexOf(File.separator) + 1) : path;
@@ -213,7 +225,7 @@ public class Hoverfly implements AutoCloseable {
         try {
             startedProcess = new ProcessExecutor()
                     .command(commands)
-                    .redirectOutput(System.out)
+                    .redirectOutput(hoverflyConfig.getHoverflyLogger().<OutputStream>map(LoggingOutputStream::new).orElse(System.out))
                     .directory(tempFileManager.getTempDirectory().toFile())
                     .start();
         } catch (IOException e) {
@@ -508,5 +520,11 @@ public class Hoverfly implements AutoCloseable {
         // TODO: reset default SslContext?
         sslConfigurer.reset();
         tempFileManager.purge();
+
+        try {
+            shutdownThread.ifPresent(Runtime.getRuntime()::removeShutdownHook);
+        } catch (IllegalStateException e) {
+            // Ignoring this exception as it only means that the JVM is already shutting down
+        }
     }
 }

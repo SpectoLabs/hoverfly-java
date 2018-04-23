@@ -1,5 +1,8 @@
 package io.specto.hoverfly.junit.core;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,9 +17,12 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.SystemOutRule;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.StartedProcess;
@@ -30,11 +36,15 @@ import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.*;
 import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.OK;
 
 public class HoverflyTest {
+
+    @Rule
+    public final SystemOutRule systemOut = new SystemOutRule();
 
     private static final int EXPECTED_PROXY_PORT = 8890;
     private Hoverfly hoverfly;
@@ -47,6 +57,51 @@ public class HoverflyTest {
         hoverfly.start();
         assertThat(System.getProperty("http.proxyPort")).isEqualTo(String.valueOf(EXPECTED_PROXY_PORT));
         assertThat(hoverfly.getHoverflyConfig().getProxyPort()).isEqualTo(EXPECTED_PROXY_PORT);
+    }
+
+    @Test
+    public void shouldLogToStdOut() {
+        final Appender<ILoggingEvent> appender = Mockito.mock(Appender.class);
+        final Logger logger = (Logger) LoggerFactory.getLogger("hoverfly");
+        logger.addAppender(appender);
+        logger.setLevel(Level.INFO);
+
+        systemOut.enableLog();
+        hoverfly = new Hoverfly(localConfigs().logToStdOut(), SIMULATE);
+        hoverfly.start();
+
+        verify(appender, never()).doAppend(any());
+        assertThat(systemOut.getLogWithNormalizedLineSeparator()).containsPattern("Default proxy port has been overwritten       [^\n]*port[^\n]*=");
+    }
+
+    @Test
+    public void shouldLogToSlf4j() {
+        final String loggerName = randomAlphanumeric(20);
+        final Appender<ILoggingEvent> appender = Mockito.mock(Appender.class);
+        final Logger logger = (Logger) LoggerFactory.getLogger(loggerName);
+        logger.addAppender(appender);
+        logger.setLevel(Level.INFO);
+
+        systemOut.enableLog();
+        hoverfly = new Hoverfly(localConfigs().logger(loggerName), SIMULATE);
+        hoverfly.start();
+
+        final ArgumentCaptor<ILoggingEvent> eventArgumentCaptor = ArgumentCaptor.forClass(ILoggingEvent.class);
+        verify(appender, atLeastOnce()).doAppend(eventArgumentCaptor.capture());
+
+        assertThat(systemOut.getLogWithNormalizedLineSeparator()).doesNotContainPattern("Default proxy port has been overwritten       [^\n]*port[^\n]*=");
+
+        assertThat(eventArgumentCaptor.getAllValues()).as("'Default proxy port has been overwritten' log message")
+                .anyMatch(e -> e.getLevel() == Level.INFO && e.getFormattedMessage().startsWith("Default proxy port has been overwritten port="));
+    }
+
+    @Test
+    public void shouldRemoveShutdownHookIfAlreadyCleanedUp() {
+        hoverfly = new Hoverfly(localConfigs(), SIMULATE);
+        hoverfly.start();
+        hoverfly.close();
+
+        assertThat(Runtime.getRuntime().removeShutdownHook(hoverfly.shutdownThread.get())).as("Shutdown hook should be removed").isFalse();
     }
 
     @Test

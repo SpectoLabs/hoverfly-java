@@ -34,7 +34,7 @@ dependencies {
     testCompile 'com.google.guava:guava:20.0'
     testCompile 'org.springframework:spring-web:4.3.8.RELEASE'
     testCompile 'org.apache.httpcomponents:httpclient:4.5.2'
-    testCompile 'org.assertj:assertj-core:3.6.1'
+    testCompile 'org.assertj:assertj-core:3.9.1'
     testCompile 'net.javacrumbs.json-unit:json-unit:1.17.0'
     testCompile 'net.javacrumbs.json-unit:json-unit-fluent:1.17.0'
     testCompile 'org.eclipse.jetty:jetty-server:9.3.11.v20160721'

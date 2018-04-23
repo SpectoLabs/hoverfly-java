@@ -12,11 +12,13 @@
  */
 package io.specto.hoverfly.junit.core.config;
 
-
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.Optional;
 
 /**
  * Config builder interface for settings specific to {@link Hoverfly} managed internally
@@ -30,6 +32,7 @@ public class LocalHoverflyConfig extends HoverflyConfig {
     private boolean plainHttpTunneling;
     private LocalMiddleware localMiddleware;
     private String upstreamProxy;
+    private Optional<Logger> hoverflyLogger = Optional.ofNullable(LoggerFactory.getLogger("hoverfly"));
 
     /**
      * Sets the SSL certificate file for overriding default Hoverfly self-signed certificate
@@ -99,10 +102,29 @@ public class LocalHoverflyConfig extends HoverflyConfig {
         return this;
     }
 
+    /**
+     * Set the name of the logger to use when logging the output of the Hoverfly binary.
+     * @param loggerName Name of the logger to use when logging the output of the Hoverfly binary.
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public LocalHoverflyConfig logger(final String loggerName) {
+        this.hoverflyLogger = Optional.ofNullable(loggerName).map(LoggerFactory::getLogger);
+        return this;
+    }
+
+    /**
+     * Change the Hoverfly binary to output directly to {@link System#out}.
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public LocalHoverflyConfig logToStdOut() {
+        this.hoverflyLogger = Optional.empty();
+        return this;
+    }
+
     @Override
     public HoverflyConfiguration build() {
         HoverflyConfiguration configs = new HoverflyConfiguration(proxyPort, adminPort, proxyLocalHost, destination,
-                proxyCaCert, captureHeaders, webServer);
+                proxyCaCert, captureHeaders, webServer, hoverflyLogger);
         configs.setSslCertificatePath(this.sslCertificatePath);
         configs.setSslKeyPath(this.sslKeyPath);
         configs.setTlsVerificationDisabled(this.tlsVerificationDisabled);

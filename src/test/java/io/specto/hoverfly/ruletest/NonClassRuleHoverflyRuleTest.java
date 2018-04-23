@@ -49,7 +49,7 @@ public class NonClassRuleHoverflyRuleTest {
     @BeforeClass
     public static void init() {
         appender = Mockito.mock(Appender.class);
-        Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        Logger logger = (Logger) LoggerFactory.getLogger(HoverflyRule.class);
         logger.addAppender(appender);
         logger.setAdditive(false);
         logger.setLevel(Level.WARN);

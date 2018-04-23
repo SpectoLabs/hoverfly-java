@@ -1,6 +1,8 @@
 package io.specto.hoverfly.junit.core.config;
 
 import io.specto.hoverfly.junit.core.Hoverfly;
+import org.slf4j.Logger;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +33,7 @@ public class HoverflyConfiguration {
     private boolean tlsVerificationDisabled;
     private boolean plainHttpTunneling;
     private String upstreamProxy;
+    private Optional<Logger> hoverflyLogger;
 
     /**
      * Create configurations for external hoverfly
@@ -46,7 +49,7 @@ public class HoverflyConfiguration {
                           final String adminCertificate,
                           final List<String> captureHeaders,
                           final boolean webServer) {
-        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, captureHeaders, webServer);
+        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, captureHeaders, webServer, Optional.empty());
         setScheme(scheme);
         setHost(host);
         this.authToken = authToken;
@@ -63,7 +66,8 @@ public class HoverflyConfiguration {
                           final String destination,
                           final String proxyCaCertificate,
                           final List<String> captureHeaders,
-                          final boolean webServer) {
+                          final boolean webServer,
+                          final Optional<Logger> hoverflyLogger) {
         this.proxyPort = proxyPort;
         this.adminPort = adminPort;
         this.proxyLocalHost = proxyLocalHost;
@@ -71,6 +75,7 @@ public class HoverflyConfiguration {
         this.proxyCaCertificate = proxyCaCertificate;
         this.captureHeaders = captureHeaders;
         this.webServer = webServer;
+        this.hoverflyLogger = hoverflyLogger;
     }
 
     /**
@@ -216,6 +221,10 @@ public class HoverflyConfiguration {
 
     public boolean isMiddlewareEnabled() {
         return localMiddleware != null && isNotBlank(localMiddleware.getBinary()) && isNotBlank(localMiddleware.getPath());
+    }
+
+    public Optional<Logger> getHoverflyLogger() {
+        return hoverflyLogger;
     }
 
     private boolean isNotBlank(String str) {
