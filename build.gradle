@@ -23,9 +23,9 @@ repositories {
 dependencies {
     compile 'junit:junit:4.12'
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.4'
-    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.4'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.5'
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.5'
     compile 'org.apache.commons:commons-lang3:3.5'
     compile 'org.zeroturnaround:zt-exec:1.9'
     compile 'org.slf4j:slf4j-api:1.7.21'
