@@ -195,8 +195,7 @@ public class Hoverfly implements AutoCloseable {
         }
 
         if (hoverflyConfig.isTlsVerificationDisabled()) {
-            commands.add("-tls-verification");
-            commands.add("false");
+            commands.add("-tls-verification=false");
         }
 
         if (hoverflyConfig.getHoverflyLogger().isPresent()) {

@@ -523,6 +523,16 @@ public class HoverflyTest {
         verify(hoverflyClient).cleanDiffs();
     }
 
+    @Test
+    public void shouldAllowTLSVerificationToBeDisabled() {
+        systemOut.enableLog();
+        hoverfly = new Hoverfly(localConfigs().logToStdOut().disableTlsVerification(), SIMULATE);
+        hoverfly.start();
+
+        assertThat(systemOut.getLogWithNormalizedLineSeparator())
+                .containsPattern("TLS certificate verification has been disabled");
+    }
+
     @After
     public void tearDown() {
         if (hoverfly != null) {
