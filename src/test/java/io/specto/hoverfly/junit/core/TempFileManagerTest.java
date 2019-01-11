@@ -3,6 +3,7 @@ package io.specto.hoverfly.junit.core;
 
 import com.google.common.io.Resources;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +13,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static io.specto.hoverfly.junit.core.SystemConfigFactory.OsName.LINUX;
 import static io.specto.hoverfly.junit.core.SystemConfigFactory.OsName.OSX;
+import static io.specto.hoverfly.junit.core.SystemConfigFactory.OsName.WINDOWS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -66,13 +69,21 @@ public class TempFileManagerTest {
 
     @Test
     public void shouldCopyHoverflyBinary() throws Exception {
+        SystemConfigFactory.OsName osName;
+        if (SystemUtils.IS_OS_WINDOWS) {
+            osName = WINDOWS;
+        } else if (SystemUtils.IS_OS_MAC_OSX) {
+            osName = OSX;
+        } else {
+            osName = LINUX;
+        }
 
         // Given
         URL sourceFileUrl = Resources.getResource("binaries/hoverfly_OSX_amd64");
         Path sourceFile = Paths.get(sourceFileUrl.toURI());
         SystemConfig systemConfig = mock(SystemConfig.class);
         when(systemConfig.getHoverflyBinaryName()).thenReturn("hoverfly_OSX_amd64");
-        when(systemConfig.getOsName()).thenReturn(OSX);
+        when(systemConfig.getOsName()).thenReturn(osName);
 
         // When
         Path targetFile = tempFileManager.copyHoverflyBinary(systemConfig);
