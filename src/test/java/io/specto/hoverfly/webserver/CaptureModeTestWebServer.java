@@ -48,13 +48,15 @@ public class CaptureModeTestWebServer extends AbstractHandler {
         // Declare response status code
         response.setStatus(HttpServletResponse.SC_OK);
 
+        // Must not use system line separator in Hello World string as
+        // it would not match the expected files using linux line separator.
         if(request.getPathInfo().equals("/other")) {
             // Write back response
-            response.getWriter().println("<h1>Hello Other World</h1>");
+            response.getWriter().print("<h1>Hello Other World</h1>\n");
         }
         else {
             // Write back response
-            response.getWriter().println("<h1>Hello World</h1>");
+            response.getWriter().print("<h1>Hello World</h1>\n");
         }
 
         // Inform jetty that this request has now been handled
