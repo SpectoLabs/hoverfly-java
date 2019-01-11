@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.StartedProcess;
 
 import javax.net.ssl.SSLContext;
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.ArrayList;
@@ -361,9 +362,12 @@ public class HoverflyTest {
 
     @Test
     public void shouldCopyMiddlewareScriptToTempFolderIfLocalMiddlewareEnabled () {
+        String rawFilename = "middleware.py";
+        String path = "middleware" + File.separator + rawFilename;
+
         // Given
         hoverfly = new Hoverfly(localConfigs()
-           .localMiddleware("python", "middleware/middleware.py"), SIMULATE);
+           .localMiddleware("python", path), SIMULATE);
         TempFileManager tempFileManager = spy(TempFileManager.class);
         Whitebox.setInternalState(hoverfly, "tempFileManager", tempFileManager);
 
@@ -371,7 +375,7 @@ public class HoverflyTest {
         hoverfly.start();
 
         // Then
-        verify(tempFileManager).copyClassPathResource("middleware/middleware.py", "middleware.py");
+        verify(tempFileManager).copyClassPathResource(path, rawFilename);
     }
 
 
