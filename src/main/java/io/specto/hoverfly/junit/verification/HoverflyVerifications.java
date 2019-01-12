@@ -71,23 +71,23 @@ public class HoverflyVerifications {
             sb.append(expected).append(" ");
 
             if (expected > 1) {
-                sb.append("requests:\n");
+                sb.append("requests:").append(System.lineSeparator());
             } else {
-                sb.append("request:\n");
+                sb.append("request:").append(System.lineSeparator());
             }
         }
 
-        sb.append(request.toString()).append("\n");
+        sb.append(request.toString()).append(System.lineSeparator());
 
 
-        sb.append("\n").append("But actual number of requests is ").append(actual).append(".");
+        sb.append(System.lineSeparator()).append("But actual number of requests is ").append(actual).append(".");
         if (actual > 0) {
-            sb.append("\n").append("Actual requests found: ").append("\n");
+            sb.append("\n").append("Actual requests found: ").append(System.lineSeparator());
         }
 
         data.getJournal().getEntries().stream()
                 .map(VerificationUtils::format)
-                .forEach(formatted -> sb.append(formatted).append("\n"));
+                .forEach(formatted -> sb.append(formatted).append(System.lineSeparator()));
 
         throw new HoverflyVerificationError(sb.toString());
     }

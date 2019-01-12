@@ -30,6 +30,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class HoverflyRuleVerificationTest {
 
+    private static final String NL = System.lineSeparator();
     private RestTemplate restTemplate = new RestTemplate();
 
     private static SimpleBooking booking = new SimpleBooking(1, "London", "Hong Kong", LocalDate.of(2017, 6, 29));
@@ -110,36 +111,36 @@ public class HoverflyRuleVerificationTest {
 
        assertThatThrownBy(() -> hoverflyRule.verifyAll())
                .isInstanceOf(HoverflyVerificationError.class)
-               .hasMessageContaining("Expected at least 1 request:\n" +
-                       "{\n" +
-                       "  \"path\" : [ {\n" +
-                       "    \"matcher\" : \"exact\",\n" +
-                       "    \"value\" : \"/api/bookings\"\n" +
-                       "  } ],\n" +
-                       "  \"method\" : [ {\n" +
-                       "    \"matcher\" : \"exact\",\n" +
-                       "    \"value\" : \"GET\"\n" +
-                       "  } ],\n" +
-                       "  \"destination\" : [ {\n" +
-                       "    \"matcher\" : \"glob\",\n" +
-                       "    \"value\" : \"api*.flight.com\"\n" +
-                       "  } ],\n" +
-                       "  \"query\" : {\n" +
-                       "    \"airline\" : [ {\n" +
-                       "      \"matcher\" : \"regex\",\n" +
-                       "      \"value\" : \".*Pacific.*\"\n" +
-                       "    } ],\n" +
-                       "    \"page\" : [ {\n" +
-                       "      \"matcher\" : \"regex\",\n" +
-                       "      \"value\" : \".*\"\n" +
-                       "    } ]\n" +
-                       "  },\n" +
-                       "  \"body\" : [ {\n" +
-                       "    \"matcher\" : \"exact\",\n" +
-                       "    \"value\" : \"\"\n" +
-                       "  } ]\n" +
-                       "}\n" +
-                       "\n" +
+               .hasMessageContaining("Expected at least 1 request:" + NL +
+                       "{" + NL +
+                       "  \"path\" : [ {" + NL +
+                       "    \"matcher\" : \"exact\"," + NL +
+                       "    \"value\" : \"/api/bookings\"" + NL +
+                       "  } ]," + NL +
+                       "  \"method\" : [ {" + NL +
+                       "    \"matcher\" : \"exact\"," + NL +
+                       "    \"value\" : \"GET\"" + NL +
+                       "  } ]," + NL +
+                       "  \"destination\" : [ {" + NL +
+                       "    \"matcher\" : \"glob\"," + NL +
+                       "    \"value\" : \"api*.flight.com\"" + NL +
+                       "  } ]," + NL +
+                       "  \"query\" : {" + NL +
+                       "    \"airline\" : [ {" + NL +
+                       "      \"matcher\" : \"regex\"," + NL +
+                       "      \"value\" : \".*Pacific.*\"" + NL +
+                       "    } ]," + NL +
+                       "    \"page\" : [ {" + NL +
+                       "      \"matcher\" : \"regex\"," + NL +
+                       "      \"value\" : \".*\"" + NL +
+                       "    } ]" + NL +
+                       "  }," + NL +
+                       "  \"body\" : [ {" + NL +
+                       "    \"matcher\" : \"exact\"," + NL +
+                       "    \"value\" : \"\"" + NL +
+                       "  } ]" + NL +
+                       "}" + NL +
+                       NL +
                        "But actual number of requests is 0.");
     }
 
