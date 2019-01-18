@@ -12,10 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static io.specto.hoverfly.junit.core.SystemConfigFactory.OsName.OSX;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class TempFileManagerTest {
 
@@ -68,11 +65,9 @@ public class TempFileManagerTest {
     public void shouldCopyHoverflyBinary() throws Exception {
 
         // Given
-        URL sourceFileUrl = Resources.getResource("binaries/hoverfly_OSX_amd64");
+        SystemConfig systemConfig = new SystemConfigFactory().createSystemConfig();
+        URL sourceFileUrl = Resources.getResource("binaries/" + systemConfig.getHoverflyBinaryName());
         Path sourceFile = Paths.get(sourceFileUrl.toURI());
-        SystemConfig systemConfig = mock(SystemConfig.class);
-        when(systemConfig.getHoverflyBinaryName()).thenReturn("hoverfly_OSX_amd64");
-        when(systemConfig.getOsName()).thenReturn(OSX);
 
         // When
         Path targetFile = tempFileManager.copyHoverflyBinary(systemConfig);
@@ -84,12 +79,10 @@ public class TempFileManagerTest {
         assertThat(Files.isExecutable(targetFile)).isTrue();
         assertThat(targetFile.getParent()).isEqualTo(tempFileManager.getTempDirectory());
         assertThat(FileUtils.contentEquals(sourceFile.toFile(), targetFile.toFile())).isTrue();
-
     }
 
     @After
     public void tearDown() {
         tempFileManager.purge();
-
     }
 }

@@ -57,9 +57,9 @@ public class HttpsHoverflyRuleTest {
         // Then
         assertThat(firstResponse.getStatusCode()).isEqualTo(OK);
         assertThat(firstResponse.getBody()).isNull();
-        assertThat(firstResponse.getHeaders()).containsOnlyKeys("Transfer-Encoding");
+        assertThat(firstResponse.getHeaders()).containsKey("Transfer-Encoding");
         assertThat(secondResponse.getStatusCode()).isEqualTo(OK);
         assertThat(secondResponse.getBody()).isNull();
-        assertThat(secondResponse.getHeaders()).containsOnlyKeys("Transfer-Encoding");
+        assertThat(secondResponse.getHeaders()).containsKey("Transfer-Encoding");
     }
 }
