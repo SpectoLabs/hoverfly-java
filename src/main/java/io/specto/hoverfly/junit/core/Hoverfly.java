@@ -12,29 +12,7 @@
  */
 package io.specto.hoverfly.junit.core;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Stream;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.specto.hoverfly.junit.api.HoverflyClient;
 import io.specto.hoverfly.junit.api.HoverflyClientException;
@@ -57,6 +35,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.StartedProcess;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Stream;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
@@ -253,9 +252,26 @@ public class Hoverfly implements AutoCloseable {
 
 
     public void simulate(SimulationSource simulationSource, SimulationSource... sources) {
+        simulate(null, simulationSource, sources);
+    }
+
+    private boolean requiresTestInstanceSimulationPreprocessing() {
+        return hoverflyConfig.getSimulationPreprocessorProvider()
+                .map(SimulationPreprocessorProvider::isTestInstanceRequired)
+                .orElse(false);
+    }
+
+    private boolean isSimulationPreprocessingEnabled(Object testInstance) {
+        if (testInstance == null && requiresTestInstanceSimulationPreprocessing()) {
+            return false;
+        }
+        return hoverflyConfig.getSimulationPreprocessorProvider().isPresent();
+    }
+
+    public void simulate(Object testInstance, SimulationSource simulationSource, SimulationSource... sources) {
         LOGGER.info("Importing simulation data to Hoverfly");
 
-        if (sources.length > 0) {
+        if (sources.length > 0 || isSimulationPreprocessingEnabled(testInstance)) {
             final Simulation simulation = readSimulationFromString(simulationSource.getSimulation());
 
             Stream.of(sources).map(SimulationSource::getSimulation)
@@ -264,6 +280,13 @@ public class Hoverfly implements AutoCloseable {
                         simulation.getHoverflyData().getPairs().addAll(s.getHoverflyData().getPairs());
                         simulation.getHoverflyData().getGlobalActions().getDelays().addAll(s.getHoverflyData().getGlobalActions().getDelays());
                     });
+
+            if (isSimulationPreprocessingEnabled(testInstance)) {
+                Optional<SimulationPreprocessorProvider> simulationPreprocessorProvider = hoverflyConfig.getSimulationPreprocessorProvider();
+                simulationPreprocessorProvider.ifPresent(p -> p.getSimulationPreprocessor(testInstance).accept(simulation));
+            } else if (LOGGER.isDebugEnabled() && hoverflyConfig.getSimulationPreprocessorProvider().isPresent()){
+                LOGGER.debug("Skipping non-static SimulationPreprocessor in static context.");
+            }
 
             hoverflyClient.setSimulation(simulation);
         } else {

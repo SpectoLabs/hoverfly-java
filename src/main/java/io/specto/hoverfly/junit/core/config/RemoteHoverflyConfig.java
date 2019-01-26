@@ -71,6 +71,7 @@ public class RemoteHoverflyConfig extends HoverflyConfig {
         }
         HoverflyConfiguration configs = new HoverflyConfiguration(scheme, host, proxyPort, adminPort, proxyLocalHost,
                 destination, proxyCaCert, authToken, adminCertificate, captureHeaders, webServer, statefulCapture);
+        configs.setSimulationPreprocessorProvider(simulationPreprocessorProvider);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }

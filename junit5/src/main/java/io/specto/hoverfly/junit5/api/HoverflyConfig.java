@@ -1,8 +1,8 @@
 package io.specto.hoverfly.junit5.api;
 
 
+import io.specto.hoverfly.junit.core.SimulationPreprocessor;
 import io.specto.hoverfly.junit.core.config.LocalHoverflyConfig;
-import io.specto.hoverfly.junit.core.config.LocalMiddleware;
 import io.specto.hoverfly.junit.core.config.RemoteHoverflyConfig;
 
 import java.lang.annotation.ElementType;
@@ -86,4 +86,5 @@ public @interface HoverflyConfig {
      */
     boolean webServer() default false;
 
+    Class<? extends SimulationPreprocessor> simulationPreprocessor() default UnsetSimulationPreprocessor.class;
 }

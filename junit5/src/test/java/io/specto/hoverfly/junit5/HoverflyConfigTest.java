@@ -2,7 +2,9 @@ package io.specto.hoverfly.junit5;
 
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyMode;
+import io.specto.hoverfly.junit.core.SimulationPreprocessor;
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
+import io.specto.hoverfly.junit.core.model.Simulation;
 import io.specto.hoverfly.junit5.api.HoverflyConfig;
 import io.specto.hoverfly.junit5.api.HoverflyCore;
 import org.junit.jupiter.api.Nested;
@@ -36,6 +38,7 @@ class HoverflyConfigTest {
             assertThat(configs.getHost()).isEqualTo("localhost");
             assertThat(configs.getScheme()).isEqualTo("http");
             assertThat(configs.isStatefulCapture()).isFalse();
+            assertThat(configs.getSimulationPreprocessorProvider()).isEmpty();
         }
     }
 
@@ -43,7 +46,8 @@ class HoverflyConfigTest {
     @HoverflyCore(mode = HoverflyMode.SIMULATE, config = @HoverflyConfig(
             proxyLocalHost = true, destination = "hoverfly.io", captureHeaders = {"Content-Type"},
             plainHttpTunneling = true, disableTlsVerification = true, upstreamProxy = "localhost:5000",
-            webServer = true, statefulCapture = true
+            webServer = true, statefulCapture = true,
+            simulationPreprocessor = CustomizedSettings.CustomSimulationPreprocessor.class
     ))
     @ExtendWith(HoverflyExtension.class)
     class CustomizedSettings {
@@ -61,6 +65,14 @@ class HoverflyConfigTest {
             assertThat(configs.getHost()).isEqualTo("localhost");
             assertThat(configs.getScheme()).isEqualTo("http");
             assertThat(configs.isStatefulCapture()).isTrue();
+            assertThat(configs.getSimulationPreprocessorProvider()).isPresent();
+        }
+
+        class CustomSimulationPreprocessor implements SimulationPreprocessor {
+            @Override
+            public void accept(Simulation simulation) {
+
+            }
         }
     }
 }

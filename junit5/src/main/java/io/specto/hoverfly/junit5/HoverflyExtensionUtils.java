@@ -1,12 +1,14 @@
 package io.specto.hoverfly.junit5;
 
 import io.specto.hoverfly.junit.core.HoverflyConstants;
+import io.specto.hoverfly.junit.core.SimulationPreprocessor;
+import io.specto.hoverfly.junit.core.SimulationPreprocessorProvider;
 import io.specto.hoverfly.junit.core.SimulationSource;
 import io.specto.hoverfly.junit.core.config.LocalHoverflyConfig;
 import io.specto.hoverfly.junit5.api.HoverflyConfig;
 import io.specto.hoverfly.junit5.api.HoverflySimulate;
+import io.specto.hoverfly.junit5.api.UnsetSimulationPreprocessor;
 
-import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -77,12 +79,13 @@ class HoverflyExtensionUtils {
     }
 
     private static void fillHoverflyConfig(io.specto.hoverfly.junit.core.HoverflyConfig configs,
-        HoverflyConfig configParams) {
+                                           HoverflyConfig configParams) {
         configs
             .adminPort(configParams.adminPort())
             .proxyPort(configParams.proxyPort())
             .destination(configParams.destination())
-            .captureHeaders(configParams.captureHeaders());
+            .captureHeaders(configParams.captureHeaders())
+            .simulationPreprocessorProvider(getSimulationPreprocessorProvider(configParams));
         if (configParams.proxyLocalHost()) {
             configs.proxyLocalHost();
         }
@@ -95,5 +98,15 @@ class HoverflyExtensionUtils {
         if (configParams.statefulCapture()) {
             configs.enableStatefulCapture();
         }
+    }
+
+    private static SimulationPreprocessorProvider getSimulationPreprocessorProvider(HoverflyConfig configParams) {
+        Class<? extends SimulationPreprocessor> simulationPreprocessorCls = configParams.simulationPreprocessor();
+
+        if (UnsetSimulationPreprocessor.class.isAssignableFrom(simulationPreprocessorCls)) {
+            return null;
+        }
+
+        return SimulationPreprocessorProvider.forClass(simulationPreprocessorCls);
     }
 }

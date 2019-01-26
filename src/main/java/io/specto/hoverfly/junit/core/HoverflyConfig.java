@@ -16,6 +16,8 @@ package io.specto.hoverfly.junit.core;
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.config.LocalHoverflyConfig;
 import io.specto.hoverfly.junit.core.config.RemoteHoverflyConfig;
+import io.specto.hoverfly.junit.core.model.Simulation;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +35,7 @@ public abstract class HoverflyConfig {
     protected List<String> captureHeaders;
     protected boolean webServer;
     protected boolean statefulCapture;
+    protected SimulationPreprocessorProvider simulationPreprocessorProvider;
 
     /**
      * New instance
@@ -169,6 +172,22 @@ public abstract class HoverflyConfig {
     @Deprecated
     public RemoteHoverflyConfig remote() {
         return new RemoteHoverflyConfig();
+    }
+
+    /**
+     * Provides the ability to pre-process the mutable {@link Simulation} instance
+     * prior to handing it over to the Hoverfly client.
+     *
+     * @param simulationPreprocessor pre-processor
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public HoverflyConfig simulationPreprocessor(SimulationPreprocessor simulationPreprocessor) {
+        return simulationPreprocessorProvider(SimulationPreprocessorProvider.forInstance(simulationPreprocessor));
+    }
+
+    public HoverflyConfig simulationPreprocessorProvider(SimulationPreprocessorProvider simulationPreprocessorProvider) {
+        this.simulationPreprocessorProvider = simulationPreprocessorProvider;
+        return this;
     }
 
     /**

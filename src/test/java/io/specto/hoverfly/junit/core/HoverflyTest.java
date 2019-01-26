@@ -12,14 +12,15 @@ import io.specto.hoverfly.junit.api.HoverflyClient;
 import io.specto.hoverfly.junit.api.HoverflyClientException;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
+import io.specto.hoverfly.junit.core.config.LocalHoverflyConfig;
 import io.specto.hoverfly.junit.core.model.DelaySettings;
+import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.assertj.core.util.Lists;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,11 +41,26 @@ import java.util.List;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
-import static io.specto.hoverfly.junit.core.HoverflyMode.*;
+import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
+import static io.specto.hoverfly.junit.core.HoverflyMode.DIFF;
+import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
+import static io.specto.hoverfly.junit.core.HoverflyMode.SPY;
 import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 
 public class HoverflyTest {
@@ -156,6 +172,29 @@ public class HoverflyTest {
         // Then
         Simulation exportedSimulation = hoverfly.getSimulation();
         assertThat(exportedSimulation.getHoverflyData()).isEqualTo(importedSimulation.getHoverflyData());
+    }
+
+    @Test
+    public void shouldUseSimulationPreprocessor() throws Exception {
+        // Given
+        HoverflyConfig configBuilder = new LocalHoverflyConfig().simulationPreprocessor(s ->
+                s.getHoverflyData().getPairs()
+                        .forEach(
+                                p -> p.getRequest().getPath()
+                                        .add(new RequestFieldMatcher<>(RequestFieldMatcher.MatcherType.GLOB, "/preprocessed/*"))
+                        )
+        );
+        hoverfly = new Hoverfly(configBuilder, SIMULATE);
+        hoverfly.start();
+
+        // When
+        URL resource = Resources.getResource("test-service.json");
+        Simulation importedSimulation = mapper.readValue(resource, Simulation.class);
+        hoverfly.simulate(classpath("test-service.json"));
+
+        // Then
+        Simulation exportedSimulation = hoverfly.getSimulation();
+        assertThat(exportedSimulation.getHoverflyData()).isNotEqualTo(importedSimulation.getHoverflyData());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package io.specto.hoverfly.junit.core.config;
 
 import io.specto.hoverfly.junit.core.Hoverfly;
+import io.specto.hoverfly.junit.core.SimulationPreprocessorProvider;
 import org.slf4j.Logger;
 
 import java.util.Collections;
@@ -35,6 +36,7 @@ public class HoverflyConfiguration {
     private String upstreamProxy;
     private Optional<Logger> hoverflyLogger;
     private boolean statefulCapture;
+    private SimulationPreprocessorProvider simulationPreprocessorProvider;
 
     /**
      * Create configurations for external hoverfly
@@ -238,5 +240,13 @@ public class HoverflyConfiguration {
 
     private boolean isNotBlank(String str) {
         return str != null && !str.trim().isEmpty();
+    }
+
+    public void setSimulationPreprocessorProvider(SimulationPreprocessorProvider simulationPreprocessorProvider) {
+        this.simulationPreprocessorProvider = simulationPreprocessorProvider;
+    }
+
+    public Optional<SimulationPreprocessorProvider> getSimulationPreprocessorProvider() {
+        return Optional.ofNullable(simulationPreprocessorProvider);
     }
 }
