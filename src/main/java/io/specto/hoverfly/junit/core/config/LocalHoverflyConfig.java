@@ -131,7 +131,7 @@ public class LocalHoverflyConfig extends HoverflyConfig {
         configs.setPlainHttpTunneling(this.plainHttpTunneling);
         configs.setLocalMiddleware(this.localMiddleware);
         configs.setUpstreamProxy(this.upstreamProxy);
-        configs.setSimulationPreprocessorProvider(this.simulationPreprocessorProvider);
+        configs.setSimulationPreprocessor(this.simulationPreprocessor);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }

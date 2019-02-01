@@ -38,7 +38,7 @@ class HoverflyConfigTest {
             assertThat(configs.getHost()).isEqualTo("localhost");
             assertThat(configs.getScheme()).isEqualTo("http");
             assertThat(configs.isStatefulCapture()).isFalse();
-            assertThat(configs.getSimulationPreprocessorProvider()).isEmpty();
+            assertThat(configs.getSimulationPreprocessor()).isEmpty();
         }
     }
 
@@ -47,7 +47,7 @@ class HoverflyConfigTest {
             proxyLocalHost = true, destination = "hoverfly.io", captureHeaders = {"Content-Type"},
             plainHttpTunneling = true, disableTlsVerification = true, upstreamProxy = "localhost:5000",
             webServer = true, statefulCapture = true,
-            simulationPreprocessor = CustomizedSettings.CustomSimulationPreprocessor.class
+            simulationPreprocessor = CustomSimulationPreprocessor.class
     ))
     @ExtendWith(HoverflyExtension.class)
     class CustomizedSettings {
@@ -65,14 +65,15 @@ class HoverflyConfigTest {
             assertThat(configs.getHost()).isEqualTo("localhost");
             assertThat(configs.getScheme()).isEqualTo("http");
             assertThat(configs.isStatefulCapture()).isTrue();
-            assertThat(configs.getSimulationPreprocessorProvider()).isPresent();
+            assertThat(configs.getSimulationPreprocessor()).isPresent();
         }
 
-        class CustomSimulationPreprocessor implements SimulationPreprocessor {
-            @Override
-            public void accept(Simulation simulation) {
+    }
 
-            }
+    static class CustomSimulationPreprocessor implements SimulationPreprocessor {
+        @Override
+        public void accept(Simulation simulation) {
+
         }
     }
 }

@@ -1,13 +1,14 @@
 package io.specto.hoverfly.junit5;
 
+import io.specto.hoverfly.junit.api.HoverflyClientException;
 import io.specto.hoverfly.junit.core.HoverflyConstants;
 import io.specto.hoverfly.junit.core.SimulationPreprocessor;
-import io.specto.hoverfly.junit.core.SimulationPreprocessorProvider;
 import io.specto.hoverfly.junit.core.SimulationSource;
 import io.specto.hoverfly.junit.core.config.LocalHoverflyConfig;
 import io.specto.hoverfly.junit5.api.HoverflyConfig;
 import io.specto.hoverfly.junit5.api.HoverflySimulate;
 import io.specto.hoverfly.junit5.api.UnsetSimulationPreprocessor;
+import org.junit.platform.commons.util.ReflectionUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -85,7 +86,7 @@ class HoverflyExtensionUtils {
             .proxyPort(configParams.proxyPort())
             .destination(configParams.destination())
             .captureHeaders(configParams.captureHeaders())
-            .simulationPreprocessorProvider(getSimulationPreprocessorProvider(configParams));
+            .simulationPreprocessor(getSimulationPreprocessor(configParams));
         if (configParams.proxyLocalHost()) {
             configs.proxyLocalHost();
         }
@@ -100,13 +101,26 @@ class HoverflyExtensionUtils {
         }
     }
 
-    private static SimulationPreprocessorProvider getSimulationPreprocessorProvider(HoverflyConfig configParams) {
+    private static SimulationPreprocessor getSimulationPreprocessor(HoverflyConfig configParams) {
         Class<? extends SimulationPreprocessor> simulationPreprocessorCls = configParams.simulationPreprocessor();
 
         if (UnsetSimulationPreprocessor.class.isAssignableFrom(simulationPreprocessorCls)) {
             return null;
         }
 
-        return SimulationPreprocessorProvider.forClass(simulationPreprocessorCls);
+        try {
+            return ReflectionUtils.newInstance(simulationPreprocessorCls);
+        }
+        catch (Exception ex) {
+            if (ex instanceof NoSuchMethodException) {
+                String message = String.format("Failed to find a no-argument constructor for SimulationPreprocessor [%s]. "
+                                + "Please ensure that a no-argument constructor exists and "
+                                + "that the class is either a top-level class or a static nested class",
+                        simulationPreprocessorCls.getName());
+                throw new HoverflyClientException(message, ex);
+            }
+            throw ex;
+        }
+
     }
 }

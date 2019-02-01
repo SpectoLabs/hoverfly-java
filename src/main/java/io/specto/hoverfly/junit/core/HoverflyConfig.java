@@ -35,7 +35,7 @@ public abstract class HoverflyConfig {
     protected List<String> captureHeaders;
     protected boolean webServer;
     protected boolean statefulCapture;
-    protected SimulationPreprocessorProvider simulationPreprocessorProvider;
+    protected SimulationPreprocessor simulationPreprocessor;
 
     /**
      * New instance
@@ -182,11 +182,7 @@ public abstract class HoverflyConfig {
      * @return the {@link HoverflyConfig} for further customizations
      */
     public HoverflyConfig simulationPreprocessor(SimulationPreprocessor simulationPreprocessor) {
-        return simulationPreprocessorProvider(SimulationPreprocessorProvider.forInstance(simulationPreprocessor));
-    }
-
-    public HoverflyConfig simulationPreprocessorProvider(SimulationPreprocessorProvider simulationPreprocessorProvider) {
-        this.simulationPreprocessorProvider = simulationPreprocessorProvider;
+        this.simulationPreprocessor = simulationPreprocessor;
         return this;
     }
 

@@ -252,26 +252,11 @@ public class Hoverfly implements AutoCloseable {
 
 
     public void simulate(SimulationSource simulationSource, SimulationSource... sources) {
-        simulate(null, simulationSource, sources);
-    }
-
-    private boolean requiresTestInstanceSimulationPreprocessing() {
-        return hoverflyConfig.getSimulationPreprocessorProvider()
-                .map(SimulationPreprocessorProvider::isTestInstanceRequired)
-                .orElse(false);
-    }
-
-    private boolean isSimulationPreprocessingEnabled(Object testInstance) {
-        if (testInstance == null && requiresTestInstanceSimulationPreprocessing()) {
-            return false;
-        }
-        return hoverflyConfig.getSimulationPreprocessorProvider().isPresent();
-    }
-
-    public void simulate(Object testInstance, SimulationSource simulationSource, SimulationSource... sources) {
         LOGGER.info("Importing simulation data to Hoverfly");
 
-        if (sources.length > 0 || isSimulationPreprocessingEnabled(testInstance)) {
+        Optional<SimulationPreprocessor> simulationPreprocessor = hoverflyConfig.getSimulationPreprocessor();
+
+        if (sources.length > 0 || simulationPreprocessor.isPresent()) {
             final Simulation simulation = readSimulationFromString(simulationSource.getSimulation());
 
             Stream.of(sources).map(SimulationSource::getSimulation)
@@ -281,12 +266,7 @@ public class Hoverfly implements AutoCloseable {
                         simulation.getHoverflyData().getGlobalActions().getDelays().addAll(s.getHoverflyData().getGlobalActions().getDelays());
                     });
 
-            if (isSimulationPreprocessingEnabled(testInstance)) {
-                Optional<SimulationPreprocessorProvider> simulationPreprocessorProvider = hoverflyConfig.getSimulationPreprocessorProvider();
-                simulationPreprocessorProvider.ifPresent(p -> p.getSimulationPreprocessor(testInstance).accept(simulation));
-            } else if (LOGGER.isDebugEnabled() && hoverflyConfig.getSimulationPreprocessorProvider().isPresent()){
-                LOGGER.debug("Skipping non-static SimulationPreprocessor in static context.");
-            }
+            simulationPreprocessor.ifPresent(p -> p.accept(simulation));
 
             hoverflyClient.setSimulation(simulation);
         } else {

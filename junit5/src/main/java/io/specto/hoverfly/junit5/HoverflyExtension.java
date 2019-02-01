@@ -59,7 +59,7 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
             // Reset to per-class global configuration
             hoverfly.resetMode(mode);
             if (mode.allowSimulationImport()) {
-                hoverfly.simulate(context.getTestInstance().orElse(null), source);
+                hoverfly.simulate(source);
             }
         }
     }
