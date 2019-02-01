@@ -7,21 +7,13 @@ import io.specto.hoverfly.junit5.api.HoverflyCapture;
 import io.specto.hoverfly.junit5.api.HoverflyConfig;
 import io.specto.hoverfly.junit5.api.HoverflyCore;
 import io.specto.hoverfly.junit5.api.HoverflySimulate;
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junit.jupiter.api.extension.ParameterResolver;
+import org.junit.jupiter.api.extension.*;
 
 import java.lang.reflect.AnnotatedElement;
 import java.nio.file.Path;
 
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
-import static io.specto.hoverfly.junit5.HoverflyExtensionUtils.getCapturePath;
-import static io.specto.hoverfly.junit5.HoverflyExtensionUtils.getHoverflyConfigs;
-import static io.specto.hoverfly.junit5.HoverflyExtensionUtils.getSimulationSource;
+import static io.specto.hoverfly.junit5.HoverflyExtensionUtils.*;
 import static org.junit.platform.commons.support.AnnotationSupport.isAnnotated;
 
 /**

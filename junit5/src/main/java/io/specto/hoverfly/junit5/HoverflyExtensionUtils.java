@@ -80,7 +80,7 @@ class HoverflyExtensionUtils {
     }
 
     private static void fillHoverflyConfig(io.specto.hoverfly.junit.core.HoverflyConfig configs,
-                                           HoverflyConfig configParams) {
+        HoverflyConfig configParams) {
         configs
             .adminPort(configParams.adminPort())
             .proxyPort(configParams.proxyPort())
