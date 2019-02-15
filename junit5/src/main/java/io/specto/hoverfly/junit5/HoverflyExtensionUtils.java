@@ -1,6 +1,5 @@
 package io.specto.hoverfly.junit5;
 
-import io.specto.hoverfly.junit.api.HoverflyClientException;
 import io.specto.hoverfly.junit.core.HoverflyConstants;
 import io.specto.hoverfly.junit.core.SimulationPreprocessor;
 import io.specto.hoverfly.junit.core.SimulationSource;
@@ -117,7 +116,7 @@ class HoverflyExtensionUtils {
                                 + "Please ensure that a no-argument constructor exists and "
                                 + "that the class is either a top-level class or a static nested class",
                         simulationPreprocessorCls.getName());
-                throw new HoverflyClientException(message, ex);
+                throw new IllegalArgumentException(message, ex);
             }
             throw ex;
         }
