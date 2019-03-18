@@ -148,6 +148,19 @@ This feature can be enabled easily by setting ``enableAutoCapture`` to ``true`` 
         // ...
     }
 
+Diff
+----
+
+You can declare ``@HoverflyDiff`` to run Hoverfly in diff mode (see :ref:`diffing`). You can customize the location of the simulation data as well as the Hoverfly configuration parameters.
+
+.. code-block:: java
+
+    @HoverflyDiff(
+        source = @HoverflySimulate.Source(value = "hoverfly/diff/captured-wrong-simulation-for-diff.json",
+            type = HoverflySimulate.SourceType.CLASSPATH))
+    )
+
+Also you can use ``@HoverflyValidate`` at class or method level, to assert automatically that there is no difference between simulated and captured traffic.
 
 Nested tests
 ------------

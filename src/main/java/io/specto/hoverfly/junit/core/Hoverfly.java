@@ -59,6 +59,7 @@ import org.zeroturnaround.exec.StartedProcess;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
+import static io.specto.hoverfly.junit.core.HoverflyMode.DIFF;
 import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
 import static io.specto.hoverfly.junit.core.HoverflyUtils.readSimulationFromString;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
@@ -517,6 +518,8 @@ public class Hoverfly implements AutoCloseable {
     private void setModeWithArguments(HoverflyMode mode, HoverflyConfiguration config) {
         if (mode == CAPTURE) {
             hoverflyClient.setMode(mode, new ModeArguments(config.getCaptureHeaders(), config.isStatefulCapture()));
+        } else if (mode == DIFF && !config.getCaptureHeaders().isEmpty()) {
+            hoverflyClient.setMode(mode, new ModeArguments(config.getCaptureHeaders()));
         } else {
             hoverflyClient.setMode(mode);
         }

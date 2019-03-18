@@ -1,0 +1,113 @@
+{
+  "data" : {
+    "pairs" : [ {
+      "request" : {
+        "path" : [ {
+          "matcher" : "exact",
+          "value" : "/api/v2/hoverfly/mode"
+        } ],
+        "method" : [ {
+          "matcher" : "exact",
+          "value" : "GET"
+        } ],
+        "destination" : [ {
+          "matcher" : "exact",
+          "value" : "localhost:64921"
+        } ],
+        "scheme" : [ {
+          "matcher" : "exact",
+          "value" : "http"
+        } ],
+        "query" : { },
+        "body" : [ {
+          "matcher" : "exact",
+          "value" : ""
+        } ],
+        "headers" : {
+          "Accept-Encoding" : [ {
+            "matcher" : "exact",
+            "value" : "gzip"
+          } ],
+          "Connection" : [ {
+            "matcher" : "exact",
+            "value" : "Keep-Alive"
+          } ],
+          "User-Agent" : [ {
+            "matcher" : "exact",
+            "value" : "okhttp/3.12.0"
+          } ]
+        }
+      },
+      "response" : {
+        "status" : 200,
+        "body" : "{\"mode\":\"capture\",\"arguments\":{\"headersWhitelist\":[\"*\"]}}",
+        "encodedBody" : false,
+        "templated" : false,
+        "headers" : {
+          "Content-Length" : [ "57" ],
+          "Content-Type" : [ "application/json; charset=utf-8" ],
+          "Date" : [ "Fri, 15 Mar 2019 18:22:53 GMT" ],
+          "Hoverfly" : [ "Was-Here" ]
+        }
+      }
+    }, {
+      "request" : {
+        "path" : [ {
+          "matcher" : "exact",
+          "value" : "/api/health"
+        } ],
+        "method" : [ {
+          "matcher" : "exact",
+          "value" : "GET"
+        } ],
+        "destination" : [ {
+          "matcher" : "glob",
+          "value" : "*"
+        } ],
+        "scheme" : [ {
+          "matcher" : "exact",
+          "value" : "http"
+        } ],
+        "query" : { },
+        "body" : [ {
+          "matcher" : "exact",
+          "value" : ""
+        } ],
+        "headers" : {
+          "Accept-Encoding" : [ {
+            "matcher" : "exact",
+            "value" : "gzip"
+          } ],
+          "Connection" : [ {
+            "matcher" : "exact",
+            "value" : "Keep-Alive"
+          } ],
+          "User-Agent" : [ {
+            "matcher" : "exact",
+            "value" : "okhttp/3.12.0"
+          } ]
+        }
+      },
+      "response" : {
+        "status" : 200,
+        "body" : "{\"message\":\"Hoverfly is healthy\"}\n",
+        "encodedBody" : false,
+        "templated" : false,
+        "headers" : {
+          "Content-Length" : [ "34" ],
+          "Content-Type" : [ "application/json; charset=utf-8" ],
+          "Date" : [ "Fri, 15 Mar 2019 18:22:53 GMT" ],
+          "Hoverfly" : [ "Was-Here" ]
+        }
+      }
+    } ],
+    "globalActions" : {
+      "delays" : [ ]
+    }
+  },
+  "meta" : {
+    "schemaVersion" : "v5",
+    "hoverflyVersion" : "v1.0.0-rc.2",
+    "timeExported" : "2019-03-15T19:22:53+01:00"
+  }
+}

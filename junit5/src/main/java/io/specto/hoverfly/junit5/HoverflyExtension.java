@@ -6,7 +6,9 @@ import io.specto.hoverfly.junit.core.SimulationSource;
 import io.specto.hoverfly.junit5.api.HoverflyCapture;
 import io.specto.hoverfly.junit5.api.HoverflyConfig;
 import io.specto.hoverfly.junit5.api.HoverflyCore;
+import io.specto.hoverfly.junit5.api.HoverflyDiff;
 import io.specto.hoverfly.junit5.api.HoverflySimulate;
+import io.specto.hoverfly.junit5.api.HoverflyValidate;
 import org.junit.jupiter.api.extension.*;
 
 import java.lang.reflect.AnnotatedElement;
@@ -27,7 +29,7 @@ import static org.junit.platform.commons.support.AnnotationSupport.isAnnotated;
  * and make use of the Hoverfly API directly.
  *
  * {@link HoverflyCore} annotation can be used along with HoverflyExtension to set the mode and customize the configurations.
- * @see HoverflyCore for more configuration options*
+ * @see HoverflyCore for more configuration options
  *
  * {@link HoverflySimulate} annotation can be used to instruct Hoverfly to load simulation from a file located at
  * Hoverfly default path (src/test/resources/hoverfly) and file called with fully qualified name of test class, replacing dots (.) and dollar signs ($) to underlines (_).
@@ -35,9 +37,12 @@ import static org.junit.platform.commons.support.AnnotationSupport.isAnnotated;
  *
  * {@link HoverflyCapture} annotation can be used to config Hoverfly to capture and export simulation to a file located at
  * Hoverfly default path (src/test/resources/hoverfly) and file called with fully qualified name of test class, replacing dots (.) and dollar signs ($) to underlines (_).
- * @see HoverflyCapture for more configuration options*
+ * @see HoverflyCapture for more configuration options
+ *
+ * {@link HoverflyDiff} annotation can be used along with HoverflyExtension to set the mode to diff and customize the configurations.
+ * @see HoverflyDiff for more configuration options*
  */
-public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, BeforeAllCallback, ParameterResolver {
+public class HoverflyExtension implements AfterEachCallback, BeforeEachCallback, AfterAllCallback, BeforeAllCallback, ParameterResolver {
 
     private Hoverfly hoverfly;
     private SimulationSource source = SimulationSource.empty();
@@ -67,14 +72,9 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
             HoverflySimulate hoverflySimulate = annotatedElement.getAnnotation(HoverflySimulate.class);
             config = hoverflySimulate.config();
 
+            String path = getPath(context, hoverflySimulate.source());
             HoverflySimulate.SourceType type = hoverflySimulate.source().type();
-            String path = hoverflySimulate.source().value();
-
-            if (path.isEmpty()) {
-                 path = context.getTestClass()
-                        .map(HoverflyExtensionUtils::getFileNameFromTestClass)
-                        .orElseThrow(() -> new IllegalStateException("No test class found."));
-            }
+            source = getSimulationSource(path, type);
 
             if(hoverflySimulate.enableAutoCapture()) {
                 AutoCaptureSource.newInstance(path, type).ifPresent(source -> {
@@ -82,7 +82,6 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
                     capturePath = source.getCapturePath();
                 });
             }
-            source = getSimulationSource(path, type);
 
         } else if (isAnnotated(annotatedElement, HoverflyCore.class)) {
             HoverflyCore hoverflyCore = annotatedElement.getAnnotation(HoverflyCore.class);
@@ -101,6 +100,13 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
             }
 
             capturePath = getCapturePath(hoverflyCapture.path(), filename);
+        } else if (isAnnotated(annotatedElement, HoverflyDiff.class)) {
+            HoverflyDiff hoverflyDiff = annotatedElement.getAnnotation(HoverflyDiff.class);
+            config = hoverflyDiff.config();
+            mode = HoverflyMode.DIFF;
+            String path = getPath(context, hoverflyDiff.source());
+            HoverflySimulate.SourceType type = hoverflyDiff.source().type();
+            source = getSimulationSource(path, type);
         }
 
         if (!isRunning()) {
@@ -113,10 +119,28 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
         }
     }
 
+    private String getPath(ExtensionContext context, HoverflySimulate.Source source) {
+        String path = source.value();
+
+        if (path.isEmpty()) {
+             path = context.getTestClass()
+                    .map(HoverflyExtensionUtils::getFileNameFromTestClass)
+                    .orElseThrow(() -> new IllegalStateException("No test class found."));
+        }
+        return path;
+    }
 
     @Override
     public void afterAll(ExtensionContext context) {
         if (isRunning()) {
+
+            AnnotatedElement annotatedElement = context.getElement().orElseThrow(() -> new IllegalStateException("No test class found."));
+
+            if (isAnnotated(annotatedElement, HoverflyValidate.class)) {
+                final HoverflyValidate hoverflyValidate = annotatedElement.getAnnotation(HoverflyValidate.class);
+                hoverfly.assertThatNoDiffIsReported(hoverflyValidate.reset());
+            }
+
             try {
                 if (this.capturePath != null) {
                     this.hoverfly.exportSimulation(this.capturePath);
@@ -144,4 +168,17 @@ public class HoverflyExtension implements BeforeEachCallback, AfterAllCallback, 
         return this.hoverfly != null;
     }
 
+    @Override
+    public void afterEach(ExtensionContext context) {
+        if (isRunning()) {
+
+            AnnotatedElement annotatedElement =
+                context.getElement().orElseThrow(() -> new IllegalStateException("No test class found."));
+
+            if (isAnnotated(annotatedElement, HoverflyValidate.class)) {
+                final HoverflyValidate hoverflyValidate = annotatedElement.getAnnotation(HoverflyValidate.class);
+                hoverfly.assertThatNoDiffIsReported(hoverflyValidate.reset());
+            }
+        }
+    }
 }
