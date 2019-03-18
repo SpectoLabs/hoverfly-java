@@ -134,12 +134,7 @@ public class HoverflyExtension implements AfterEachCallback, BeforeEachCallback,
     public void afterAll(ExtensionContext context) {
         if (isRunning()) {
 
-            AnnotatedElement annotatedElement = context.getElement().orElseThrow(() -> new IllegalStateException("No test class found."));
-
-            if (isAnnotated(annotatedElement, HoverflyValidate.class)) {
-                final HoverflyValidate hoverflyValidate = annotatedElement.getAnnotation(HoverflyValidate.class);
-                hoverfly.assertThatNoDiffIsReported(hoverflyValidate.reset());
-            }
+            verifyHoverflyValidate(context);
 
             try {
                 if (this.capturePath != null) {
@@ -171,14 +166,17 @@ public class HoverflyExtension implements AfterEachCallback, BeforeEachCallback,
     @Override
     public void afterEach(ExtensionContext context) {
         if (isRunning()) {
+            verifyHoverflyValidate(context);
+        }
+    }
 
-            AnnotatedElement annotatedElement =
-                context.getElement().orElseThrow(() -> new IllegalStateException("No test class found."));
+    private void verifyHoverflyValidate(ExtensionContext context) {
+        AnnotatedElement annotatedElement =
+            context.getElement().orElseThrow(() -> new IllegalStateException("No test class found."));
 
-            if (isAnnotated(annotatedElement, HoverflyValidate.class)) {
-                final HoverflyValidate hoverflyValidate = annotatedElement.getAnnotation(HoverflyValidate.class);
-                hoverfly.assertThatNoDiffIsReported(hoverflyValidate.reset());
-            }
+        if (isAnnotated(annotatedElement, HoverflyValidate.class)) {
+            final HoverflyValidate hoverflyValidate = annotatedElement.getAnnotation(HoverflyValidate.class);
+            hoverfly.assertThatNoDiffIsReported(hoverflyValidate.reset());
         }
     }
 }

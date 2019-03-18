@@ -518,7 +518,7 @@ public class Hoverfly implements AutoCloseable {
     private void setModeWithArguments(HoverflyMode mode, HoverflyConfiguration config) {
         if (mode == CAPTURE) {
             hoverflyClient.setMode(mode, new ModeArguments(config.getCaptureHeaders(), config.isStatefulCapture()));
-        } else if (mode == DIFF && !config.getCaptureHeaders().isEmpty()) {
+        } else if (mode == DIFF) {
             hoverflyClient.setMode(mode, new ModeArguments(config.getCaptureHeaders()));
         } else {
             hoverflyClient.setMode(mode);
