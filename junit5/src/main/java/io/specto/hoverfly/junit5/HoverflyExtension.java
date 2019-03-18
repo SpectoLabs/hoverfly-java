@@ -133,10 +133,9 @@ public class HoverflyExtension implements AfterEachCallback, BeforeEachCallback,
     @Override
     public void afterAll(ExtensionContext context) {
         if (isRunning()) {
-
-            verifyHoverflyValidate(context);
-
+            
             try {
+                verifyHoverflyValidate(context);
                 if (this.capturePath != null) {
                     this.hoverfly.exportSimulation(this.capturePath);
                 }
