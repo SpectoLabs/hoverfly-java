@@ -37,6 +37,7 @@ public class HoverflyConfiguration {
     private boolean statefulCapture;
     private SimulationPreprocessor simulationPreprocessor;
     private String binaryNameFormat;
+    private List<String> commands;
 
     /**
      * Create configurations for external hoverfly
@@ -52,8 +53,10 @@ public class HoverflyConfiguration {
                           final String adminCertificate,
                           final List<String> captureHeaders,
                           final boolean webServer,
-                          final boolean statefulCapture) {
-        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, captureHeaders, webServer, null, statefulCapture);
+                          final boolean statefulCapture,
+                          final SimulationPreprocessor preprocessor,
+                          final List<String> commands) {
+        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, captureHeaders, webServer, null, statefulCapture, preprocessor, commands);
         setScheme(scheme);
         setHost(host);
         this.authToken = authToken;
@@ -72,7 +75,9 @@ public class HoverflyConfiguration {
                           final List<String> captureHeaders,
                           final boolean webServer,
                           final Logger hoverflyLogger,
-                          final boolean statefulCapture
+                          final boolean statefulCapture,
+                          final SimulationPreprocessor preprocessor,
+                          final List<String> commands
     ) {
         this.proxyPort = proxyPort;
         this.adminPort = adminPort;
@@ -83,6 +88,8 @@ public class HoverflyConfiguration {
         this.webServer = webServer;
         this.hoverflyLogger = hoverflyLogger;
         this.statefulCapture = statefulCapture;
+        this.simulationPreprocessor = preprocessor;
+        this.commands = commands;
     }
 
     /**
@@ -257,5 +264,14 @@ public class HoverflyConfiguration {
 
     public void setBinaryNameFormat(String binaryNameFormat) {
         this.binaryNameFormat = binaryNameFormat;
+    }
+
+
+    public List<String> getCommands() {
+        return commands;
+    }
+
+    public void setCommands(List<String> commands) {
+        this.commands = commands;
     }
 }

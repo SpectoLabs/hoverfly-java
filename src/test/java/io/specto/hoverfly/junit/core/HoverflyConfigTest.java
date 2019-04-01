@@ -164,4 +164,13 @@ public class HoverflyConfigTest {
 
         assertThat(configs.isStatefulCapture()).isTrue();
     }
+
+    @Test
+    public void shouldAddCommands() {
+        HoverflyConfiguration configs = localConfigs()
+                .addCommands("-log-level", "error", "-disable-cache")
+                .addCommands("-generate-ca-cert").build();
+
+        assertThat(configs.getCommands()).containsExactly("-log-level", "error", "-disable-cache", "-generate-ca-cert");
+    }
 }
