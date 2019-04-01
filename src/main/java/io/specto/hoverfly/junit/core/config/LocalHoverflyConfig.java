@@ -142,6 +142,16 @@ public class LocalHoverflyConfig extends HoverflyConfig {
         return this;
     }
 
+    public LocalHoverflyConfig addCommands(String[] commands) {
+
+        if (this.commands == null) {
+            this.commands = new LinkedList<>();
+        }
+
+        this.commands.addAll(Arrays.asList(commands));
+        return this;
+    }
+
     @Override
     public HoverflyConfiguration build() {
         HoverflyConfiguration configs = new HoverflyConfiguration(proxyPort, adminPort, proxyLocalHost, destination,

@@ -38,6 +38,9 @@ class HoverflyExtensionUtils {
                 if (config.disableTlsVerification()){
                     ((LocalHoverflyConfig) configs).disableTlsVerification();
                 }
+                if (config.commands().length > 0) {
+                    ((LocalHoverflyConfig) configs).addCommands(config.commands());
+                }
             }
             fillHoverflyConfig(configs, config);
             return configs;

@@ -39,6 +39,7 @@ class HoverflyConfigTest {
             assertThat(configs.getScheme()).isEqualTo("http");
             assertThat(configs.isStatefulCapture()).isFalse();
             assertThat(configs.getSimulationPreprocessor()).isEmpty();
+            assertThat(configs.getCommands()).isNull();
         }
     }
 
@@ -47,7 +48,8 @@ class HoverflyConfigTest {
             proxyLocalHost = true, destination = "hoverfly.io", captureHeaders = {"Content-Type"},
             plainHttpTunneling = true, disableTlsVerification = true, upstreamProxy = "localhost:5000",
             webServer = true, statefulCapture = true,
-            simulationPreprocessor = CustomSimulationPreprocessor.class
+            simulationPreprocessor = CustomSimulationPreprocessor.class,
+            commands = { "-log-level", "error" }
     ))
     @ExtendWith(HoverflyExtension.class)
     class CustomizedSettings {
@@ -66,6 +68,7 @@ class HoverflyConfigTest {
             assertThat(configs.getScheme()).isEqualTo("http");
             assertThat(configs.isStatefulCapture()).isTrue();
             assertThat(configs.getSimulationPreprocessor()).isPresent();
+            assertThat(configs.getCommands()).containsExactly("-log-level", "error");
         }
 
     }

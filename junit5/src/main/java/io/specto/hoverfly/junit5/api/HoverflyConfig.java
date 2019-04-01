@@ -87,4 +87,9 @@ public @interface HoverflyConfig {
     boolean webServer() default false;
 
     Class<? extends SimulationPreprocessor> simulationPreprocessor() default UnsetSimulationPreprocessor.class;
+
+    /**
+     * Set additional commands for starting Hoverfly
+     */
+    String[] commands() default {};
 }
