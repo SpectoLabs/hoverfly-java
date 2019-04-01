@@ -36,7 +36,7 @@ public class LocalHoverflyConfig extends HoverflyConfig {
     private LocalMiddleware localMiddleware;
     private String upstreamProxy;
     private Logger hoverflyLogger = LoggerFactory.getLogger("hoverfly");
-    private List<String> commands;
+    private List<String> commands = new LinkedList<>();
 
     /**
      * Sets the SSL certificate file for overriding default Hoverfly self-signed certificate
@@ -133,10 +133,6 @@ public class LocalHoverflyConfig extends HoverflyConfig {
      */
     public LocalHoverflyConfig addCommands(String command, String... commands) {
 
-        if (this.commands == null) {
-            this.commands = new LinkedList<>();
-        }
-
         this.commands.add(command);
         this.commands.addAll(Arrays.asList(commands));
         return this;
@@ -144,11 +140,13 @@ public class LocalHoverflyConfig extends HoverflyConfig {
 
     public LocalHoverflyConfig addCommands(String[] commands) {
 
-        if (this.commands == null) {
-            this.commands = new LinkedList<>();
-        }
-
         this.commands.addAll(Arrays.asList(commands));
+        return this;
+    }
+
+    public LocalHoverflyConfig addCommands(String command) {
+
+        this.commands.add(command);
         return this;
     }
 

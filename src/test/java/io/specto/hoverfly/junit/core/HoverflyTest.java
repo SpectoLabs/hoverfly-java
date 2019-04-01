@@ -614,6 +614,16 @@ public class HoverflyTest {
                 .containsPattern("TLS certificate verification has been disabled");
     }
 
+    @Test
+    public void shouldBeAbleToPassFlagsViaCommandsConfig() {
+
+        hoverfly = new Hoverfly(localConfigs().addCommands("-dest", "/v*/api/*"), SIMULATE);
+
+        hoverfly.start();
+
+        assertThat(hoverfly.getHoverflyInfo().getDestination()).isEqualTo("/v*/api/*");
+    }
+
     @After
     public void tearDown() {
         if (hoverfly != null) {

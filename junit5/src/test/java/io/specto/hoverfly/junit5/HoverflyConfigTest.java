@@ -39,7 +39,7 @@ class HoverflyConfigTest {
             assertThat(configs.getScheme()).isEqualTo("http");
             assertThat(configs.isStatefulCapture()).isFalse();
             assertThat(configs.getSimulationPreprocessor()).isEmpty();
-            assertThat(configs.getCommands()).isNull();
+            assertThat(configs.getCommands()).isEmpty();
         }
     }
 

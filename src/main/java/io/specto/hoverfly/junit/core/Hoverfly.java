@@ -172,8 +172,10 @@ public class Hoverfly implements AutoCloseable {
         LOGGER.info("Executing binary at {}", binaryPath);
         final List<String> commands = new ArrayList<>();
         commands.add(binaryPath.toString());
-        commands.add("-db");
-        commands.add("memory");
+
+        if (!hoverflyConfig.getCommands().isEmpty()) {
+            commands.addAll(hoverflyConfig.getCommands());
+        }
         commands.add("-pp");
         commands.add(String.valueOf(hoverflyConfig.getProxyPort()));
         commands.add("-ap");
