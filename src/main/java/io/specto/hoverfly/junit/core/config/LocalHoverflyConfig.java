@@ -18,6 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,6 +36,7 @@ public class LocalHoverflyConfig extends HoverflyConfig {
     private LocalMiddleware localMiddleware;
     private String upstreamProxy;
     private Logger hoverflyLogger = LoggerFactory.getLogger("hoverfly");
+    private List<String> commands;
 
     /**
      * Sets the SSL certificate file for overriding default Hoverfly self-signed certificate
@@ -121,16 +125,34 @@ public class LocalHoverflyConfig extends HoverflyConfig {
         return this;
     }
 
+    /**
+     * Set additional commands for starting Hoverfly.
+     * @param command Hoverfly command flag
+     * @param commands More Hoverfly command flags.
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public LocalHoverflyConfig addCommands(String command, String... commands) {
+
+        if (this.commands == null) {
+            this.commands = new LinkedList<>();
+        }
+
+        this.commands.add(command);
+        this.commands.addAll(Arrays.asList(commands));
+        return this;
+    }
+
     @Override
     public HoverflyConfiguration build() {
         HoverflyConfiguration configs = new HoverflyConfiguration(proxyPort, adminPort, proxyLocalHost, destination,
-                proxyCaCert, captureHeaders, webServer, hoverflyLogger, statefulCapture, simulationPreprocessor, commands);
+                proxyCaCert, captureHeaders, webServer, hoverflyLogger, statefulCapture, simulationPreprocessor);
         configs.setSslCertificatePath(sslCertificatePath);
         configs.setSslKeyPath(sslKeyPath);
         configs.setTlsVerificationDisabled(tlsVerificationDisabled);
         configs.setPlainHttpTunneling(plainHttpTunneling);
         configs.setLocalMiddleware(localMiddleware);
         configs.setUpstreamProxy(upstreamProxy);
+        configs.setCommands(commands);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }

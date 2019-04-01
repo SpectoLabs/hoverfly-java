@@ -54,9 +54,8 @@ public class HoverflyConfiguration {
                           final List<String> captureHeaders,
                           final boolean webServer,
                           final boolean statefulCapture,
-                          final SimulationPreprocessor preprocessor,
-                          final List<String> commands) {
-        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, captureHeaders, webServer, null, statefulCapture, preprocessor, commands);
+                          final SimulationPreprocessor preprocessor) {
+        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, captureHeaders, webServer, null, statefulCapture, preprocessor);
         setScheme(scheme);
         setHost(host);
         this.authToken = authToken;
@@ -76,8 +75,7 @@ public class HoverflyConfiguration {
                           final boolean webServer,
                           final Logger hoverflyLogger,
                           final boolean statefulCapture,
-                          final SimulationPreprocessor preprocessor,
-                          final List<String> commands
+                          final SimulationPreprocessor preprocessor
     ) {
         this.proxyPort = proxyPort;
         this.adminPort = adminPort;
@@ -89,7 +87,6 @@ public class HoverflyConfiguration {
         this.hoverflyLogger = hoverflyLogger;
         this.statefulCapture = statefulCapture;
         this.simulationPreprocessor = preprocessor;
-        this.commands = commands;
     }
 
     /**

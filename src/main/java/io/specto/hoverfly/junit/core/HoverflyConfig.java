@@ -20,7 +20,6 @@ import io.specto.hoverfly.junit.core.model.Simulation;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,7 +36,6 @@ public abstract class HoverflyConfig {
     protected boolean webServer;
     protected boolean statefulCapture;
     protected SimulationPreprocessor simulationPreprocessor;
-    protected List<String> commands;
 
     /**
      * New instance
@@ -185,17 +183,6 @@ public abstract class HoverflyConfig {
      */
     public HoverflyConfig simulationPreprocessor(SimulationPreprocessor simulationPreprocessor) {
         this.simulationPreprocessor = simulationPreprocessor;
-        return this;
-    }
-
-    public HoverflyConfig addCommands(String command, String... commands) {
-
-        if (this.commands == null) {
-            this.commands = new LinkedList<>();
-        }
-
-        this.commands.add(command);
-        this.commands.addAll(Arrays.asList(commands));
         return this;
     }
 
