@@ -33,6 +33,10 @@ The simplest way is to get started is with the JUnit rule. Behind the scenes the
 
 .. code-block:: java
 
+    import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
+    import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
+    import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
+
     public class HoverflyExample {
 
         @ClassRule
