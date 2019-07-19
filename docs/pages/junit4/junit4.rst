@@ -51,6 +51,24 @@ Multi-Capture
 
 File is relative to ``src/test/resources/hoverfly``.
 
+.. _incrementalcapture:
+
+Incremental Capture
+-------------------
+
+In capture mode, ``HoverflyRule`` by default exports the simulation and overwrites any existing content of the supplied file.
+This is not very helpful if you add a new test and you don't want to re-capture everything.
+In this case, you can enable the incremental capture option. ``HoverflyRule`` will check and import if the supplied simulation file exists. Any new request / response pairs will be appended to the existing file during capturing.
+
+.. code-block:: java
+
+    @ClassRule
+    public static HoverflyRule hoverflyRule = HoverflyRule.inCaptureMode("simulation.json",
+            localConfigs()
+                    .enableIncrementalCapture());
+
+
+
 .. _captureorsimulate:
 
 Capture or Simulate
