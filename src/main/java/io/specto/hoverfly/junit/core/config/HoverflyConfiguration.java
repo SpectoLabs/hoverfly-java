@@ -36,6 +36,7 @@ public class HoverflyConfiguration {
     private Logger hoverflyLogger;
     private LogLevel logLevel;
     private boolean statefulCapture;
+    private boolean incrementalCapture;
     private SimulationPreprocessor simulationPreprocessor;
     private String binaryNameFormat;
     private List<String> commands;
@@ -55,8 +56,9 @@ public class HoverflyConfiguration {
                           final List<String> captureHeaders,
                           final boolean webServer,
                           final boolean statefulCapture,
+                          final boolean incrementalCapture,
                           final SimulationPreprocessor preprocessor) {
-        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, captureHeaders, webServer, null, null, statefulCapture, preprocessor);
+        this(proxyPort, adminPort, proxyLocalHost, destination, proxyCaCertificate, captureHeaders, webServer, null, null, statefulCapture, incrementalCapture, preprocessor);
         setScheme(scheme);
         setHost(host);
         this.authToken = authToken;
@@ -77,6 +79,7 @@ public class HoverflyConfiguration {
                           final Logger hoverflyLogger,
                           final LogLevel logLevel,
                           final boolean statefulCapture,
+                          final boolean incrementalCapture,
                           final SimulationPreprocessor preprocessor
     ) {
         this.proxyPort = proxyPort;
@@ -89,6 +92,7 @@ public class HoverflyConfiguration {
         this.hoverflyLogger = hoverflyLogger;
         this.logLevel = logLevel;
         this.statefulCapture = statefulCapture;
+        this.incrementalCapture = incrementalCapture;
         this.simulationPreprocessor = preprocessor;
     }
 
@@ -248,6 +252,10 @@ public class HoverflyConfiguration {
 
     public boolean isStatefulCapture() {
         return statefulCapture;
+    }
+
+    public boolean isIncrementalCapture() {
+        return incrementalCapture;
     }
 
     private boolean isNotBlank(String str) {

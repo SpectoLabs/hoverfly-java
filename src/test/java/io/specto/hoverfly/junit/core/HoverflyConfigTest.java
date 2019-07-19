@@ -39,6 +39,7 @@ public class HoverflyConfigTest {
         assertThat(configs.isWebServer()).isFalse();
         assertThat(configs.isTlsVerificationDisabled()).isFalse();
         assertThat(configs.isStatefulCapture()).isFalse();
+        assertThat(configs.isIncrementalCapture()).isFalse();
         assertThat(configs.getLogLevel()).isNotPresent();
         assertThat(configs.getHoverflyLogger()).isEqualTo(Optional.of(LoggerFactory.getLogger("hoverfly")));
     }
@@ -170,6 +171,14 @@ public class HoverflyConfigTest {
 
         assertThat(configs.isStatefulCapture()).isTrue();
     }
+
+    @Test
+    public void shouldEnableIncrementalCapture() {
+        HoverflyConfiguration configs = localConfigs().enableIncrementalCapture().build();
+
+        assertThat(configs.isIncrementalCapture()).isTrue();
+    }
+
 
     @Test
     public void shouldAddCommands() {

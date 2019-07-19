@@ -35,6 +35,7 @@ public abstract class HoverflyConfig {
     protected List<String> captureHeaders;
     protected boolean webServer;
     protected boolean statefulCapture;
+    protected boolean incrementalCapture;
     protected SimulationPreprocessor simulationPreprocessor;
 
     /**
@@ -147,6 +148,15 @@ public abstract class HoverflyConfig {
         return this;
     }
 
+    /**
+     * By default Hoverfly exports the captured requests and responses to a new file by replacing any existing one. Enable this
+     * option to import any existing simulation file and append new requests to it in capture mode.
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public HoverflyConfig enableIncrementalCapture() {
+        this.incrementalCapture = true;
+        return this;
+    }
 
     /**
      * Set proxy CA certificate to validate the authenticity of a Hoverfly instance.
