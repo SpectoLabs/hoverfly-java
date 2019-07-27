@@ -37,6 +37,7 @@ public class LocalHoverflyConfig extends HoverflyConfig {
     private Logger hoverflyLogger = LoggerFactory.getLogger("hoverfly");
     private LogLevel logLevel;
     private List<String> commands = new LinkedList<>();
+    private String binaryLocation;
 
     /**
      * Sets the SSL certificate file for overriding default Hoverfly self-signed certificate
@@ -158,9 +159,13 @@ public class LocalHoverflyConfig extends HoverflyConfig {
         configs.setLocalMiddleware(localMiddleware);
         configs.setUpstreamProxy(upstreamProxy);
         configs.setCommands(commands);
+        configs.setBinaryLocation(binaryLocation);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }
 
-
+    public HoverflyConfig binaryLocation(String binaryLocation) {
+        this.binaryLocation = binaryLocation;
+        return this;
+    }
 }

@@ -31,24 +31,30 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.zeroturnaround.exec.StartedProcess;
 
 import javax.net.ssl.SSLContext;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.*;
 import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
+import static java.lang.String.format;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -642,6 +648,59 @@ public class HoverflyTest {
         hoverfly.start();
 
         assertThat(hoverfly.getHoverflyInfo().getDestination()).isEqualTo("/v*/api/*");
+    }
+
+    @Test
+    public void shouldStartHoverflyFromCustomBinaryLocation() {
+        final String os = System.getProperty("os.name").toLowerCase();
+        assumeTrue("Currently this case is tested only in Windows, in Linux ps may be used", os.indexOf("windows") != -1);
+
+        final String binaryLocation = "build/tmp";
+        clearBinaryFiles(binaryLocation);
+
+        hoverfly = new Hoverfly(localConfigs().binaryLocation(binaryLocation), SIMULATE);
+        hoverfly.start();
+
+        final String actualPath = findProcessDirectory(binaryLocation);
+        assertThat(actualPath).contains(binaryLocation.replace('/', File.separatorChar));
+        
+        final File[] exes = getBinaryFiles(binaryLocation);
+        assertThat(exes.length).isEqualTo(1);
+    }
+
+    private void clearBinaryFiles(final String binaryLocation) {
+        Arrays.stream(getBinaryFiles(binaryLocation)).forEach(f -> f.delete());
+    }
+
+    private File[] getBinaryFiles(final String binaryLocation) {
+        final File binaryDir = new File(binaryLocation);
+        final File[] exes = binaryDir.listFiles((f) -> f.getName().endsWith("exe"));
+        if (Objects.isNull(exes)) {
+            return new File[0];
+        }
+        return exes;
+    }
+
+    private String findProcessDirectory(final String binaryLocation) {
+        final String systemDependentBinaryLocation = binaryLocation.replace('/', File.separatorChar);
+        final String expectedPath = format("*%s*", systemDependentBinaryLocation);
+        final String cmd = "powershell -Command \"Get-Process -Name hoverfly* | Select-Object -ExpandProperty Path | where { $_ -like \\\"" + expectedPath + "\\\" }\"";
+        final String[] cmdLine = {
+                "cmd.exe", "/c", cmd
+        };
+        String line = null;
+        try {
+            final Process p = Runtime.getRuntime().exec(cmdLine);
+            p.waitFor();
+            try (final BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+                while ((line = in.readLine()) != null) {
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return line;
     }
 
     @After

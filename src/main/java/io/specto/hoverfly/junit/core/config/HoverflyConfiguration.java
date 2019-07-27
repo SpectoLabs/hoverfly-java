@@ -40,6 +40,7 @@ public class HoverflyConfiguration {
     private SimulationPreprocessor simulationPreprocessor;
     private String binaryNameFormat;
     private List<String> commands;
+    private String binaryLocation;
 
     /**
      * Create configurations for external hoverfly
@@ -285,5 +286,13 @@ public class HoverflyConfiguration {
 
     public void setCommands(List<String> commands) {
         this.commands = commands;
+    }
+
+    public void setBinaryLocation(String binaryLocation) {
+        this.binaryLocation = binaryLocation;
+    }
+
+    public String getBinaryLocation() {
+        return binaryLocation;
     }
 }

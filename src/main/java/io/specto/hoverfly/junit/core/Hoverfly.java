@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -168,6 +169,9 @@ public class Hoverfly implements AutoCloseable {
 
         final SystemConfig systemConfig = new SystemConfigFactory(hoverflyConfig).createSystemConfig();
 
+        if (Objects.nonNull(hoverflyConfig.getBinaryLocation())) {
+            tempFileManager.setBinaryLocation(hoverflyConfig.getBinaryLocation());
+        }
         Path binaryPath = tempFileManager.copyHoverflyBinary(systemConfig);
 
         LOGGER.info("Executing binary at {}", binaryPath);
