@@ -45,7 +45,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
@@ -653,7 +652,7 @@ public class HoverflyTest {
     @Test
     public void shouldStartHoverflyFromCustomBinaryLocation() {
         final String os = System.getProperty("os.name").toLowerCase();
-        assumeTrue("Currently this case is tested only in Windows, in Linux ps may be used", os.indexOf("windows") != -1);
+        assumeTrue("Currently this case is tested only in Windows, in Linux ps may be used", os.contains("windows"));
 
         final String binaryLocation = "build/tmp";
         clearBinaryFiles(binaryLocation);
@@ -663,7 +662,7 @@ public class HoverflyTest {
 
         final String actualPath = findProcessDirectory(binaryLocation);
         assertThat(actualPath).contains(binaryLocation.replace('/', File.separatorChar));
-        
+
         final File[] exes = getBinaryFiles(binaryLocation);
         assertThat(exes.length).isEqualTo(1);
     }
@@ -675,7 +674,7 @@ public class HoverflyTest {
     private File[] getBinaryFiles(final String binaryLocation) {
         final File binaryDir = new File(binaryLocation);
         final File[] exes = binaryDir.listFiles((f) -> f.getName().endsWith("exe"));
-        if (Objects.isNull(exes)) {
+        if (exes == null) {
             return new File[0];
         }
         return exes;
