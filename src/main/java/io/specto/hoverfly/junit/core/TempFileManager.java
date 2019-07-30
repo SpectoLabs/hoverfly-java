@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 
 import static io.specto.hoverfly.junit.core.HoverflyUtils.findResourceOnClasspath;
@@ -109,7 +110,7 @@ class TempFileManager {
     }
 
     void setBinaryLocation(String binaryLocation) {
-        this.tempDirectory = new File(binaryLocation).toPath();
+        this.tempDirectory = Paths.get(binaryLocation);
     }
 
 }
