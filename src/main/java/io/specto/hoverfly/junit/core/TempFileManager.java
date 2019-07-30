@@ -110,9 +110,7 @@ class TempFileManager {
     }
 
     void setBinaryLocation(String binaryLocation) {
-        if (Objects.nonNull(binaryLocation)) {
-            this.tempDirectory = new File(binaryLocation).toPath();
-        }
+        this.tempDirectory = new File(binaryLocation).toPath();
     }
 
 }
