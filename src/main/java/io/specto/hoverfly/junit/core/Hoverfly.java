@@ -169,7 +169,7 @@ public class Hoverfly implements AutoCloseable {
 
         final SystemConfig systemConfig = new SystemConfigFactory(hoverflyConfig).createSystemConfig();
 
-        if (Objects.nonNull(hoverflyConfig.getBinaryLocation())) {
+        if (hoverflyConfig.getBinaryLocation() != null) {
             tempFileManager.setBinaryLocation(hoverflyConfig.getBinaryLocation());
         }
         Path binaryPath = tempFileManager.copyHoverflyBinary(systemConfig);
