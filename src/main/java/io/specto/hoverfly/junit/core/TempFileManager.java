@@ -10,7 +10,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
-import java.util.Objects;
 
 import static io.specto.hoverfly.junit.core.HoverflyUtils.findResourceOnClasspath;
 import static io.specto.hoverfly.junit.core.SystemConfigFactory.OsName.WINDOWS;
