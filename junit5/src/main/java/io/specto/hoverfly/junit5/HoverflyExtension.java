@@ -119,7 +119,14 @@ public class HoverflyExtension implements AfterEachCallback, BeforeEachCallback,
         }
     }
 
-    private String getPath(ExtensionContext context, HoverflySimulate.Source source) {
+    /**
+     * Returns the path to the simulation source.
+     *
+     * @param context the current extension context; never {@code null}
+     * @param source  the simulation source annotation; never {@code null}
+     * @return the path to the simulation source
+     */
+    protected String getPath(ExtensionContext context, HoverflySimulate.Source source) {
         String path = source.value();
 
         if (path.isEmpty()) {
