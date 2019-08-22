@@ -1,0 +1,65 @@
+{
+    "data": {
+        "pairs": [
+            {
+                "request": {
+                    "path": [
+                        {
+                            "matcher": "exact",
+                            "value": "/api/version"
+                        }
+                    ],
+                    "method": [
+                        {
+                            "matcher": "exact",
+                            "value": "GET"
+                        }
+                    ],
+                    "destination": [
+                        {
+                            "matcher": "exact",
+                            "value": "www.my-test.com"
+                        }
+                    ],
+                    "scheme": [
+                        {
+                            "matcher": "exact",
+                            "value": "http"
+                        }
+                    ],
+                    "body": [
+                        {
+                            "matcher": "exact",
+                            "value": ""
+                        }
+                    ],
+                    "deprecatedQuery": [
+                        {
+                            "matcher": "exact",
+                            "value": ""
+                        }
+                    ]
+                },
+                "response": {
+                    "status": 200,
+                    "body": "v3",
+                    "encodedBody": false,
+                    "headers": {
+                        "Content-Type": [
+                            "text/plain"
+                        ]
+                    },
+                    "templated": false
+                }
+            }
+        ],
+        "globalActions": {
+            "delays": []
+        }
+    },
+    "meta": {
+        "schemaVersion": "v5",
+        "hoverflyVersion": "v1.1.1",
+        "timeExported": "2019-08-22T17:09:46+02:00"
+    }
+}
