@@ -15,6 +15,7 @@ package io.specto.hoverfly.junit.core;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -37,6 +38,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.specto.hoverfly.junit.api.HoverflyClient;
 import io.specto.hoverfly.junit.api.HoverflyClientException;
+import io.specto.hoverfly.junit.api.HoverflyClientFactory;
+import io.specto.hoverfly.junit.api.HoverflyOkHttpClientFactory;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.DiffView;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
@@ -83,7 +86,8 @@ public class Hoverfly implements AutoCloseable {
     private final HoverflyMode hoverflyMode;
     private final ProxyConfigurer proxyConfigurer;
     private final SslConfigurer sslConfigurer = new SslConfigurer();
-    private final HoverflyClient hoverflyClient;
+    private final HoverflyClientFactory hoverflyClientFactory;
+    private HoverflyClient hoverflyClient;
 
     private final TempFileManager tempFileManager = new TempFileManager();
     private StartedProcess startedProcess;
@@ -100,14 +104,8 @@ public class Hoverfly implements AutoCloseable {
     public Hoverfly(HoverflyConfig hoverflyConfigBuilder, HoverflyMode hoverflyMode) {
         hoverflyConfig = hoverflyConfigBuilder.build();
         this.proxyConfigurer = new ProxyConfigurer(hoverflyConfig);
-        this.hoverflyClient = HoverflyClient.custom()
-                .scheme(hoverflyConfig.getScheme())
-                .host(hoverflyConfig.getHost())
-                .port(hoverflyConfig.getAdminPort())
-                .withAuthToken()
-                .build();
         this.hoverflyMode = hoverflyMode;
-
+        this.hoverflyClientFactory = new HoverflyOkHttpClientFactory();
     }
 
     /**
@@ -139,7 +137,10 @@ public class Hoverfly implements AutoCloseable {
 
         if (!hoverflyConfig.isRemoteInstance()) {
             startHoverflyProcess();
-        } else {
+        }
+        this.hoverflyClient = hoverflyClientFactory.createHoverflyClient(hoverflyConfig);
+
+        if (hoverflyConfig.isRemoteInstance()) {
             resetJournal();
         }
 
@@ -152,7 +153,7 @@ public class Hoverfly implements AutoCloseable {
         }
 
         if (hoverflyConfig.getProxyCaCertificate().isPresent()) {
-          sslConfigurer.setDefaultSslContext(hoverflyConfig.getProxyCaCertificate().get());
+            sslConfigurer.setDefaultSslContext(hoverflyConfig.getProxyCaCertificate().get());
         } else if (StringUtils.isNotBlank(hoverflyConfig.getSslCertificatePath())) {
             sslConfigurer.setDefaultSslContext(hoverflyConfig.getSslCertificatePath());
         } else {
@@ -163,81 +164,90 @@ public class Hoverfly implements AutoCloseable {
     }
 
     private void startHoverflyProcess() {
-        checkPortInUse(hoverflyConfig.getProxyPort());
-        checkPortInUse(hoverflyConfig.getAdminPort());
+        synchronized (Hoverfly.class) {
 
-        final SystemConfig systemConfig = new SystemConfigFactory(hoverflyConfig).createSystemConfig();
+            if (hoverflyConfig.getProxyPort() == 0) {
+                hoverflyConfig.setProxyPort(findUnusedPort());
+            }
+            if (hoverflyConfig.getAdminPort() == 0) {
+                hoverflyConfig.setAdminPort(findUnusedPort());
+            }
+            checkPortInUse(hoverflyConfig.getProxyPort());
+            checkPortInUse(hoverflyConfig.getAdminPort());
 
-        if (hoverflyConfig.getBinaryLocation() != null) {
-            tempFileManager.setBinaryLocation(hoverflyConfig.getBinaryLocation());
-        }
-        Path binaryPath = tempFileManager.copyHoverflyBinary(systemConfig);
+            final SystemConfig systemConfig = new SystemConfigFactory(hoverflyConfig).createSystemConfig();
 
-        LOGGER.info("Executing binary at {}", binaryPath);
-        final List<String> commands = new ArrayList<>();
-        commands.add(binaryPath.toString());
+            if (hoverflyConfig.getBinaryLocation() != null) {
+                tempFileManager.setBinaryLocation(hoverflyConfig.getBinaryLocation());
+            }
+            Path binaryPath = tempFileManager.copyHoverflyBinary(systemConfig);
 
-        if (!hoverflyConfig.getCommands().isEmpty()) {
-            commands.addAll(hoverflyConfig.getCommands());
-        }
-        commands.add("-pp");
-        commands.add(String.valueOf(hoverflyConfig.getProxyPort()));
-        commands.add("-ap");
-        commands.add(String.valueOf(hoverflyConfig.getAdminPort()));
+            LOGGER.info("Executing binary at {}", binaryPath);
+            final List<String> commands = new ArrayList<>();
+            commands.add(binaryPath.toString());
 
-        if (StringUtils.isNotBlank(hoverflyConfig.getSslCertificatePath())) {
-            tempFileManager.copyClassPathResource(hoverflyConfig.getSslCertificatePath(), "ca.crt");
-            commands.add("-cert");
-            commands.add("ca.crt");
-        }
-        if (StringUtils.isNotBlank(hoverflyConfig.getSslKeyPath())) {
-            tempFileManager.copyClassPathResource(hoverflyConfig.getSslKeyPath(), "ca.key");
-            commands.add("-key");
-            commands.add("ca.key");
-        }
-        if (hoverflyConfig.isPlainHttpTunneling()) {
-            commands.add("-plain-http-tunneling");
-        }
+            if (!hoverflyConfig.getCommands().isEmpty()) {
+                commands.addAll(hoverflyConfig.getCommands());
+            }
+            commands.add("-pp");
+            commands.add(String.valueOf(hoverflyConfig.getProxyPort()));
+            commands.add("-ap");
+            commands.add(String.valueOf(hoverflyConfig.getAdminPort()));
 
-        if (hoverflyConfig.isWebServer()) {
-            commands.add("-webserver");
-        }
+            if (StringUtils.isNotBlank(hoverflyConfig.getSslCertificatePath())) {
+                tempFileManager.copyClassPathResource(hoverflyConfig.getSslCertificatePath(), "ca.crt");
+                commands.add("-cert");
+                commands.add("ca.crt");
+            }
+            if (StringUtils.isNotBlank(hoverflyConfig.getSslKeyPath())) {
+                tempFileManager.copyClassPathResource(hoverflyConfig.getSslKeyPath(), "ca.key");
+                commands.add("-key");
+                commands.add("ca.key");
+            }
+            if (hoverflyConfig.isPlainHttpTunneling()) {
+                commands.add("-plain-http-tunneling");
+            }
 
-        if (hoverflyConfig.isTlsVerificationDisabled()) {
-            commands.add("-tls-verification=false");
-        }
+            if (hoverflyConfig.isWebServer()) {
+                commands.add("-webserver");
+            }
 
-        if (hoverflyConfig.getHoverflyLogger().isPresent()) {
-            commands.add("-logs");
-            commands.add("json");
-        }
+            if (hoverflyConfig.isTlsVerificationDisabled()) {
+                commands.add("-tls-verification=false");
+            }
 
-        if (hoverflyConfig.getLogLevel().isPresent()) {
-            commands.add("-log-level");
-            commands.add(hoverflyConfig.getLogLevel().get().name().toLowerCase());
-        }
+            if (hoverflyConfig.getHoverflyLogger().isPresent()) {
+                commands.add("-logs");
+                commands.add("json");
+            }
 
-        if (hoverflyConfig.isMiddlewareEnabled()) {
-            final String path = hoverflyConfig.getLocalMiddleware().getPath();
-            final String scriptName = path.contains(File.separator) ? path.substring(path.lastIndexOf(File.separator) + 1) : path;
-            tempFileManager.copyClassPathResource(path, scriptName);
-            commands.add("-middleware");
-            commands.add(hoverflyConfig.getLocalMiddleware().getBinary() + " " + scriptName);
-        }
+            if (hoverflyConfig.getLogLevel().isPresent()) {
+                commands.add("-log-level");
+                commands.add(hoverflyConfig.getLogLevel().get().name().toLowerCase());
+            }
 
-        if (StringUtils.isNotBlank(hoverflyConfig.getUpstreamProxy())) {
-            commands.add("-upstream-proxy");
-            commands.add(hoverflyConfig.getUpstreamProxy());
-        }
+            if (hoverflyConfig.isMiddlewareEnabled()) {
+                final String path = hoverflyConfig.getLocalMiddleware().getPath();
+                final String scriptName = path.contains(File.separator) ? path.substring(path.lastIndexOf(File.separator) + 1) : path;
+                tempFileManager.copyClassPathResource(path, scriptName);
+                commands.add("-middleware");
+                commands.add(hoverflyConfig.getLocalMiddleware().getBinary() + " " + scriptName);
+            }
 
-        try {
-            startedProcess = new ProcessExecutor()
-                    .command(commands)
-                    .redirectOutput(hoverflyConfig.getHoverflyLogger().<OutputStream>map(LoggingOutputStream::new).orElse(System.out))
-                    .directory(tempFileManager.getTempDirectory().toFile())
-                    .start();
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not start Hoverfly process", e);
+            if (StringUtils.isNotBlank(hoverflyConfig.getUpstreamProxy())) {
+                commands.add("-upstream-proxy");
+                commands.add(hoverflyConfig.getUpstreamProxy());
+            }
+
+            try {
+                startedProcess = new ProcessExecutor()
+                        .command(commands)
+                        .redirectOutput(hoverflyConfig.getHoverflyLogger().<OutputStream>map(LoggingOutputStream::new).orElse(System.out))
+                        .directory(tempFileManager.getTempDirectory().toFile())
+                        .start();
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not start Hoverfly process", e);
+            }
         }
     }
 
@@ -505,6 +515,16 @@ public class Hoverfly implements AutoCloseable {
         JSON_PRETTY_PRINTER.writeValue(path.toFile(), simulation);
     }
 
+    /**
+     * Looks for an unused port on the current machine
+     */
+    private int findUnusedPort() {
+        try (final ServerSocket serverSocket = new ServerSocket(0)) {
+            return serverSocket.getLocalPort();
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot find available port", e);
+        }
+    }
 
     /**
      * Blocks until the Hoverfly process becomes healthy, otherwise time out

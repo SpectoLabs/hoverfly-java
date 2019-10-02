@@ -30,16 +30,6 @@ public class HoverflyConfigValidatorTest {
     }
 
     @Test
-    public void shouldAssignPortForLocalHoverflyInstanceIfNotConfigured() {
-
-        HoverflyConfiguration validated = localConfigs().build();
-
-
-        assertThat(validated.getProxyPort()).isNotZero();
-        assertThat(validated.getAdminPort()).isNotZero();
-    }
-
-    @Test
     public void shouldThrowExceptionIfOnlySslKeyIsConfigured() {
 
         assertThatThrownBy(() -> localConfigs().sslKeyPath("ssl/ca.key").build())
