@@ -9,7 +9,7 @@ test, then switch back into simulate mode using the simulation data recorded dur
 
 .. code-block:: java
 
-    try(Hoverfly hoverfly = new Hoverfly(configs(), CAPTURE)) {
+    try(Hoverfly hoverfly = new Hoverfly(localConfigs(), CAPTURE)) {
 
         hoverfly.start();
 
