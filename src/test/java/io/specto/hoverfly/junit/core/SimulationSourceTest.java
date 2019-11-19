@@ -12,13 +12,13 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.Set;
 
 import static io.specto.hoverfly.assertions.Assertions.assertThat;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -42,7 +42,7 @@ public class SimulationSourceTest {
 
     private static String getSimulation() {
         try {
-            return Resources.toString(Resources.getResource("test-service.json"), Charset.defaultCharset());
+            return Resources.toString(Resources.getResource("test-service.json"), UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

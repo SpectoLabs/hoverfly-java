@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
 
 import static io.specto.hoverfly.webserver.WebServerUtils.findUnusedPort;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ImportTestWebServer extends AbstractHandler {
 
@@ -50,7 +50,7 @@ public class ImportTestWebServer extends AbstractHandler {
         response.setContentType("application/json; charset=utf-8");
 
         final URL resourceUrl = Resources.getResource("test-service.json");
-        final String json = Resources.toString(resourceUrl, Charset.defaultCharset());
+        final String json = Resources.toString(resourceUrl, UTF_8);
 
         response.getWriter().write(json);
 

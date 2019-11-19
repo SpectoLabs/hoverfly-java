@@ -23,7 +23,7 @@ import java.nio.file.Paths;
 import java.util.Set;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
-import static java.nio.charset.Charset.defaultCharset;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CaptureModeTest {
@@ -45,8 +45,8 @@ public class CaptureModeTest {
     public static void after() throws IOException, JSONException {
 
         // Verify captured data is expected
-        final String expectedSimulation = Resources.toString(Resources.getResource(EXPECTED_SIMULATION_JSON), defaultCharset());
-        final String actualSimulation = new String(Files.readAllBytes(RECORDED_SIMULATION_FILE), defaultCharset());
+        final String expectedSimulation = Resources.toString(Resources.getResource(EXPECTED_SIMULATION_JSON), UTF_8);
+        final String actualSimulation = new String(Files.readAllBytes(RECORDED_SIMULATION_FILE), UTF_8);
         JSONAssert.assertEquals(expectedSimulation, actualSimulation, JSONCompareMode.LENIENT);
 
         // Verify headers are captured

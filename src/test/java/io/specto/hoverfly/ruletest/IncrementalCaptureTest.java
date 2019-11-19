@@ -5,7 +5,10 @@ import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import io.specto.hoverfly.webserver.CaptureModeTestWebServer;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -16,7 +19,7 @@ import java.nio.file.Paths;
 import java.util.Set;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
-import static java.nio.charset.Charset.defaultCharset;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class IncrementalCaptureTest {
@@ -63,7 +66,7 @@ public class IncrementalCaptureTest {
     public static void afterAll() throws IOException {
 
         // Verify captured data is expected
-        final String actualSimulation = new String(Files.readAllBytes(SIMULATION_FILE), defaultCharset());
+        final String actualSimulation = new String(Files.readAllBytes(SIMULATION_FILE), UTF_8);
 
         // Verify headers are captured
         ObjectMapper objectMapper = new ObjectMapper();

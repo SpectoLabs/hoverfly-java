@@ -3,12 +3,6 @@ package io.specto.hoverfly.junit.core;
 import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import io.specto.hoverfly.webserver.CaptureModeTestWebServer;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.junit.AfterClass;
@@ -19,8 +13,15 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
-import static java.nio.charset.Charset.defaultCharset;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class MultiCaptureTest {
 
@@ -89,13 +90,13 @@ public class MultiCaptureTest {
     // We have to assert after the rule has executed because that's when the classpath is written to the filesystem
     @AfterClass
     public static void after() throws IOException, JSONException {
-        final String expectedSimulation = Resources.toString(Resources.getResource(EXPECTED_SIMULATION_JSON), defaultCharset());
-        final String otherExpectedSimulation = Resources.toString(Resources.getResource(OTHER_EXPECTED_SIMULATION_JSON), defaultCharset());
+        final String expectedSimulation = Resources.toString(Resources.getResource(EXPECTED_SIMULATION_JSON), UTF_8);
+        final String otherExpectedSimulation = Resources.toString(Resources.getResource(OTHER_EXPECTED_SIMULATION_JSON), UTF_8);
 
-        final String firstActualSimulation = new String(Files.readAllBytes(FIRST_RECORDED_SIMULATION_FILE), defaultCharset());
-        final String secondActualSimulation = new String(Files.readAllBytes(SECOND_RECORDED_SIMULATION_FILE), defaultCharset());
-        final String thirdActualSimulation = new String(Files.readAllBytes(THIRD_RECORDED_SIMULATION_FILE), defaultCharset());
-        final String forthActualSimulation = new String(Files.readAllBytes(FORTH_RECORDED_SIMULATION_FILE), defaultCharset());
+        final String firstActualSimulation = new String(Files.readAllBytes(FIRST_RECORDED_SIMULATION_FILE), UTF_8);
+        final String secondActualSimulation = new String(Files.readAllBytes(SECOND_RECORDED_SIMULATION_FILE), UTF_8);
+        final String thirdActualSimulation = new String(Files.readAllBytes(THIRD_RECORDED_SIMULATION_FILE), UTF_8);
+        final String forthActualSimulation = new String(Files.readAllBytes(FORTH_RECORDED_SIMULATION_FILE), UTF_8);
 
         JSONAssert.assertEquals(expectedSimulation, firstActualSimulation, JSONCompareMode.LENIENT);
         JSONAssert.assertEquals(otherExpectedSimulation, secondActualSimulation, JSONCompareMode.LENIENT);

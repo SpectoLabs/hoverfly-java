@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -59,7 +60,7 @@ class HoverflyUtils {
 
 
     static String convertStreamToString(InputStream is) {
-        Scanner s = new Scanner(is).useDelimiter("\\A");
+        Scanner s = new Scanner(is, StandardCharsets.UTF_8.name()).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
 
