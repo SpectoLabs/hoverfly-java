@@ -13,7 +13,7 @@ import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class HoverflyClientTest {
+public class HoverflyOkHttpClientFactoryTest {
 
 
     @Rule
@@ -30,7 +30,7 @@ public class HoverflyClientTest {
                     .get("/api/health")
                     .willReturn(success())
         ));
-        HoverflyClient hoverflyClient = HoverflyClient.custom()
+        HoverflyClient hoverflyClient = HoverflyOkHttpClientFactory.custom()
                 .port(9999)
                 .build();
 
@@ -46,7 +46,7 @@ public class HoverflyClientTest {
                         .header("Authorization", "Bearer some-token")
                     .willReturn(success())
         ));
-        HoverflyClient hoverflyClient = HoverflyClient.custom()
+        HoverflyClient hoverflyClient = HoverflyOkHttpClientFactory.custom()
                 .host("remote.host")
                 .port(12345)
                 .withAuthToken()
@@ -62,7 +62,7 @@ public class HoverflyClientTest {
                     .get("/api/health")
                     .willReturn(success())
         ));
-        HoverflyClient defaultClient = HoverflyClient.createDefault();
+        HoverflyClient defaultClient = HoverflyOkHttpClientFactory.createDefault();
 
         assertThat(defaultClient.getHealth()).isTrue();
     }

@@ -28,8 +28,6 @@ public class HoverflyConfigTest {
         assertThat(configs.getHost()).isEqualTo("localhost");
         assertThat(configs.getScheme()).isEqualTo("http");
         assertThat(configs.isWebServer()).isFalse();
-        assertThat(configs.getAdminPort()).isGreaterThan(0);
-        assertThat(configs.getProxyPort()).isGreaterThan(0);
         assertThat(configs.getSslCertificatePath()).isNull();
         assertThat(configs.getSslKeyPath()).isNull();
 

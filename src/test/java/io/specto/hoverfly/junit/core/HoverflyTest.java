@@ -10,8 +10,10 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.api.HoverflyClient;
 import io.specto.hoverfly.junit.api.HoverflyClientException;
+import io.specto.hoverfly.junit.api.HoverflyClientFactory;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
+import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.config.LocalHoverflyConfig;
 import io.specto.hoverfly.junit.core.config.LogLevel;
 import io.specto.hoverfly.junit.core.model.DelaySettings;
@@ -228,7 +230,6 @@ public class HoverflyTest {
     }
 
 
-
     @Test
     public void shouldThrowExceptionWhenExportSimulationWithoutPath() {
 
@@ -395,9 +396,9 @@ public class HoverflyTest {
     public void shouldResetSimulationJournalAndStateWhenCallingReset() {
 
         hoverfly = new Hoverfly(SIMULATE);
-
         HoverflyClient hoverflyClient = createMockHoverflyClient(hoverfly);
         when(hoverflyClient.getHealth()).thenReturn(true);
+        hoverfly.start();
 
         hoverfly.reset();
 
@@ -407,7 +408,7 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldCopySslCertAndKeyToTempFolderIfPresent () {
+    public void shouldCopySslCertAndKeyToTempFolderIfPresent() {
         // Given
         hoverfly = new Hoverfly(localConfigs().caCert("ssl/ca.crt", "ssl/ca.key"), SIMULATE);
         TempFileManager tempFileManager = spy(TempFileManager.class);
@@ -422,13 +423,13 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldCopyMiddlewareScriptToTempFolderIfLocalMiddlewareEnabled () {
+    public void shouldCopyMiddlewareScriptToTempFolderIfLocalMiddlewareEnabled() {
         String rawFilename = "middleware.py";
         String path = "middleware" + File.separator + rawFilename;
 
         // Given
         hoverfly = new Hoverfly(localConfigs()
-           .localMiddleware("python", path), SIMULATE);
+                .localMiddleware("python", path), SIMULATE);
         TempFileManager tempFileManager = spy(TempFileManager.class);
         Whitebox.setInternalState(hoverfly, "tempFileManager", tempFileManager);
 
@@ -456,10 +457,13 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldValidateHoverflyConfigBeforeStart() {
+    public void shouldFindUnusedPortWhenStarted() {
 
         hoverfly = new Hoverfly(SIMULATE);
+        assertThat(hoverfly.getHoverflyConfig().getProxyPort()).isZero();
+        assertThat(hoverfly.getHoverflyConfig().getAdminPort()).isZero();
 
+        hoverfly.start();
         assertThat(hoverfly.getHoverflyConfig().getProxyPort()).isNotZero();
         assertThat(hoverfly.getHoverflyConfig().getAdminPort()).isNotZero();
     }
@@ -562,18 +566,18 @@ public class HoverflyTest {
     @Test
     public void shouldResetModeWithModeArguments() {
         hoverfly = new Hoverfly(localConfigs().captureAllHeaders().enableStatefulCapture(), CAPTURE);
-
         HoverflyClient hoverflyClient = createMockHoverflyClient(hoverfly);
+        when(hoverflyClient.getHealth()).thenReturn(true);
+        hoverfly.start();
 
         hoverfly.resetMode(CAPTURE);
 
         final ArgumentCaptor<ModeArguments> arguments = ArgumentCaptor.forClass(ModeArguments.class);
-        verify(hoverflyClient).setMode(eq(HoverflyMode.CAPTURE), arguments.capture());
+        verify(hoverflyClient, times(2)).setMode(eq(HoverflyMode.CAPTURE), arguments.capture());
 
         assertThat(arguments.getValue().isStateful()).isTrue();
         assertThat(arguments.getValue().getHeadersWhitelist()).containsOnly("*");
     }
-
 
 
     @Test
@@ -591,7 +595,9 @@ public class HoverflyTest {
 
         hoverfly = new Hoverfly(SIMULATE);
         HoverflyClient hoverflyClient = createMockHoverflyClient(hoverfly);
+        when(hoverflyClient.getHealth()).thenReturn(true);
         doThrow(HoverflyClientException.class).when(hoverflyClient).deleteJournal();
+        hoverfly.start();
 
         hoverfly.resetJournal();
 
@@ -616,7 +622,9 @@ public class HoverflyTest {
         // given
         hoverfly = new Hoverfly(DIFF);
         HoverflyClient hoverflyClient = createMockHoverflyClient(hoverfly);
+        when(hoverflyClient.getHealth()).thenReturn(true);
         doThrow(HoverflyClientException.class).when(hoverflyClient).cleanDiffs();
+        hoverfly.start();
 
         // when
         hoverfly.resetDiffs();
@@ -707,7 +715,9 @@ public class HoverflyTest {
 
     private HoverflyClient createMockHoverflyClient(Hoverfly hoverfly) {
         HoverflyClient hoverflyClient = mock(HoverflyClient.class);
-        Whitebox.setInternalState(hoverfly, "hoverflyClient", hoverflyClient);
+        HoverflyClientFactory clientFactory = mock(HoverflyClientFactory.class);
+        when(clientFactory.createHoverflyClient(any(HoverflyConfiguration.class))).thenReturn(hoverflyClient);
+        Whitebox.setInternalState(hoverfly, "hoverflyClientFactory", clientFactory);
         return hoverflyClient;
     }
 

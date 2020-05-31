@@ -47,15 +47,7 @@ class HoverflyConfigValidator {
             if (isKeyBlank && !isCertBlank || !isKeyBlank && isCertBlank) {
                 throw new IllegalArgumentException("Both SSL key and certificate files are required to override the default Hoverfly SSL.");
             }
-            // Validate proxy port
-            if (hoverflyConfig.getProxyPort() == 0) {
-                hoverflyConfig.setProxyPort(findUnusedPort());
-            }
 
-            // Validate admin port
-            if (hoverflyConfig.getAdminPort() == 0) {
-                hoverflyConfig.setAdminPort(findUnusedPort());
-            }
         }
 
         // Check proxy CA cert exists
@@ -64,18 +56,6 @@ class HoverflyConfigValidator {
         }
 
         return hoverflyConfig;
-    }
-
-
-    /**
-     * Looks for an unused port on the current machine
-     */
-    private static int findUnusedPort() {
-        try (final ServerSocket serverSocket = new ServerSocket(0)) {
-            return serverSocket.getLocalPort();
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot find available port", e);
-        }
     }
 
     private void checkResourceOnClasspath(String resourceName) {
