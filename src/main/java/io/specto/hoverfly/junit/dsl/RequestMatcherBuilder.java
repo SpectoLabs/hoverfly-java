@@ -28,16 +28,17 @@ import static java.util.Collections.singletonList;
  */
 public class RequestMatcherBuilder {
 
-    private StubServiceBuilder invoker;
+    private final StubServiceBuilder invoker;
     private final List<RequestFieldMatcher> method;
     private final List<RequestFieldMatcher> scheme;
     private final List<RequestFieldMatcher> destination;
     private final List<RequestFieldMatcher> path;
     private final Map<String, List<RequestFieldMatcher>> headers = new HashMap<>();
     private final Map<String, String> requiresState = new HashMap<>();
-    private Map<String, List<RequestFieldMatcher>> query = new HashMap<>(); // default to match on empty query
-    private List<RequestFieldMatcher> body = singletonList(newExactMatcher("")); // default to match on empty body
-
+    private final Map<String, List<RequestFieldMatcher>> query = new HashMap<>(); // default to match on empty query
+    private final List<RequestFieldMatcher> body = new ArrayList<>();
+    private boolean isAnyBody = false;
+    private boolean isAnyQuery = false;
 
     RequestMatcherBuilder(final StubServiceBuilder invoker,
                           final StubServiceBuilder.HttpMethod method,
@@ -57,7 +58,7 @@ public class RequestMatcherBuilder {
      * @return the {@link RequestMatcherBuilder} for further customizations
      */
     public RequestMatcherBuilder body(final String body) {
-        this.body = singletonList(newExactMatcher(body));
+        this.body.add(newExactMatcher(body));
         return this;
     }
 
@@ -67,17 +68,17 @@ public class RequestMatcherBuilder {
      * @return the {@link RequestMatcherBuilder} for further customizations
      */
     public RequestMatcherBuilder body(HttpBodyConverter httpBodyConverter) {
-        this.body = singletonList(newExactMatcher(httpBodyConverter.body()));
+        this.body.add(newExactMatcher(httpBodyConverter.body()));
         return this;
     }
 
     public RequestMatcherBuilder body(RequestFieldMatcher matcher) {
-        this.body = singletonList(matcher);
+        this.body.add(matcher);
         return this;
     }
 
     public RequestMatcherBuilder anyBody() {
-        this.body = null;
+        this.isAnyBody = true;
         return this;
     }
 
@@ -156,7 +157,7 @@ public class RequestMatcherBuilder {
      * @return the {@link RequestMatcherBuilder} for further customizations
      */
     public RequestMatcherBuilder anyQueryParams() {
-        query = null;
+        this.isAnyQuery = true;
         return this;
     }
 
@@ -175,6 +176,12 @@ public class RequestMatcherBuilder {
 
     public Request build() {
 
+        if (body.isEmpty()) {
+            body.add(newExactMatcher("")); // default to match on empty body
+        }
+
+        Map<String, List<RequestFieldMatcher>> query = isAnyQuery ? null : this.query;
+        List<RequestFieldMatcher> body = isAnyBody ? null : this.body;
         return new Request(path, method, destination, scheme, query, null, body, headers, requiresState);
     }
 
