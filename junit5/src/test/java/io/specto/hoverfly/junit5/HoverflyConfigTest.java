@@ -48,6 +48,7 @@ class HoverflyConfigTest {
             assertThat(configs.getClientKeyPath()).isNull();
             assertThat(configs.getClientAuthDestination()).isNull();
             assertThat(configs.getClientCaCertPath()).isNull();
+            assertThat(configs.getBinaryLocation()).isNull();
         }
     }
 

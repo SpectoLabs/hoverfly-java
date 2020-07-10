@@ -130,4 +130,9 @@ public @interface HoverflyConfig {
      * Client CA certificate file in classpath. Must be a PEM encoded certificate, with .crt or .pem extensions
      */
     String clientCaCertPath() default "";
+
+    /**
+     * Overrides the default path for Hoverfly binary and working directory.
+     */
+    String binaryLocation() default "";
 }

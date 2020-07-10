@@ -40,6 +40,9 @@ class HoverflyExtensionUtils {
                         .enableClientAuth(config.clientCertPath(), config.clientKeyPath(), config.clientAuthDestination())
                         .clientAuthCaCertPath(config.clientCaCertPath());
                 }
+                if (StringUtils.isNotBlank(config.binaryLocation())) {
+                    ((LocalHoverflyConfig) configs).binaryLocation(config.binaryLocation());
+                }
                 if (config.plainHttpTunneling()) {
                     ((LocalHoverflyConfig) configs).plainHttpTunneling();
                 }
