@@ -1,38 +1,31 @@
 package io.specto.hoverfly.junit.core.model;
 
 
+import static io.specto.hoverfly.junit.core.model.RequestFieldMatcher.newExactMatcher;
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.Collections;
-
-import static io.specto.hoverfly.junit.core.model.RequestFieldMatcher.*;
-import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class SimulationTest {
 
     
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private URL v1Resource = Resources.getResource("simulations/v1-simulation.json");
-    private URL v1ResourceWithLooseMatching = Resources.getResource("simulations/v1-simulation-with-loose-matching.json");
-    private URL v1ResourceWithRecording = Resources.getResource("simulations/v1-simulation-with-recording.json");
-    private URL v2Resource = Resources.getResource("simulations/v2-simulation.json");
-    private URL v3Resource = Resources.getResource("simulations/v3-simulation.json");
-    private URL v4Resource = Resources.getResource("simulations/v4-simulation.json");
-    private URL v5Resource = Resources.getResource("simulations/v5-simulation.json");
-    private URL v5ResourceWithoutGlobalActions = Resources.getResource("simulations/v5-simulation-without-global-actions.json");
-    private URL v5ResourceWithUnknownFields = Resources.getResource("simulations/v5-simulation-with-unknown-fields.json");
+    private final URL v5Resource = Resources.getResource("simulations/v5-simulation.json");
+    private final URL v5ResourceWithoutGlobalActions = Resources.getResource("simulations/v5-simulation-without-global-actions.json");
+    private final URL v5ResourceWithUnknownFields = Resources.getResource("simulations/v5-simulation-with-unknown-fields.json");
 
 
     @Test
@@ -56,7 +49,7 @@ public class SimulationTest {
         String actual = objectMapper.writeValueAsString(simulation);
 
         // then
-        String expected = Resources.toString(v5Resource, Charset.forName("UTF-8"));
+        String expected = Resources.toString(v5Resource, StandardCharsets.UTF_8);
         JSONAssert.assertEquals(expected, actual, JSONCompareMode.STRICT);
     }
 
@@ -74,7 +67,7 @@ public class SimulationTest {
 
     @Test
     public void shouldNotIncludeNullGlobalActionsFieldWhenSerialize() throws Exception{
-        String expected = Resources.toString(v5ResourceWithoutGlobalActions, Charset.forName("UTF-8"));
+        String expected = Resources.toString(v5ResourceWithoutGlobalActions, StandardCharsets.UTF_8);
 
         Simulation simulation = objectMapper.readValue(expected, Simulation.class);
 

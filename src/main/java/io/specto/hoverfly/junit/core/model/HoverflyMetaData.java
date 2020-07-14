@@ -26,12 +26,12 @@ public class HoverflyMetaData {
 
     private static final List<String> EXCLUDED_FIELDS = Arrays.asList("hoverflyVersion", "timeExported");
 
-    private String schemaVersion;
+    private final String schemaVersion;
     private String hoverflyVersion;
     private String timeExported;
 
     public HoverflyMetaData() {
-        schemaVersion = "v5";
+        schemaVersion = "v5.1";
     }
 
     @JsonCreator

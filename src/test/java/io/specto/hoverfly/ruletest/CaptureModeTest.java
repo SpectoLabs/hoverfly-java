@@ -38,7 +38,7 @@ public class CaptureModeTest {
             localConfigs().captureAllHeaders().proxyLocalHost());
 
     private URI webServerBaseUrl;
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     // We have to assert after the rule has executed because that's when the classpath is written to the filesystem
     @AfterClass
