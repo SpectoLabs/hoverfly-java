@@ -53,6 +53,14 @@ If you are developing behind a cooperate proxy, you can configure Hoverfly to us
     localConfigs().upstreamProxy(new InetSocketAddress("127.0.0.1", 8900))
 
 
+By default Hoverfly binary is copied to the system temporary folder to run. In some cases, you may not have permission to write to the temporary folder, eg. in CI server,
+what you can do is to specify a different Hoverfly working directory:
+
+.. code-block:: java
+
+    localConfigs().binaryLocation("/absolute/path/to/hoverfly/directory")
+
+
 Logging
 -------
 Hoverfly logs to SLF4J by default, meaning that you have control of Hoverfly logs using JAVA logging framework.

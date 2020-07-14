@@ -162,6 +162,11 @@ public class LocalHoverflyConfig extends HoverflyConfig {
         return this;
     }
 
+    /**
+     * Overrides the default path for Hoverfly binary and working directory.
+     * @param binaryLocation absolute path for the Hoverfly working directory
+     * @return the {@link LocalHoverflyConfig} for further customizations
+     */
     public HoverflyConfig binaryLocation(String binaryLocation) {
         this.binaryLocation = binaryLocation;
         return this;
