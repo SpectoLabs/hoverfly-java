@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(HoverflyExtension.class)
 class HoverflyDefaultCoreTest {
 
-    private OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client = new OkHttpClient();
 
     @Test
     void shouldBeAbleToSimulate(Hoverfly hoverfly) throws IOException {
