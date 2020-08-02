@@ -1,5 +1,31 @@
 package io.specto.hoverfly.junit.core;
 
+import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
+import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
+import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
+import static io.specto.hoverfly.junit.core.HoverflyMode.DIFF;
+import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
+import static io.specto.hoverfly.junit.core.HoverflyMode.SPY;
+import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
+import static java.lang.String.format;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.Assume.assumeTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.OK;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -18,6 +44,19 @@ import io.specto.hoverfly.junit.core.model.DelaySettings;
 import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 import io.specto.hoverfly.junit.core.model.Simulation;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.net.ssl.SSLContext;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -35,36 +74,15 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.zeroturnaround.exec.StartedProcess;
 
-import javax.net.ssl.SSLContext;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
-import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
-import static io.specto.hoverfly.junit.core.HoverflyMode.*;
-import static io.specto.hoverfly.junit.core.SimulationSource.classpath;
-import static java.lang.String.format;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assume.assumeTrue;
-import static org.mockito.Mockito.*;
-import static org.springframework.http.HttpStatus.OK;
-
 public class HoverflyTest {
+
+    private static final int EXPECTED_PROXY_PORT = 8890;
 
     @Rule
     public final SystemOutRule systemOut = new SystemOutRule();
 
-    private static final int EXPECTED_PROXY_PORT = 8890;
+    private final ObjectMapper mapper = new ObjectMapper();
     private Hoverfly hoverfly;
-    private ObjectMapper mapper = new ObjectMapper();
 
     @Test
     public void shouldStartHoverflyOnConfiguredPort() {
@@ -666,9 +684,8 @@ public class HoverflyTest {
     }
 
     @Test
-    public void shouldStartHoverflyFromCustomBinaryLocation() {
-        final String os = System.getProperty("os.name").toLowerCase();
-        assumeTrue("Currently this case is tested only in Windows, in Linux ps may be used", os.contains("windows"));
+    public void shouldStartHoverflyFromCustomBinaryLocationForWindows() {
+        assumeTrue("Currently this case is tested only in Windows, in Linux ps may be used", SystemUtils.IS_OS_WINDOWS);
 
         final String binaryLocation = "build/tmp";
         clearBinaryFiles(binaryLocation);
@@ -683,8 +700,23 @@ public class HoverflyTest {
         assertThat(exes.length).isEqualTo(1);
     }
 
+    @Test
+    public void shouldStartHoverflyFromCustomBinaryLocation() {
+
+        assumeTrue("Test case for Mac OS only", !SystemUtils.IS_OS_WINDOWS);
+
+        final String binaryLocation = "build/tmp";
+        Path hoverflyBinary = Paths.get(binaryLocation).resolve(new SystemConfigFactory().createSystemConfig().getHoverflyBinaryName()).toAbsolutePath();
+        assertThat(Files.exists(hoverflyBinary)).isFalse();
+
+        hoverfly = new Hoverfly(localConfigs().binaryLocation(binaryLocation), SIMULATE);
+        hoverfly.start();
+
+        assertThat(Files.exists(hoverflyBinary)).isTrue();
+    }
+
     private void clearBinaryFiles(final String binaryLocation) {
-        Arrays.stream(getBinaryFiles(binaryLocation)).forEach(f -> f.delete());
+        Arrays.stream(getBinaryFiles(binaryLocation)).forEach(File::delete);
     }
 
     private File[] getBinaryFiles(final String binaryLocation) {

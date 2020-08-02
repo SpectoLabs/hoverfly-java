@@ -9,7 +9,7 @@ class SystemConfigFactory {
 
     static final String DEFAULT_BINARY_NAME_FORMAT = "hoverfly_%s_%s%s";
 
-    private SystemInfo systemInfo = new SystemInfo();
+    private final SystemInfo systemInfo = new SystemInfo();
     private HoverflyConfiguration configs;
 
     SystemConfigFactory() {

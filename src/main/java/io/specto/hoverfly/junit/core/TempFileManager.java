@@ -110,7 +110,7 @@ class TempFileManager {
     }
 
     void setBinaryLocation(String binaryLocation) {
-        this.tempDirectory = Paths.get(binaryLocation);
+        this.tempDirectory = Paths.get(binaryLocation).toAbsolutePath();
     }
 
 }
