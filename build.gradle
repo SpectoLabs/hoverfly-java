@@ -54,6 +54,7 @@ dependencies {
     testCompile 'com.github.stefanbirkner:system-rules:1.19.0'
     testCompile 'io.projectreactor.ipc:reactor-netty:0.7.12.RELEASE'
     testCompile 'io.projectreactor:reactor-test:3.2.3.RELEASE'
+    testCompile 'org.awaitility:awaitility:4.0.3'
 }
 
 allprojects { subproj ->
