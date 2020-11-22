@@ -6,6 +6,8 @@ import com.google.common.collect.Iterables;
 import io.specto.hoverfly.junit.core.model.Request;
 import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
+import io.specto.hoverfly.junit.core.model.Response;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -538,6 +540,38 @@ public class StubServiceBuilderTest {
             .containsOnly(
                 entry("firstStateKey", "firstStateValue"),
                 entry("secondStateKey", "secondStateValue"));
+    }
+
+    @Test
+    public void shouldBeAbleToSetFixedDelay() {
+
+        final RequestResponsePair pair = service("https://www.my-test.com")
+            .get("/")
+            .willReturn(response().withFixedDelay(10, TimeUnit.SECONDS))
+            .getRequestResponsePairs()
+            .iterator().next();
+
+        assertThat(pair.getResponse().getFixedDelay()).isEqualTo(10000);
+    }
+
+    @Test
+    public void shouldSetDefaultValuesForResponse() {
+
+        Response response = service("https://www.my-test.com")
+            .get("/")
+            .willReturn(response())
+            .getRequestResponsePairs()
+            .iterator().next()
+            .getResponse();
+
+        assertThat(response.getFixedDelay()).isEqualTo(0);
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getBody()).isEmpty();
+        assertThat(response.getHeaders()).isEmpty();
+        assertThat(response.getTransitionsState()).isEmpty();
+        assertThat(response.getRemovesState()).isEmpty();
+        assertThat(response.isEncodedBody()).isFalse();
+        assertThat(response.isTemplated()).isTrue();
     }
 
     private void assertExactMatcherForMethod(RequestMatcherBuilder builder, String method) {
