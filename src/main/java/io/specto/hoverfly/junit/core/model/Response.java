@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import sun.rmi.runtime.Log;
 
 import java.util.List;
 import java.util.Map;
@@ -34,18 +35,19 @@ public class Response {
     private final Map<String, String> transitionsState;
     private final List<String> removesState;
     private final Integer fixedDelay;
-
+    private final LogNormalDelay logNormalDelay;
 
     @JsonCreator
     public Response(
-        @JsonProperty("status") Integer status,
-        @JsonProperty("body") String body,
-        @JsonProperty("encodedBody") boolean encodedBody,
-        @JsonProperty("templated") boolean templated,
-        @JsonProperty("headers") Map<String, List<String>> headers,
-        @JsonProperty("transitionsState") Map<String, String> transitionsState,
-        @JsonProperty("removesState") List<String> removesState,
-        @JsonProperty("fixedDelay") Integer fixedDelay) {
+            @JsonProperty("status") Integer status,
+            @JsonProperty("body") String body,
+            @JsonProperty("encodedBody") boolean encodedBody,
+            @JsonProperty("templated") boolean templated,
+            @JsonProperty("headers") Map<String, List<String>> headers,
+            @JsonProperty("transitionsState") Map<String, String> transitionsState,
+            @JsonProperty("removesState") List<String> removesState,
+            @JsonProperty("fixedDelay") Integer fixedDelay,
+            @JsonProperty("logNormalDelay") LogNormalDelay logNormalDelay) {
         this.status = status;
         this.body = body;
         this.encodedBody = encodedBody;
@@ -54,6 +56,7 @@ public class Response {
         this.transitionsState = transitionsState;
         this.removesState = removesState;
         this.fixedDelay = fixedDelay;
+        this.logNormalDelay = logNormalDelay;
     }
 
     public Integer getStatus() {
@@ -89,6 +92,10 @@ public class Response {
         return fixedDelay;
     }
 
+    public LogNormalDelay getLogNormalDelay() {
+        return logNormalDelay;
+    }
+
     static class Builder {
         private Integer status;
         private String body;
@@ -98,6 +105,7 @@ public class Response {
         private Map<String, String> transitionsState;
         private List<String> removesState;
         private Integer fixedDelay;
+        private LogNormalDelay logNormalDelay;
 
         Builder status(int status) {
             this.status = status;
@@ -139,8 +147,13 @@ public class Response {
             return this;
         }
 
+        Builder logNormalDelay(int min, int max, int mean, int median) {
+            this.logNormalDelay = new LogNormalDelay(min, max, mean, median);
+            return this;
+        }
+
         Response build() {
-            return new Response(status, body, encodedBody, templated, headers, transitionsState, removesState, fixedDelay);
+            return new Response(status, body, encodedBody, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay);
         }
     }
 

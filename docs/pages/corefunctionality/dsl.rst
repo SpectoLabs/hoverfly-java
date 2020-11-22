@@ -52,10 +52,19 @@ Per-request delay can be set as follows:
 
 .. code-block:: java
 
+    // Fixed delay
     SimulationSource.dsl(
         service("www.not-so-slow-service.com")
             .get("/api/bookings")
             .willReturn(success().withFixedDelay(1, TimeUnit.SECONDS))
+        )
+    )
+
+    // Log Normal random delay
+    SimulationSource.dsl(
+        service("www.not-so-slow-service.com")
+            .get("/api/bookings")
+            .willReturn(success().withLogNormalDelay(2, 1, TimeUnit.SECONDS))
         )
     )
 

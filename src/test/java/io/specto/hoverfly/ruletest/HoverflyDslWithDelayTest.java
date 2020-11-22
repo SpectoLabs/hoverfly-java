@@ -9,13 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.contains;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.endsWith;
-import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.equalsTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class HoverflyDslWithDelayTest {
@@ -43,7 +43,12 @@ public class HoverflyDslWithDelayTest {
             // Fixed delay for a particular request matcher
             service("www.not-so-slow-service.com")
                     .get("/api/bookings")
-                    .willReturn(success().withFixedDelay(1, TimeUnit.SECONDS))
+                    .willReturn(success().withFixedDelay(1, TimeUnit.SECONDS)),
+
+            // Log Normal random delay for a particular request matcher
+            service("www.random-slow-service.com")
+                    .get("/api/bookings")
+                    .willReturn(success().withLogNormalDelay(800, 500, 100, 1000, TimeUnit.MILLISECONDS))
 
     )).printSimulationData();
 
@@ -53,56 +58,46 @@ public class HoverflyDslWithDelayTest {
     @Test
     public void shouldBeAbleToDelayRequestByHost() {
 
-        // When
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        final ResponseEntity<Void> bookingResponse = restTemplate.getForEntity("http://www.slow-service.com/api/bookings", Void.class);
-        stopWatch.stop();
-        long time = stopWatch.getTime();
-
-        // Then
-        assertThat(bookingResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(TimeUnit.MILLISECONDS.toSeconds(time)).isGreaterThanOrEqualTo(3L);
+        long latency = getLatency(() -> restTemplate.getForEntity("http://www.slow-service.com/api/bookings", Void.class));
+        assertThat(TimeUnit.MILLISECONDS.toSeconds(latency)).isGreaterThanOrEqualTo(3L);
     }
 
     @Test
     public void shouldBeAbleToDelayRequestByHttpMethod() {
 
-        // When
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        final ResponseEntity<Void> postResponse = restTemplate.postForEntity("http://www.other-slow-service.com/api/bookings", null, Void.class);
-        stopWatch.stop();
-        long postTime = stopWatch.getTime();
+        long latencyForPost = getLatency(() -> restTemplate.postForEntity("http://www.other-slow-service.com/api/bookings", null, Void.class));
+        assertThat(TimeUnit.MILLISECONDS.toSeconds(latencyForPost)).isGreaterThanOrEqualTo(3L);
 
-        // Then
-        assertThat(postResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(TimeUnit.MILLISECONDS.toSeconds(postTime)).isGreaterThanOrEqualTo(3L);
-
-        // When
-        stopWatch.reset();
-        stopWatch.start();
-        final ResponseEntity<Void> getResponse = restTemplate.getForEntity("http://www.other-slow-service.com/api/bookings", Void.class);
-        stopWatch.stop();
-        long getTime = stopWatch.getTime();
-
-        // Then
-        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(TimeUnit.MILLISECONDS.toSeconds(getTime)).isLessThan(3L);
+        long latencyForGet = getLatency(() -> restTemplate.getForEntity("http://www.other-slow-service.com/api/bookings", Void.class));
+        assertThat(TimeUnit.MILLISECONDS.toSeconds(latencyForGet)).isLessThan(3L);
     }
 
     @Test
     public void shouldBeAbleToAddFixedDelayPerRequestMatcher() {
 
-        // When
+        long latency = getLatency(() -> restTemplate.getForEntity("http://www.not-so-slow-service.com/api/bookings", Void.class));
+        assertThat(TimeUnit.MILLISECONDS.toSeconds(latency)).isLessThan(3L).isGreaterThanOrEqualTo(1L);
+    }
+
+    @Test
+    public void shouldBeAbleToAddLogNormalRandomDelayPerRequestMatcher() {
+
+        long latency1 = getLatency(() -> restTemplate.getForEntity("http://www.random-slow-service.com/api/bookings", Void.class));
+        long latency2 = getLatency(() -> restTemplate.getForEntity("http://www.random-slow-service.com/api/bookings", Void.class));
+
+        assertThat(latency1).isLessThanOrEqualTo(1000).isGreaterThanOrEqualTo(100);
+        assertThat(latency2).isLessThanOrEqualTo(1000).isGreaterThanOrEqualTo(100);
+        assertThat(latency2).isNotEqualTo(latency1);
+    }
+
+
+    private long getLatency(Supplier<ResponseEntity<Void>> httpRequest) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        final ResponseEntity<Void> getResponse = restTemplate.getForEntity("http://www.not-so-slow-service.com/api/bookings", Void.class);
+        final ResponseEntity<Void> getResponse = httpRequest.get();
         stopWatch.stop();
         long getTime = stopWatch.getTime();
-
-        // Then
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(TimeUnit.MILLISECONDS.toSeconds(getTime)).isLessThan(3L).isGreaterThanOrEqualTo(1L);
+        return getTime;
     }
 }

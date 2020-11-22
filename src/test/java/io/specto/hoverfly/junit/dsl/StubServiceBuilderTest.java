@@ -3,10 +3,8 @@ package io.specto.hoverfly.junit.dsl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Iterables;
-import io.specto.hoverfly.junit.core.model.Request;
-import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
-import io.specto.hoverfly.junit.core.model.RequestResponsePair;
-import io.specto.hoverfly.junit.core.model.Response;
+import io.specto.hoverfly.junit.core.model.*;
+
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -555,6 +553,32 @@ public class StubServiceBuilderTest {
     }
 
     @Test
+    public void shouldBeAbleToSetLogNormalRandomDelay() {
+
+        final RequestResponsePair pair = service("https://www.my-test.com")
+                .get("/")
+                .willReturn(response().withLogNormalDelay(3, 4, TimeUnit.SECONDS))
+                .getRequestResponsePairs()
+                .iterator().next();
+
+        assertThat(pair.getResponse().getLogNormalDelay())
+                .isEqualToComparingFieldByField(new LogNormalDelay(0, 0, 3000, 4000));
+    }
+
+    @Test
+    public void shouldBeAbleToSetLogNormalRandomDelayWithMinAndMax() {
+
+        final RequestResponsePair pair = service("https://www.my-test.com")
+                .get("/")
+                .willReturn(response().withLogNormalDelay(3, 4, 1, 5, TimeUnit.SECONDS))
+                .getRequestResponsePairs()
+                .iterator().next();
+
+        assertThat(pair.getResponse().getLogNormalDelay())
+                .isEqualToComparingFieldByField(new LogNormalDelay(1000, 5000, 3000, 4000));
+    }
+
+    @Test
     public void shouldSetDefaultValuesForResponse() {
 
         Response response = service("https://www.my-test.com")
@@ -564,7 +588,6 @@ public class StubServiceBuilderTest {
             .iterator().next()
             .getResponse();
 
-        assertThat(response.getFixedDelay()).isEqualTo(0);
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody()).isEmpty();
         assertThat(response.getHeaders()).isEmpty();
@@ -572,6 +595,8 @@ public class StubServiceBuilderTest {
         assertThat(response.getRemovesState()).isEmpty();
         assertThat(response.isEncodedBody()).isFalse();
         assertThat(response.isTemplated()).isTrue();
+        assertThat(response.getFixedDelay()).isEqualTo(0);
+        assertThat(response.getLogNormalDelay()).isNull();
     }
 
     private void assertExactMatcherForMethod(RequestMatcherBuilder builder, String method) {
