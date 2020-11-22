@@ -55,7 +55,7 @@ Per-request delay can be set as follows:
     SimulationSource.dsl(
         service("www.not-so-slow-service.com")
             .get("/api/bookings")
-            .willReturn(success().withDelay(1, TimeUnit.SECONDS))
+            .willReturn(success().withFixedDelay(1, TimeUnit.SECONDS))
         )
     )
 

@@ -15,6 +15,7 @@ import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.contains;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.endsWith;
+import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.equalsTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class HoverflyDslWithDelayTest {
@@ -39,10 +40,10 @@ public class HoverflyDslWithDelayTest {
 
                     .andDelay(3, TimeUnit.SECONDS).forMethod("POST"),
 
-            // Delay based on URL
+            // Fixed delay for a particular request
             service("www.not-so-slow-service.com")
                     .get("/api/bookings")
-                    .willReturn(success().withDelay(1, TimeUnit.SECONDS))
+                    .willReturn(success().withFixedDelay(1, TimeUnit.SECONDS))
 
     )).printSimulationData();
 
@@ -91,7 +92,7 @@ public class HoverflyDslWithDelayTest {
     }
 
     @Test
-    public void shouldBeAbleToDelayRequest() {
+    public void shouldBeAbleToAddFixedDelayPerRequest() {
 
         // When
         StopWatch stopWatch = new StopWatch();

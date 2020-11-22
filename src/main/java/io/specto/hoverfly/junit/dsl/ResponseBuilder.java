@@ -36,6 +36,10 @@ public class ResponseBuilder {
     private final Map<String, String> transitionsState = new HashMap<>();
     private final List<String> removesState = new ArrayList<>();
 
+    private int fixedDelay;
+    private TimeUnit fixedDelayTimeUnit;
+
+    // Deprecated: For global delay settings
     private int delay;
     private TimeUnit delayTimeUnit;
 
@@ -108,7 +112,8 @@ public class ResponseBuilder {
      * @return the response
      */
     Response build() {
-        return new Response(status, body, false, templated, headers, transitionsState, removesState);
+        int fixedDelayInMillis = fixedDelayTimeUnit == null ? 0 : (int) fixedDelayTimeUnit.toMillis(fixedDelay);
+        return new Response(status, body, false, templated, headers, transitionsState, removesState, fixedDelayInMillis);
     }
 
     public ResponseBuilder body(final HttpBodyConverter httpBodyConverter) {
@@ -123,12 +128,19 @@ public class ResponseBuilder {
         return this;
     }
 
+    public ResponseBuilder withFixedDelay(int delay, TimeUnit delayTimeUnit) {
+        fixedDelay = delay;
+        fixedDelayTimeUnit = delayTimeUnit;
+        return this;
+    }
+
     /**
      * Sets delay parameters.
      * @param delay amount of delay
      * @param delayTimeUnit time unit of delay (e.g. SECONDS)
      * @return the {@link ResponseBuilder for further customizations}
      */
+    @Deprecated
     public ResponseBuilder withDelay(int delay, TimeUnit delayTimeUnit) {
         this.delay = delay;
         this.delayTimeUnit = delayTimeUnit;
