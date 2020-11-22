@@ -12,6 +12,7 @@
  */
 package io.specto.hoverfly.junit.dsl;
 
+import io.specto.hoverfly.junit.core.model.LogNormalDelay;
 import io.specto.hoverfly.junit.core.model.Response;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class ResponseBuilder {
     private final List<String> removesState = new ArrayList<>();
 
     private int fixedDelay;
-    private TimeUnit fixedDelayTimeUnit;
+    private LogNormalDelay logNormalDelay;
 
     // Deprecated: For global delay settings
     private int delay;
@@ -112,8 +113,7 @@ public class ResponseBuilder {
      * @return the response
      */
     Response build() {
-        int fixedDelayInMillis = fixedDelayTimeUnit == null ? 0 : (int) fixedDelayTimeUnit.toMillis(fixedDelay);
-        return new Response(status, body, false, templated, headers, transitionsState, removesState, fixedDelayInMillis);
+        return new Response(status, body, false, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay);
     }
 
     public ResponseBuilder body(final HttpBodyConverter httpBodyConverter) {
@@ -128,9 +128,53 @@ public class ResponseBuilder {
         return this;
     }
 
+
+    /**
+     * Set fixed delay for the request-response pair
+     * @param delay amount of delay
+     * @param delayTimeUnit time unit of delay (e.g. SECONDS)
+     * @return the {@link ResponseBuilder for further customizations}
+     */
     public ResponseBuilder withFixedDelay(int delay, TimeUnit delayTimeUnit) {
-        fixedDelay = delay;
-        fixedDelayTimeUnit = delayTimeUnit;
+        fixedDelay = (int) delayTimeUnit.toMillis(delay);
+        return this;
+    }
+
+    /**
+     * Set Log Normal delay for the request-response pair. The delay value will be generated randomly based on the distribution
+     * which is defined by 2 parameters μ and σ. We will compute these parameters from the mean and median of a server response time.
+     * You can typically find these values in your monitoring of the production server.
+     * @param mean mean value of the delays to simulate
+     * @param median median value of the delays to simulate
+     * @param delayTimeUnit time unit of delay (e.g. SECONDS)
+     * @return the {@link ResponseBuilder for further customizations}
+     */
+    public ResponseBuilder withLogNormalDelay(int mean, int median, TimeUnit delayTimeUnit) {
+        logNormalDelay = new LogNormalDelay(
+                0,
+                0,
+                (int) delayTimeUnit.toMillis(mean),
+                (int) delayTimeUnit.toMillis(median));
+        return this;
+    }
+
+    /**
+     * Set Log Normal delay for the request-response pair. The delay value will be generated randomly based on the distribution
+     * which is defined by 2 parameters μ and σ. We will compute these parameters from the mean and median of a server response time.
+     * You can typically find these values in your monitoring of the production server.
+     * @param mean mean value of the delays to simulate
+     * @param median median value of the delays to simulate
+     * @param min lower bound of the delays
+     * @param max upper bound of the delays
+     * @param delayTimeUnit time unit of delay (e.g. SECONDS)
+     * @return the {@link ResponseBuilder for further customizations}
+     */
+    public ResponseBuilder withLogNormalDelay(int mean, int median, int min, int max, TimeUnit delayTimeUnit) {
+        logNormalDelay = new LogNormalDelay(
+                (int) delayTimeUnit.toMillis(min),
+                (int) delayTimeUnit.toMillis(max),
+                (int) delayTimeUnit.toMillis(mean),
+                (int) delayTimeUnit.toMillis(median));
         return this;
     }
 
