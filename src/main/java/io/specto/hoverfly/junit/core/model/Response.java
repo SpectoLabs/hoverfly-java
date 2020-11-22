@@ -33,15 +33,19 @@ public class Response {
     private final Map<String, List<String>> headers;
     private final Map<String, String> transitionsState;
     private final List<String> removesState;
+    private final Integer fixedDelay;
+
 
     @JsonCreator
-    public Response(@JsonProperty("status") Integer status,
-                    @JsonProperty("body") String body,
-                    @JsonProperty("encodedBody") boolean encodedBody,
-                    @JsonProperty("templated") boolean templated,
-                    @JsonProperty("headers") Map<String, List<String>> headers,
-                    @JsonProperty("transitionsState") Map<String, String> transitionsState,
-                    @JsonProperty("removesState") List<String> removesState) {
+    public Response(
+        @JsonProperty("status") Integer status,
+        @JsonProperty("body") String body,
+        @JsonProperty("encodedBody") boolean encodedBody,
+        @JsonProperty("templated") boolean templated,
+        @JsonProperty("headers") Map<String, List<String>> headers,
+        @JsonProperty("transitionsState") Map<String, String> transitionsState,
+        @JsonProperty("removesState") List<String> removesState,
+        @JsonProperty("fixedDelay") Integer fixedDelay) {
         this.status = status;
         this.body = body;
         this.encodedBody = encodedBody;
@@ -49,9 +53,10 @@ public class Response {
         this.headers = headers;
         this.transitionsState = transitionsState;
         this.removesState = removesState;
+        this.fixedDelay = fixedDelay;
     }
 
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
@@ -80,6 +85,10 @@ public class Response {
         return removesState;
     }
 
+    public Integer getFixedDelay() {
+        return fixedDelay;
+    }
+
     static class Builder {
         private Integer status;
         private String body;
@@ -88,6 +97,7 @@ public class Response {
         private Map<String, List<String>> headers;
         private Map<String, String> transitionsState;
         private List<String> removesState;
+        private Integer fixedDelay;
 
         Builder status(int status) {
             this.status = status;
@@ -124,8 +134,13 @@ public class Response {
             return this;
         }
 
+        Builder fixedDelay(int fixedDelay) {
+            this.fixedDelay = fixedDelay;
+            return this;
+        }
+
         Response build() {
-            return new Response(status, body, encodedBody, templated, headers, transitionsState, removesState);
+            return new Response(status, body, encodedBody, templated, headers, transitionsState, removesState, fixedDelay);
         }
     }
 
