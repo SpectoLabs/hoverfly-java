@@ -40,7 +40,7 @@ public class HoverflyDslWithDelayTest {
 
                     .andDelay(3, TimeUnit.SECONDS).forMethod("POST"),
 
-            // Fixed delay for a particular request
+            // Fixed delay for a particular request matcher
             service("www.not-so-slow-service.com")
                     .get("/api/bookings")
                     .willReturn(success().withFixedDelay(1, TimeUnit.SECONDS))
@@ -92,7 +92,7 @@ public class HoverflyDslWithDelayTest {
     }
 
     @Test
-    public void shouldBeAbleToAddFixedDelayPerRequest() {
+    public void shouldBeAbleToAddFixedDelayPerRequestMatcher() {
 
         // When
         StopWatch stopWatch = new StopWatch();

@@ -89,15 +89,15 @@ public class HoverflyRule extends ExternalResource {
 
     private HoverflyRule(HoverflyMode hoverflyMode, final SimulationSource simulationSource, final HoverflyConfig hoverflyConfig) {
         this.hoverflyMode = hoverflyMode;
-        this.hoverfly = new Hoverfly(hoverflyConfig, hoverflyMode);
+        hoverfly = new Hoverfly(hoverflyConfig, hoverflyMode);
         if (simulationSource != null) {
-            this.simulationSources.add(simulationSource);
+            simulationSources.add(simulationSource);
         }
     }
 
     private HoverflyRule(final Path capturePath, final HoverflyConfig hoverflyConfig) {
-        this.hoverflyMode = CAPTURE;
-        this.hoverfly = new Hoverfly(hoverflyConfig, hoverflyMode);
+        hoverflyMode = CAPTURE;
+        hoverfly = new Hoverfly(hoverflyConfig, hoverflyMode);
         this.capturePath = capturePath;
     }
 
@@ -301,8 +301,8 @@ public class HoverflyRule extends ExternalResource {
             importSimulation();
         }
 
-        if (hoverfly.getHoverflyConfig().isIncrementalCapture() && this.capturePath != null && Files.isReadable(this.capturePath)) {
-            hoverfly.simulate(SimulationSource.file(this.capturePath));
+        if (hoverfly.getHoverflyConfig().isIncrementalCapture() && capturePath != null && Files.isReadable(capturePath)) {
+            hoverfly.simulate(SimulationSource.file(capturePath));
         }
     }
 
@@ -350,10 +350,10 @@ public class HoverflyRule extends ExternalResource {
      */
     public void simulate(SimulationSource simulationSource, SimulationSource... sources) {
         checkMode(HoverflyMode::allowSimulationImport);
-        this.simulationSources = new ArrayList<>();
-        this.simulationSources.add(simulationSource);
+        simulationSources = new ArrayList<>();
+        simulationSources.add(simulationSource);
         if (sources.length > 0) {
-            this.simulationSources.addAll(Arrays.asList(sources));
+            simulationSources.addAll(Arrays.asList(sources));
         }
         hoverfly.resetState();
         importSimulation();
