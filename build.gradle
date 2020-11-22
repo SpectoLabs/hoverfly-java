@@ -10,7 +10,7 @@ plugins {
 apply plugin: 'jacoco'
 
 jacoco {
-    toolVersion = "0.8.2"
+    toolVersion = "0.8.6"
 }
 
 group = 'io.specto'
@@ -50,7 +50,7 @@ dependencies {
     testCompile 'org.eclipse.jetty:jetty-server:9.3.11.v20160721'
     testCompile 'org.skyscreamer:jsonassert:1.5.0'
     testCompile 'org.mockito:mockito-core:2.23.4'
-    testCompile 'org.powermock:powermock-module-junit4:1.7.4'
+    testCompile 'org.powermock:powermock-module-junit4:2.0.9'
     testCompile 'com.github.stefanbirkner:system-rules:1.19.0'
     testCompile 'io.projectreactor.ipc:reactor-netty:0.7.12.RELEASE'
     testCompile 'io.projectreactor:reactor-test:3.2.3.RELEASE'
