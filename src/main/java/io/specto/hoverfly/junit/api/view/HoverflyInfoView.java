@@ -16,6 +16,7 @@ public class HoverflyInfoView {
     private final Usage usage;
     private final Middleware middleware;
     private final String upstreamProxy;
+    private final String version;
 
 
     @JsonCreator
@@ -24,13 +25,15 @@ public class HoverflyInfoView {
                             @JsonProperty("arguments") ModeArguments modeArguments,
                             @JsonProperty("usage") Usage usage,
                             @JsonProperty("middleware") Middleware middleware,
-                            @JsonProperty("upstream-proxy") String upstreamProxy) {
+                            @JsonProperty("upstream-proxy") String upstreamProxy,
+                            @JsonProperty("version") String version) {
         this.destination = destination;
         this.mode = mode;
         this.modeArguments = modeArguments;
         this.usage = usage;
         this.middleware = middleware;
         this.upstreamProxy = upstreamProxy;
+        this.version = version;
     }
 
 
@@ -56,6 +59,10 @@ public class HoverflyInfoView {
 
     public String getUpstreamProxy() {
         return upstreamProxy;
+    }
+
+    public String getVersion() {
+        return version;
     }
 
     private static class Usage {

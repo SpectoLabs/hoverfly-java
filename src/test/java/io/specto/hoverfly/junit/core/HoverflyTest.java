@@ -759,6 +759,9 @@ public class HoverflyTest {
 
     private HoverflyClient createMockHoverflyClient(Hoverfly hoverfly) {
         HoverflyClient hoverflyClient = mock(HoverflyClient.class);
+        HoverflyInfoView mockHoverflyInfoView = mock(HoverflyInfoView.class);
+        when(mockHoverflyInfoView.getVersion()).thenReturn("v1.0.0");
+        when(hoverflyClient.getConfigInfo()).thenReturn(mockHoverflyInfoView);
         Whitebox.setInternalState(hoverfly, "hoverflyClient", hoverflyClient);
         return hoverflyClient;
     }
