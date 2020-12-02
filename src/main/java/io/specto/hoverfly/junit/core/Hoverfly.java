@@ -143,6 +143,7 @@ public class Hoverfly implements AutoCloseable {
         }
 
         waitForHoverflyToBecomeHealthy();
+        LOGGER.info("A {} Hoverfly with version {} is ready", hoverflyConfig.isRemoteInstance() ? "remote" : "local", hoverflyClient.getConfigInfo().getVersion());
 
         setModeWithArguments(hoverflyMode, hoverflyConfig);
 

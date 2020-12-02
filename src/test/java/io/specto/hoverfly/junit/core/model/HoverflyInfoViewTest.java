@@ -11,7 +11,7 @@ public class HoverflyInfoViewTest {
     @Test
     public void shouldNotSerializeNullField() throws Exception {
 
-        HoverflyInfoView hoverflyInfoView = new HoverflyInfoView("www.test.com", null, null, null, null, null);
+        HoverflyInfoView hoverflyInfoView = new HoverflyInfoView("www.test.com", null, null, null, null, null, null);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
