@@ -12,6 +12,34 @@
  */
 package io.specto.hoverfly.junit.core;
 
+import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
+import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
+import static io.specto.hoverfly.junit.core.HoverflyMode.DIFF;
+import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
+import static io.specto.hoverfly.junit.core.HoverflyUtils.readSimulationFromString;
+import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
+import static io.specto.hoverfly.junit.verification.HoverflyVerifications.atLeastOnce;
+import static io.specto.hoverfly.junit.verification.HoverflyVerifications.never;
+import static io.specto.hoverfly.junit.verification.HoverflyVerifications.times;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import io.specto.hoverfly.junit.api.HoverflyClient;
+import io.specto.hoverfly.junit.api.HoverflyClientException;
+import io.specto.hoverfly.junit.api.model.ModeArguments;
+import io.specto.hoverfly.junit.api.view.DiffView;
+import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
+import io.specto.hoverfly.junit.api.view.StateView;
+import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
+import io.specto.hoverfly.junit.core.model.Journal;
+import io.specto.hoverfly.junit.core.model.Request;
+import io.specto.hoverfly.junit.core.model.RequestResponsePair;
+import io.specto.hoverfly.junit.core.model.Simulation;
+import io.specto.hoverfly.junit.dsl.RequestMatcherBuilder;
+import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
+import io.specto.hoverfly.junit.verification.HoverflyComparisonFailure;
+import io.specto.hoverfly.junit.verification.VerificationCriteria;
+import io.specto.hoverfly.junit.verification.VerificationData;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,40 +60,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import io.specto.hoverfly.junit.api.HoverflyClient;
-import io.specto.hoverfly.junit.api.HoverflyClientException;
-import io.specto.hoverfly.junit.api.model.ModeArguments;
-import io.specto.hoverfly.junit.api.view.DiffView;
-import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
-import io.specto.hoverfly.junit.api.view.StateView;
-import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
-import io.specto.hoverfly.junit.core.model.Journal;
-import io.specto.hoverfly.junit.core.model.Request;
-import io.specto.hoverfly.junit.core.model.RequestResponsePair;
-import io.specto.hoverfly.junit.core.model.Simulation;
-import io.specto.hoverfly.junit.dsl.RequestMatcherBuilder;
-import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
-import io.specto.hoverfly.junit.verification.VerificationCriteria;
-import io.specto.hoverfly.junit.verification.VerificationData;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.StartedProcess;
-
-import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
-import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
-import static io.specto.hoverfly.junit.core.HoverflyMode.DIFF;
-import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
-import static io.specto.hoverfly.junit.core.HoverflyUtils.readSimulationFromString;
-import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
-import static io.specto.hoverfly.junit.verification.HoverflyVerifications.atLeastOnce;
-import static io.specto.hoverfly.junit.verification.HoverflyVerifications.never;
-import static io.specto.hoverfly.junit.verification.HoverflyVerifications.times;
 
 /**
  * A wrapper class for the Hoverfly binary.  Manage the lifecycle of the processes, and then manage Hoverfly itself by using it's API endpoints.
@@ -494,7 +493,7 @@ public class Hoverfly implements AutoCloseable {
             if (shouldResetDiff) {
                 hoverflyClient.cleanDiffs();
             }
-            Assert.fail(message.toString());
+            throw new HoverflyComparisonFailure(message.toString(), diffs);
         }
     }
 
