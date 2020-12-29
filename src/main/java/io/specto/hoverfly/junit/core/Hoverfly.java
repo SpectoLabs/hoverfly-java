@@ -37,7 +37,7 @@ import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import io.specto.hoverfly.junit.dsl.RequestMatcherBuilder;
 import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
-import io.specto.hoverfly.junit.verification.HoverflyComparisonFailure;
+import io.specto.hoverfly.junit.verification.HoverflyDiffAssertionError;
 import io.specto.hoverfly.junit.verification.VerificationCriteria;
 import io.specto.hoverfly.junit.verification.VerificationData;
 import java.io.File;
@@ -493,7 +493,7 @@ public class Hoverfly implements AutoCloseable {
             if (shouldResetDiff) {
                 hoverflyClient.cleanDiffs();
             }
-            throw new HoverflyComparisonFailure(message.toString(), diffs);
+            throw new HoverflyDiffAssertionError(message.toString(), diffs);
         }
     }
 
