@@ -53,7 +53,7 @@ class HoverflyExtensionUtils {
                     ((LocalHoverflyConfig) configs).addCommands(config.commands());
                 }
             }
-            fillHoverflyConfig(configs, config);
+            setCommonHoverflyConfig(configs, config);
             return configs;
 
         } else {
@@ -92,7 +92,7 @@ class HoverflyExtensionUtils {
         return Paths.get(path).resolve(filename);
     }
 
-    private static void fillHoverflyConfig(io.specto.hoverfly.junit.core.HoverflyConfig configs,
+    private static void setCommonHoverflyConfig(io.specto.hoverfly.junit.core.HoverflyConfig configs,
         HoverflyConfig configParams) {
         configs
             .adminPort(configParams.adminPort())
@@ -111,6 +111,9 @@ class HoverflyExtensionUtils {
         }
         if (configParams.statefulCapture()) {
             configs.enableStatefulCapture();
+        }
+        if (configParams.enableIncrementalCapture()){
+            configs.enableIncrementalCapture();
         }
     }
 

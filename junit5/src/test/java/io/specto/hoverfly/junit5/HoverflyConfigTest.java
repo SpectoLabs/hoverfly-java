@@ -59,7 +59,8 @@ class HoverflyConfigTest {
             webServer = true, statefulCapture = true,
             simulationPreprocessor = CustomSimulationPreprocessor.class,
             commands = { "-log-level", "error" },
-            logLevel = LogLevel.DEBUG
+            logLevel = LogLevel.DEBUG,
+            enableIncrementalCapture =true
     ))
     @ExtendWith(HoverflyExtension.class)
     class CustomizedSettings {
@@ -80,6 +81,7 @@ class HoverflyConfigTest {
             assertThat(configs.getSimulationPreprocessor()).isPresent();
             assertThat(configs.getCommands()).containsExactly("-log-level", "error");
             assertThat(configs.getLogLevel()).isEqualTo(Optional.of(LogLevel.DEBUG));
+            assertThat(configs.isIncrementalCapture()).isTrue();
         }
 
     }
