@@ -12,6 +12,7 @@ import io.specto.hoverfly.junit5.api.HoverflyValidate;
 import org.junit.jupiter.api.extension.*;
 
 import java.lang.reflect.AnnotatedElement;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
@@ -58,6 +59,9 @@ public class HoverflyExtension implements AfterEachCallback, BeforeEachCallback,
             if (mode.allowSimulationImport()) {
                 hoverfly.simulate(source);
             }
+        }
+        if (hoverfly.getHoverflyConfig().isIncrementalCapture() && capturePath != null && Files.isReadable(capturePath)) {
+            hoverfly.simulate(SimulationSource.file(capturePath));
         }
     }
 

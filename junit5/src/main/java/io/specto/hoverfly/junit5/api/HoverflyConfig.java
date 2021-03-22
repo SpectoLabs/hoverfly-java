@@ -85,7 +85,7 @@ public @interface HoverflyConfig {
     boolean plainHttpTunneling() default false;
 
     /**
-     * Configure Hoverfly to skip TLS verification. This option allows Hoverfly to perform “insecure” SSL connections to target server that uses invalid certificate (eg. self-signed certificate)
+     * Configure Hoverfly to skip TLS verification. This option allows Hoverfly to perform "insecure" SSL connections to target server that uses invalid certificate (eg. self-signed certificate)
      */
     boolean disableTlsVerification() default false;
 
@@ -135,4 +135,13 @@ public @interface HoverflyConfig {
      * Overrides the default path for Hoverfly binary and working directory.
      */
     String binaryLocation() default "";
+
+    /**
+     * By default Hoverfly exports the captured requests and responses to a new file by replacing any existing one. Enable this
+     * option to import any existing simulation file and append new requests to it in capture mode.
+     * @return the {@link io.specto.hoverfly.junit.core.HoverflyConfig} for further customizations
+     */
+
+    boolean enableIncrementalCapture() default false;
+
 }

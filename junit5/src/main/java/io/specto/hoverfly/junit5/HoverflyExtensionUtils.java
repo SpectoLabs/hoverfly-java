@@ -52,6 +52,9 @@ class HoverflyExtensionUtils {
                 if (config.commands().length > 0) {
                     ((LocalHoverflyConfig) configs).addCommands(config.commands());
                 }
+                if (config.enableIncrementalCapture()){
+                    ((LocalHoverflyConfig) configs).enableIncrementalCapture();
+                }
             }
             fillHoverflyConfig(configs, config);
             return configs;
@@ -111,6 +114,9 @@ class HoverflyExtensionUtils {
         }
         if (configParams.statefulCapture()) {
             configs.enableStatefulCapture();
+        }
+        if (configParams.enableIncrementalCapture()){
+            configs.enableIncrementalCapture();
         }
     }
 
