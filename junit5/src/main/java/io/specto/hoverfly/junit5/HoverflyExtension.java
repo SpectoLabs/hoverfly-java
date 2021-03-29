@@ -3,12 +3,7 @@ package io.specto.hoverfly.junit5;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.SimulationSource;
-import io.specto.hoverfly.junit5.api.HoverflyCapture;
-import io.specto.hoverfly.junit5.api.HoverflyConfig;
-import io.specto.hoverfly.junit5.api.HoverflyCore;
-import io.specto.hoverfly.junit5.api.HoverflyDiff;
-import io.specto.hoverfly.junit5.api.HoverflySimulate;
-import io.specto.hoverfly.junit5.api.HoverflyValidate;
+import io.specto.hoverfly.junit5.api.*;
 import org.junit.jupiter.api.extension.*;
 
 import java.lang.reflect.AnnotatedElement;
@@ -111,8 +106,14 @@ public class HoverflyExtension implements AfterEachCallback, BeforeEachCallback,
             String path = getPath(context, hoverflyDiff.source());
             HoverflySimulate.SourceType type = hoverflyDiff.source().type();
             source = getSimulationSource(path, type);
+        } else if (isAnnotated(annotatedElement, HoverflySpy.class)) {
+            HoverflySpy hoverflySpy = annotatedElement.getAnnotation(HoverflySpy.class);
+            config = hoverflySpy.config();
+            mode = HoverflyMode.SPY;
+            String path = getPath(context, hoverflySpy.source());
+            HoverflySimulate.SourceType type = hoverflySpy.source().type();
+            source = getSimulationSource(path, type);
         }
-
         if (!isRunning()) {
             hoverfly = new Hoverfly(getHoverflyConfigs(config), mode);
             hoverfly.start();
