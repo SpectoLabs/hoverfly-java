@@ -13,6 +13,9 @@ import io.specto.hoverfly.junit.core.model.Journal;
 import io.specto.hoverfly.junit.core.model.Request;
 import io.specto.hoverfly.junit.core.model.Simulation;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+
 /**
  * Http client for querying Hoverfly admin endpoints
  */
@@ -128,7 +131,7 @@ public interface HoverflyClient {
         private String scheme = HoverflyConstants.HTTP;
         private String host = HoverflyConstants.LOCALHOST;
         private int port = HoverflyConstants.DEFAULT_ADMIN_PORT;
-        private String authToken = null;
+        private HashMap<String, String> headers = new LinkedHashMap<>();
 
         Builder() {
         }
@@ -153,12 +156,20 @@ public interface HoverflyClient {
          * @return this Builder for further customizations
          */
         public Builder withAuthToken() {
-            this.authToken = System.getenv(HoverflyConstants.HOVERFLY_AUTH_TOKEN);
+            String authToken = "Bearer " + System.getenv(HoverflyConstants.HOVERFLY_AUTH_TOKEN);
+            headers.put("Authorization", authToken);
+            return this;
+        }
+
+        public Builder withHeaders(HashMap<String, String> headers) {
+            if (headers != null) {
+                this.headers.putAll(headers);
+            }
             return this;
         }
 
         public HoverflyClient build() {
-            return new OkHttpHoverflyClient(scheme, host, port, authToken);
+            return new OkHttpHoverflyClient(scheme, host, port, headers);
         }
     }
 

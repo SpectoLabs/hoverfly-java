@@ -46,7 +46,14 @@ public class OkHttpHoverflyClientTest {
     public void setUp() {
         startDefaultHoverfly();
         HoverflyConfiguration hoverflyConfig = hoverfly.getHoverflyConfig();
-        client = new OkHttpHoverflyClient(hoverflyConfig.getScheme(), hoverflyConfig.getHost(), hoverflyConfig.getAdminPort(), null);
+
+        HoverflyClient.Builder hoverflyClienBuilder = new HoverflyClient.Builder();
+        hoverflyClienBuilder.scheme(hoverflyConfig.getScheme());
+        hoverflyClienBuilder.host(hoverflyConfig.getHost());
+        hoverflyClienBuilder.port(hoverflyConfig.getAdminPort());
+        hoverflyClienBuilder.withHeaders(null);
+
+        client = (OkHttpHoverflyClient)hoverflyClienBuilder.build();
     }
 
     @Test

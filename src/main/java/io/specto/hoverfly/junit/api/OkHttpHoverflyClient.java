@@ -1,6 +1,7 @@
 package io.specto.hoverfly.junit.api;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,12 +47,10 @@ class OkHttpHoverflyClient implements HoverflyClient {
 
     private final HttpUrl baseUrl;
 
-    OkHttpHoverflyClient(String scheme, String host, int port, String authToken) {
+    OkHttpHoverflyClient(String scheme, String host, int port, HashMap<String, String> headers) {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-        if (authToken != null) {
-            clientBuilder.addInterceptor(new AuthHeaderInterceptor(authToken));
-        }
+        clientBuilder.addInterceptor(new CustomHeaderInterceptor(headers));
         this.client = clientBuilder.build();
         this.baseUrl = new HttpUrl.Builder()
                 .scheme(scheme)

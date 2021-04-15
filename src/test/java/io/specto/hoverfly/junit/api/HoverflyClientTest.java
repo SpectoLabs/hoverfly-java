@@ -7,6 +7,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
@@ -50,6 +53,30 @@ public class HoverflyClientTest {
                 .host("remote.host")
                 .port(12345)
                 .withAuthToken()
+                .build();
+
+        assertThat(hoverflyClient.getHealth()).isTrue();
+    }
+
+    @Test
+    public void shouldBeAbleToCreateHoverflyClientWithCustomHeaders() {
+        envVars.set("HOVERFLY_AUTH_TOKEN", "some-token");
+        hoverflyRule.simulate(dsl(
+                service("http://remote.host:12345")
+                        .get("/api/health")
+                        .header("Authorization", "Bearer some-token")
+                        .header("Custom", "header value")
+                        .willReturn(success())
+        ));
+
+        HashMap<String, String> headers = new LinkedHashMap<>();
+        headers.put("Custom", "header value");
+
+        HoverflyClient hoverflyClient = HoverflyClient.custom()
+                .host("remote.host")
+                .port(12345)
+                .withAuthToken()
+                .withHeaders(headers)
                 .build();
 
         assertThat(hoverflyClient.getHealth()).isTrue();
