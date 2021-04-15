@@ -110,6 +110,8 @@ public interface HoverflyClient {
         return new Builder().build();
     }
 
+    void addSimulation(Simulation simulation);
+
     /**
      * HTTP client builder for Hoverfly admin API
      */
