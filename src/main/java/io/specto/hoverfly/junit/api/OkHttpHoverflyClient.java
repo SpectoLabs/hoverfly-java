@@ -42,14 +42,14 @@ class OkHttpHoverflyClient implements HoverflyClient {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final MediaType JSON = MediaType.parse("application/json");
 
-    private OkHttpClient client;
+    private final OkHttpClient client;
 
-    private HttpUrl baseUrl;
+    private final HttpUrl baseUrl;
 
     OkHttpHoverflyClient(String scheme, String host, int port, String authToken) {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-        if (authToken != null ) {
+        if (authToken != null) {
             clientBuilder.addInterceptor(new AuthHeaderInterceptor(authToken));
         }
         this.client = clientBuilder.build();
@@ -83,6 +83,19 @@ class OkHttpHoverflyClient implements HoverflyClient {
         } catch (Exception e) {
             LOGGER.warn("Failed to set simulation: {}", e.getMessage());
             throw new HoverflyClientException("Failed to set simulation: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void addSimulation(Simulation simulation) {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(SIMULATION_PATH);
+            final RequestBody body = createRequestBody(simulation);
+            final Request request = builder.post(body).build();
+            exchange(request);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to add simulation: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to add simulation: " + e.getMessage());
         }
     }
 
@@ -184,7 +197,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
             throw new HoverflyClientException("Failed to get state: " + e.getMessage());
         }
     }
-  
+
     @Override
     public DiffView getDiffs() {
         try {

@@ -19,9 +19,19 @@ import io.specto.hoverfly.junit.core.model.Simulation;
 public interface HoverflyClient {
 
 
+    /**
+     * Set the given simulation data, overwriting any existing one.
+     * @param simulation Hoverfly simulation data to set
+     */
     void setSimulation(Simulation simulation);
 
     void setSimulation(String simulation);
+
+    /**
+     * Append the given simulation to the existing one in Hoverfly, duplicated pair will not be added
+     * @param simulation Hoverfly simulation data to append
+     */
+    void addSimulation(Simulation simulation);
 
     Simulation getSimulation();
 

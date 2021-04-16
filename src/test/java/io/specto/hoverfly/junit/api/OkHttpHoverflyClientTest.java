@@ -180,6 +180,20 @@ public class OkHttpHoverflyClientTest {
     }
 
     @Test
+    public void shouldBeAbleToAppendSimulation() throws Exception {
+        URL resource = Resources.getResource("simulations/v5-simulation.json");
+        Simulation simulation = objectMapper.readValue(resource, Simulation.class);
+        client.setSimulation(simulation);
+
+        resource = Resources.getResource("simulations/v5-simulation-without-response-body.json");
+        simulation = objectMapper.readValue(resource, Simulation.class);
+        client.addSimulation(simulation);
+
+        Simulation result = client.getSimulation();
+        assertThat(result.getHoverflyData().getPairs()).hasSize(2);
+    }
+
+    @Test
     public void shouldBeAbleToDeleteJournal() {
 
         try {
