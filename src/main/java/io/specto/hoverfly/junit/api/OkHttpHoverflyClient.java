@@ -60,6 +60,16 @@ class OkHttpHoverflyClient implements HoverflyClient {
                 .build();
     }
 
+    OkHttpHoverflyClient(String scheme, String host, int port, OkHttpClient client) {
+        OBJECT_MAPPER.registerModule(new JavaTimeModule());
+        this.client = client;
+        this.baseUrl = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(host)
+                .port(port)
+                .build();
+    }
+
     @Override
     public void setSimulation(Simulation simulation) {
         try {

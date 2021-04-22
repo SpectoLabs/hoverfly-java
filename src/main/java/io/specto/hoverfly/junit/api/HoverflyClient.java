@@ -12,6 +12,7 @@ import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.Journal;
 import io.specto.hoverfly.junit.core.model.Request;
 import io.specto.hoverfly.junit.core.model.Simulation;
+import okhttp3.OkHttpClient;
 
 /**
  * Http client for querying Hoverfly admin endpoints
@@ -129,6 +130,7 @@ public interface HoverflyClient {
         private String host = HoverflyConstants.LOCALHOST;
         private int port = HoverflyConstants.DEFAULT_ADMIN_PORT;
         private String authToken = null;
+        private OkHttpClient client = null;
 
         Builder() {
         }
@@ -157,8 +159,17 @@ public interface HoverflyClient {
             return this;
         }
 
+        public Builder withHttpClient(OkHttpClient client) {
+            this.client = client;
+            return this;
+        }
+
         public HoverflyClient build() {
-            return new OkHttpHoverflyClient(scheme, host, port, authToken);
+            if (client == null) {
+                return new OkHttpHoverflyClient(scheme, host, port, authToken);
+            }
+
+            return new OkHttpHoverflyClient(scheme, host, port, client);
         }
     }
 
