@@ -2,6 +2,7 @@ package io.specto.hoverfly.junit.api;
 
 
 import io.specto.hoverfly.junit.rule.HoverflyRule;
+import okhttp3.OkHttpClient;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,6 +51,28 @@ public class HoverflyClientTest {
                 .host("remote.host")
                 .port(12345)
                 .withAuthToken()
+                .build();
+
+        assertThat(hoverflyClient.getHealth()).isTrue();
+    }
+
+    @Test
+    public void shouldBeAbleToCreateHoverflyClientWithHttpClient() {
+        envVars.set("HOVERFLY_AUTH_TOKEN", "some-token");
+        hoverflyRule.simulate(dsl(
+                service("http://remote.host:12345")
+                        .get("/api/health")
+                        .willReturn(success())
+        ));
+
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        OkHttpClient client = clientBuilder.build();
+
+        HoverflyClient hoverflyClient = HoverflyClient.custom()
+                .host("remote.host")
+                .port(12345)
+                .withAuthToken()
+                .withHttpClient(client)
                 .build();
 
         assertThat(hoverflyClient.getHealth()).isTrue();
