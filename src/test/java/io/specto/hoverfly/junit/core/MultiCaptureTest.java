@@ -3,7 +3,7 @@ package io.specto.hoverfly.junit.core;
 import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import io.specto.hoverfly.webserver.CaptureModeTestWebServer;
-import org.apache.commons.io.FileUtils;
+import java.util.Comparator;
 import org.json.JSONException;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -42,20 +42,16 @@ public class MultiCaptureTest {
     public void setUp() throws Exception {
 
         // Delete directory and contents
-        final File firstSimulationDirectory = FIRST_RECORDED_SIMULATION_FILE.getParent().toFile();
-        if(firstSimulationDirectory.exists()) {
-            FileUtils.forceDelete(firstSimulationDirectory);
-        }
+        Path firstSimulationDirectory = FIRST_RECORDED_SIMULATION_FILE.getParent();
+        recursiveDeleteIfExists(firstSimulationDirectory);
 
         // Delete individual file
         Files.deleteIfExists(SECOND_RECORDED_SIMULATION_FILE);
         Files.deleteIfExists(FORTH_RECORDED_SIMULATION_FILE);
 
         // Delete directory and contents
-        final File thirdSimulationDirectory = THIRD_RECORDED_SIMULATION_FILE.getParent().toFile();
-        if(thirdSimulationDirectory.exists()) {
-            FileUtils.forceDelete(thirdSimulationDirectory);
-        }
+        Path thirdSimulationDirectory = THIRD_RECORDED_SIMULATION_FILE.getParent();
+        recursiveDeleteIfExists(thirdSimulationDirectory);
 
         webServerBaseUrl = CaptureModeTestWebServer.run();
     }
@@ -104,6 +100,15 @@ public class MultiCaptureTest {
         JSONAssert.assertEquals(expectedSimulation, forthActualSimulation, JSONCompareMode.LENIENT);
 
         CaptureModeTestWebServer.terminate();
+    }
+
+    private void recursiveDeleteIfExists(Path directory) throws IOException {
+        if (directory.toFile().exists()) {
+            Files.walk(directory)
+                .sorted(Comparator.reverseOrder())
+                .map(Path::toFile)
+                .forEach(File::delete);
+        }
     }
 
 

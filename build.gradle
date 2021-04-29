@@ -36,7 +36,7 @@ dependencies {
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
     compile "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion"
     compile 'org.apache.commons:commons-lang3:3.8.1'
-    compile 'org.zeroturnaround:zt-exec:1.10'
+    compile 'org.zeroturnaround:zt-exec:1.11'
     compile 'org.slf4j:slf4j-api:1.7.25'
     compile 'ch.qos.logback:logback-classic:1.2.3'
     compileOnly 'junit:junit:4.12'

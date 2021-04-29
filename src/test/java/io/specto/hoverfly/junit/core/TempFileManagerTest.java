@@ -2,7 +2,6 @@ package io.specto.hoverfly.junit.core;
 
 
 import com.google.common.io.Resources;
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +57,7 @@ public class TempFileManagerTest {
         assertThat(Files.isRegularFile(targetFile)).isTrue();
         assertThat(Files.isReadable(targetFile)).isTrue();
         assertThat(targetFile.getParent()).isEqualTo(tempFileManager.getTempDirectory());
-        assertThat(FileUtils.contentEquals(sourceFile.toFile(), targetFile.toFile())).isTrue();
+        assertThat(targetFile).hasSameContentAs(sourceFile);
     }
 
     @Test
@@ -78,7 +77,8 @@ public class TempFileManagerTest {
         assertThat(Files.isReadable(targetFile)).isTrue();
         assertThat(Files.isExecutable(targetFile)).isTrue();
         assertThat(targetFile.getParent()).isEqualTo(tempFileManager.getTempDirectory());
-        assertThat(FileUtils.contentEquals(sourceFile.toFile(), targetFile.toFile())).isTrue();
+        assertThat(targetFile).hasBinaryContent(Files.readAllBytes(sourceFile));
+
     }
 
     @After

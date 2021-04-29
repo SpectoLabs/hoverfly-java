@@ -1,22 +1,21 @@
 package io.specto.hoverfly.junit.core;
 
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashSet;
-
-import static io.specto.hoverfly.junit.core.HoverflyUtils.findResourceOnClasspath;
 import static io.specto.hoverfly.junit.core.SystemConfigFactory.OsName.WINDOWS;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_READ;
 import static java.util.Arrays.asList;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
+import java.util.HashSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manage temporary files for running hoverfly
@@ -36,22 +35,23 @@ class TempFileManager {
             return;
         }
         try {
-            FileUtils.deleteDirectory(tempDirectory.toFile());
+            Files.walk(tempDirectory)
+                .sorted(Comparator.reverseOrder())
+                .map(Path::toFile)
+                .forEach(File::delete);
         } catch (IOException e) {
             LOGGER.warn("Failed to delete hoverfly binary, will try again on JVM shutdown.", e);
         }
-
     }
 
     /**
      * Copy classpath resource to hoverfly temporary directory
      */
     Path copyClassPathResource(String resourcePath, String targetName) {
-        URL sourceUrl = HoverflyUtils.findResourceOnClasspath(resourcePath);
 
         Path targetPath = getOrCreateTempDirectory().resolve(targetName);
-        try {
-            FileUtils.copyURLToFile(sourceUrl, targetPath.toFile());
+        try (InputStream resourceAsStream = HoverflyUtils.getClasspathResourceAsStream(resourcePath)) {
+            Files.copy(resourceAsStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to copy classpath resource " + resourcePath, e);
         }
@@ -66,13 +66,13 @@ class TempFileManager {
     Path copyHoverflyBinary(SystemConfig systemConfig) {
         String binaryName = systemConfig.getHoverflyBinaryName();
         LOGGER.info("Selecting the following binary based on the current operating system: {}", binaryName);
-        final URL sourceUrl = findResourceOnClasspath(HOVERFLY_BINARIES_ROOT_PATH + binaryName);
-        final Path targetPath = getOrCreateTempDirectory().resolve(binaryName);
+        Path targetPath = getOrCreateTempDirectory().resolve(binaryName);
         LOGGER.info("Storing binary in temporary directory {}", targetPath);
-        final File targetFile = targetPath.toFile();
-        try {
-            FileUtils.copyURLToFile(sourceUrl, targetFile);
+
+        try (InputStream resourceAsStream = HoverflyUtils.getClasspathResourceAsStream(HOVERFLY_BINARIES_ROOT_PATH + binaryName)) {
+            Files.copy(resourceAsStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
             if (systemConfig.getOsName() == WINDOWS) {
+                final File targetFile = targetPath.toFile();
                 targetFile.setExecutable(true);
                 targetFile.setReadable(true);
                 targetFile.setWritable(true);
