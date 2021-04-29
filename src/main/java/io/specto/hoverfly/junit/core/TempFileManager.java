@@ -39,6 +39,7 @@ class TempFileManager {
                 .sorted(Comparator.reverseOrder())
                 .map(Path::toFile)
                 .forEach(File::delete);
+            tempDirectory = null;
         } catch (IOException e) {
             LOGGER.warn("Failed to delete hoverfly binary, will try again on JVM shutdown.", e);
         }

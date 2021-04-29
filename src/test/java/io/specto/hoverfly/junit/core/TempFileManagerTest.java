@@ -44,6 +44,7 @@ public class TempFileManagerTest {
 
         assertThat(Files.exists(tempResourcePath)).isFalse();
         assertThat(Files.exists(tempResourcePath.getParent())).isFalse();
+        assertThat(tempFileManager.getTempDirectory()).isNull();
     }
 
     @Test
