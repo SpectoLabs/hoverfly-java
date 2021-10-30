@@ -12,7 +12,7 @@ jobs:
       - run:
           name: Install Python
           command: |
-            sudo apt-get install python -f
+            sudo apt-get --allow-releaseinfo-change update && sudo apt-get install python -f
       - run:
           name: Run Tests
           command: |
