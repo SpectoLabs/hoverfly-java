@@ -11,6 +11,7 @@ import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.api.view.StateView;
 import io.specto.hoverfly.junit.core.Hoverfly;
+import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
 import io.specto.hoverfly.junit.core.model.Journal;
 import io.specto.hoverfly.junit.core.model.JournalEntry;
@@ -40,7 +41,7 @@ public class OkHttpHoverflyClientTest {
 
     private Hoverfly hoverfly;
     private OkHttpHoverflyClient client;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = ObjectMapperFactory.getDefaultObjectMapper();
 
     @Before
     public void setUp() {

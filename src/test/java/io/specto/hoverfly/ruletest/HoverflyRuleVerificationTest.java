@@ -15,7 +15,7 @@ import static org.awaitility.Awaitility.await;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
+import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import io.specto.hoverfly.junit.verification.HoverflyVerificationError;
 import io.specto.hoverfly.models.SimpleBooking;
@@ -195,7 +195,7 @@ public class HoverflyRuleVerificationTest {
     private ResponseEntity<String> putBooking() throws URISyntaxException, JsonProcessingException {
         RequestEntity<String> bookFlightRequest = RequestEntity.put(new URI("http://api-sandbox.flight.com/api/bookings/1"))
                 .contentType(APPLICATION_JSON)
-                .body(HttpBodyConverter.OBJECT_MAPPER.writeValueAsString(BOOKING));
+                .body(ObjectMapperFactory.getDefaultObjectMapper().writeValueAsString(BOOKING));
 
         return restTemplate.exchange(bookFlightRequest, String.class);
     }

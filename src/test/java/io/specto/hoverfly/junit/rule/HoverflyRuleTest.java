@@ -12,7 +12,7 @@ import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.SimulationSource.empty;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
-import static org.assertj.core.api.Java6Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 public class HoverflyRuleTest {
@@ -57,7 +57,7 @@ public class HoverflyRuleTest {
         assertThatThrownBy(() -> hoverflyRule.simulate(empty()))
                 .isInstanceOf(HoverflyRule.HoverflyRuleException.class).hasMessageContaining("CAPTURE mode does not support this operation.");
 
-        verifyZeroInteractions(mockHoverfly);
+        verifyNoInteractions(mockHoverfly);
     }
 
 
@@ -69,7 +69,7 @@ public class HoverflyRuleTest {
         assertThatThrownBy(() -> hoverflyRule.capture("test.json"))
                 .isInstanceOf(HoverflyRule.HoverflyRuleException.class).hasMessageContaining("SIMULATE mode does not support this operation.");
 
-        verifyZeroInteractions(mockHoverfly);
+        verifyNoInteractions(mockHoverfly);
     }
 
 

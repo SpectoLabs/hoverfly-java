@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used to to verify if any discrepancy is detected.
+ * Annotation used to verify if any discrepancy is detected.
  * Can be used at class and method level.
  */
 @Target({ElementType.TYPE, ElementType.METHOD})

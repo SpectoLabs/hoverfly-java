@@ -22,8 +22,6 @@ import static io.specto.hoverfly.junit.verification.HoverflyVerifications.atLeas
 import static io.specto.hoverfly.junit.verification.HoverflyVerifications.never;
 import static io.specto.hoverfly.junit.verification.HoverflyVerifications.times;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import io.specto.hoverfly.junit.api.HoverflyClient;
 import io.specto.hoverfly.junit.api.HoverflyClientException;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
@@ -72,7 +70,6 @@ import org.zeroturnaround.exec.StartedProcess;
 public class Hoverfly implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hoverfly.class);
-    private static final ObjectWriter JSON_PRETTY_PRINTER = new ObjectMapper().writerWithDefaultPrettyPrinter();
     private static final int BOOT_TIMEOUT_SECONDS = 10;
     private static final int RETRY_BACKOFF_INTERVAL_MS = 100;
 
@@ -521,7 +518,7 @@ public class Hoverfly implements AutoCloseable {
 
     private void persistSimulation(Path path, Simulation simulation) throws IOException {
         Files.createDirectories(path.getParent());
-        JSON_PRETTY_PRINTER.writeValue(path.toFile(), simulation);
+        ObjectMapperFactory.getPrettyPrinter().writeValue(path.toFile(), simulation);
     }
 
 

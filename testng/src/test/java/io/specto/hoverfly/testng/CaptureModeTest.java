@@ -2,6 +2,7 @@ package io.specto.hoverfly.testng;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import io.specto.hoverfly.testng.api.TestNGClassRule;
@@ -50,8 +51,7 @@ public class CaptureModeTest {
         JSONAssert.assertEquals(expectedSimulation, actualSimulation, JSONCompareMode.LENIENT);
 
         // Verify headers are captured
-        ObjectMapper objectMapper = new ObjectMapper();
-        Simulation simulation = objectMapper.readValue(actualSimulation, Simulation.class);
+        Simulation simulation = ObjectMapperFactory.getDefaultObjectMapper().readValue(actualSimulation, Simulation.class);
         Set<RequestResponsePair> pairs = simulation.getHoverflyData().getPairs();
         assertThat(pairs.iterator().next().getRequest().getHeaders()).isNotEmpty();
 

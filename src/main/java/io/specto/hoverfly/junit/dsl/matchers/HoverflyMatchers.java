@@ -2,6 +2,7 @@ package io.specto.hoverfly.junit.dsl.matchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
 import io.specto.hoverfly.junit.dsl.HoverflyDslException;
 import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
@@ -10,7 +11,6 @@ import java.io.IOException;
 
 public class HoverflyMatchers {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final XmlMapper XML_MAPPER = new XmlMapper();
 
     private HoverflyMatchers() { }
@@ -161,7 +161,7 @@ public class HoverflyMatchers {
 
     private static void validateJson(String value) {
         try {
-            OBJECT_MAPPER.readTree(value);
+            ObjectMapperFactory.getDefaultObjectMapper().readTree(value);
         } catch (IOException e) {
             throw new HoverflyDslException("Fail to create JSON matcher from invalid JSON string: " + value);
         }

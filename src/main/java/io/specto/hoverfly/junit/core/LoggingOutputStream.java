@@ -31,7 +31,7 @@ class LoggingOutputStream extends OutputStream {
     private final ByteArrayOutputStream stream = new ByteArrayOutputStream(1000);
     private final Logger logger;
 
-    private static final ObjectMapper LOG_PARSER = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private static final ObjectMapper LOG_PARSER = ObjectMapperFactory.getDefaultObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     LoggingOutputStream(final Logger logger) {
         this.logger = logger;

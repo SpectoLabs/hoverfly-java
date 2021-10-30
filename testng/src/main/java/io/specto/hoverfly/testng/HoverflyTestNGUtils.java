@@ -12,30 +12,26 @@
  */
 package io.specto.hoverfly.testng;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import static io.specto.hoverfly.junit.core.HoverflyConstants.DEFAULT_HOVERFLY_EXPORT_PATH;
+
+import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import io.specto.hoverfly.testng.api.TestNGClassRule;
 import io.specto.hoverfly.testng.api.TestNGRule;
-import org.testng.IInvokedMethod;
-import org.testng.ITestClass;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static io.specto.hoverfly.junit.core.HoverflyConstants.DEFAULT_HOVERFLY_EXPORT_PATH;
+import org.testng.IInvokedMethod;
+import org.testng.ITestClass;
 
 /**
  * Utility methods for {@link HoverflyRule}
  */
 class HoverflyTestNGUtils {
-
-    private static final ObjectWriter JSON_PRETTY_PRINTER = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
     /**
      * Looks for a file in the src/test/resources/hoverfly directory with the given name
@@ -64,7 +60,7 @@ class HoverflyTestNGUtils {
     static void prettyPrintSimulation(Simulation value) {
         try {
             System.out.println("The following simulation is imported to Hoverfly: \n"
-                    + JSON_PRETTY_PRINTER.writeValueAsString(value));
+                    + ObjectMapperFactory.getPrettyPrinter().writeValueAsString(value));
         } catch (Exception e) {
             throw new HoverflyTestNG.HoverflyTestNgException("Failed to print simulation data: " + e.getMessage());
         }
