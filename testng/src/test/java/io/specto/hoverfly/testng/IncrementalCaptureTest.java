@@ -1,6 +1,7 @@
 package io.specto.hoverfly.testng;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import io.specto.hoverfly.testng.api.TestNGRule;
@@ -68,8 +69,7 @@ public class IncrementalCaptureTest {
         final String actualSimulation = new String(Files.readAllBytes(SIMULATION_FILE), UTF_8);
 
         // Verify headers are captured
-        ObjectMapper objectMapper = new ObjectMapper();
-        Simulation simulation = objectMapper.readValue(actualSimulation, Simulation.class);
+        Simulation simulation = ObjectMapperFactory.getDefaultObjectMapper().readValue(actualSimulation, Simulation.class);
         Set<RequestResponsePair> pairs = simulation.getHoverflyData().getPairs();
         assertThat(pairs).hasSize(2);
         assertThat(pairs.iterator().next().getRequest().getHeaders()).isNotEmpty();

@@ -1,5 +1,6 @@
 package io.specto.hoverfly.ruletest;
 
+import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import io.specto.hoverfly.models.SimpleBooking;
@@ -244,7 +245,7 @@ public class HoverflyDslMatcherTest {
         // Given
         final RequestEntity<String> bookFlightRequest = RequestEntity.put(new URI("http://www.my-test.com/api/bookings/1"))
                 .contentType(APPLICATION_JSON)
-                .body(HttpBodyConverter.OBJECT_MAPPER.writeValueAsString(BOOKING));
+                .body(ObjectMapperFactory.getDefaultObjectMapper().writeValueAsString(BOOKING));
 
         // When
         final ResponseEntity<String> bookFlightResponse = restTemplate.exchange(bookFlightRequest, String.class);

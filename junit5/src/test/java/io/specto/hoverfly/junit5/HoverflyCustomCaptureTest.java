@@ -3,6 +3,7 @@ package io.specto.hoverfly.junit5;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyMode;
+import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import io.specto.hoverfly.junit5.api.HoverflyCapture;
 import io.specto.hoverfly.junit5.api.HoverflyConfig;
@@ -78,8 +79,7 @@ class HoverflyCustomCaptureTest {
         assertThat(hoverflyInstance.isHealthy()).isFalse();
         assertThat(CAPTURED_SIMULATION_FILE).exists();
         // should capture requests from both tests
-        ObjectMapper objectMapper = new ObjectMapper();
-        Simulation simulation = objectMapper.readValue(CAPTURED_SIMULATION_FILE.toFile(), Simulation.class);
+        Simulation simulation = ObjectMapperFactory.getDefaultObjectMapper().readValue(CAPTURED_SIMULATION_FILE.toFile(), Simulation.class);
         assertThat(simulation.getHoverflyData().getPairs()).hasSize(2);
     }
 }

@@ -1,10 +1,26 @@
 package io.specto.hoverfly.testng;
 
+import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
+import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
+import static io.specto.hoverfly.junit.dsl.HttpBodyConverter.json;
+import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
+import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
+import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.contains;
+import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.equalsToJson;
+import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.matches;
+import static io.specto.hoverfly.junit.verification.HoverflyVerifications.never;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
+import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import io.specto.hoverfly.junit.verification.HoverflyVerificationError;
 import io.specto.hoverfly.models.SimpleBooking;
 import io.specto.hoverfly.testng.api.TestNGClassRule;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -13,20 +29,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.LocalDate;
-
-import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
-import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
-import static io.specto.hoverfly.junit.dsl.HttpBodyConverter.json;
-import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
-import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.*;
-import static io.specto.hoverfly.junit.verification.HoverflyVerifications.never;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Listeners(HoverflyExecutor.class)
 public class HoverflyRuleVerificationTest {
@@ -162,7 +164,7 @@ public class HoverflyRuleVerificationTest {
     private ResponseEntity<String> putBooking() throws URISyntaxException, JsonProcessingException {
         RequestEntity<String> bookFlightRequest = RequestEntity.put(new URI("http://api-sandbox.flight.com/api/bookings/1"))
                 .contentType(APPLICATION_JSON)
-                .body(HttpBodyConverter.OBJECT_MAPPER.writeValueAsString(BOOKING));
+                .body(ObjectMapperFactory.getDefaultObjectMapper().writeValueAsString(BOOKING));
 
         return restTemplate.exchange(bookFlightRequest, String.class);
     }

@@ -37,7 +37,7 @@ class HoverflyExtensionErrorHandlingTest {
             .engine("junit-jupiter")
             .selectors(selectClass(ShouldFailOnInvalidSimulationPreprocessor.class))
             .execute()
-            .containers();
+            .containerEvents();
     events.assertStatistics(stats -> stats.started(2).finished(2));
     events.assertThatEvents()
             .extracting(e -> e.getPayload(TestExecutionResult.class))

@@ -32,8 +32,8 @@ import java.util.Scanner;
  */
 class HoverflyUtils {
 
-    private static final ObjectWriter OBJECT_WRITER = new ObjectMapper().writerFor(Simulation.class);
-    private static final ObjectReader SIMULATION_READER = new ObjectMapper().readerFor(Simulation.class);
+    private static final ObjectWriter OBJECT_WRITER = ObjectMapperFactory.getDefaultObjectMapper().writerFor(Simulation.class);
+    private static final ObjectReader SIMULATION_READER = ObjectMapperFactory.getDefaultObjectMapper().readerFor(Simulation.class);
 
     static void checkPortInUse(int port) {
         try (final ServerSocket ignored = new ServerSocket(port, 1, InetAddress.getLoopbackAddress())) {

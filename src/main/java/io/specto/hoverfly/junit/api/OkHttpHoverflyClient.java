@@ -1,5 +1,6 @@
 package io.specto.hoverfly.junit.api;
 
+import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,7 +40,6 @@ class OkHttpHoverflyClient implements HoverflyClient {
     private static final String STATE_PATH = "api/v2/state";
     private static final String DIFF_PATH = "api/v2/diff";
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final MediaType JSON = MediaType.parse("application/json");
 
     private final OkHttpClient client;
@@ -47,7 +47,6 @@ class OkHttpHoverflyClient implements HoverflyClient {
     private final HttpUrl baseUrl;
 
     OkHttpHoverflyClient(String scheme, String host, int port, String authToken) {
-        OBJECT_MAPPER.registerModule(new JavaTimeModule());
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         if (authToken != null) {
             clientBuilder.addInterceptor(new AuthHeaderInterceptor(authToken));
@@ -61,7 +60,6 @@ class OkHttpHoverflyClient implements HoverflyClient {
     }
 
     OkHttpHoverflyClient(String scheme, String host, int port, OkHttpClient client) {
-        OBJECT_MAPPER.registerModule(new JavaTimeModule());
         this.client = client;
         this.baseUrl = new HttpUrl.Builder()
                 .scheme(scheme)
@@ -128,7 +126,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
             final Request request = builder.get().build();
             try (Response response = client.newCall(request).execute()) {
                 onFailure(response);
-                return OBJECT_MAPPER.readTree(response.body().string());
+                return ObjectMapperFactory.getDefaultObjectMapper().readTree(response.body().string());
             }
         } catch (Exception e) {
             LOGGER.warn("Failed to get simulation: {}", e.getMessage());
@@ -350,7 +348,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
 
     // Convert object to JSON request body
     private RequestBody createRequestBody(Object data) throws JsonProcessingException {
-        String content = OBJECT_MAPPER.writeValueAsString(data);
+        String content = ObjectMapperFactory.getDefaultObjectMapper().writeValueAsString(data);
         return RequestBody.create(JSON, content);
     }
 
@@ -359,7 +357,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
     private <T> T exchange(Request request, Class<T> clazz) throws IOException {
         try (Response response = client.newCall(request).execute()) {
             onFailure(response);
-            return OBJECT_MAPPER.readValue(response.body().string(), clazz);
+            return ObjectMapperFactory.getDefaultObjectMapper().readValue(response.body().string(), clazz);
         }
     }
 

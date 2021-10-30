@@ -14,6 +14,7 @@ package io.specto.hoverfly.junit.rule;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import org.junit.Rule;
 import org.junit.runner.Description;
@@ -30,8 +31,6 @@ import static io.specto.hoverfly.junit.core.HoverflyConstants.DEFAULT_HOVERFLY_E
  * Utility methods for {@link HoverflyRule}
  */
 class HoverflyRuleUtils {
-
-    private static final ObjectWriter JSON_PRETTY_PRINTER = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
     /**
      * Looks for a file in the src/test/resources/hoverfly directory with the given name
@@ -72,7 +71,7 @@ class HoverflyRuleUtils {
     static void prettyPrintSimulation(Simulation value) {
         try {
             System.out.println("The following simulation is imported to Hoverfly: \n"
-                    + JSON_PRETTY_PRINTER.writeValueAsString(value));
+                    + ObjectMapperFactory.getPrettyPrinter().writeValueAsString(value));
         } catch (Exception e) {
             throw new HoverflyRule.HoverflyRuleException("Failed to print simulation data: " + e.getMessage());
         }

@@ -15,13 +15,12 @@ package io.specto.hoverfly.junit.core.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.specto.hoverfly.junit.core.ObjectMapperFactory;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import java.util.List;
-import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -215,7 +214,7 @@ public class Request {
     @Override
     public String toString() {
         try {
-            return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
+            return ObjectMapperFactory.getPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException e) {
             return ToStringBuilder.reflectionToString(this);
         }
