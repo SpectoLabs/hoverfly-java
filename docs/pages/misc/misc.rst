@@ -41,6 +41,26 @@ If you are using `OkHttpClient <http://square.github.io/okhttp/>`_ to make HTTPS
             .sslSocketFactory(sslConfigurer.getSslContext().getSocketFactory(), sslConfigurer.getTrustManager())
             .build();
 
+Spring 5 WebClient with Reactor Netty
+------------
+If you are using `Spring WebClient <https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-client>`_ to make HTTP requests, here's how you set it to trust Hoverfly's CA cert and
+use Hoverfly as a proxy:
+
+.. code-block:: java
+
+    // To trust Hoverfly CA cert
+    SslContext sslContext = SslContextBuilder.forClient().trustManager(hoverfly.getSslConfigurer().getTrustManager()).build();
+
+    // Set Hoverfly as proxy
+    HttpClient httpClient = HttpClient.create()
+        .proxy(p -> p.type(Proxy.HTTP).host("localhost").port(hoverfly.getHoverflyConfig().getProxyPort()))
+        .secure(t -> t.sslContext(sslContext));
+    ReactorClientHttpConnector reactorClientHttpConnector = new ReactorClientHttpConnector(httpClient);
+
+    WebClient.builder()
+        .clientConnector(reactorClientHttpConnector)
+        .build();
+
 Spock Framework
 ---------------
 
