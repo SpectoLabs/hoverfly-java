@@ -32,6 +32,21 @@ public class ResponseCreatorsTest {
     }
 
     @Test
+    public void shouldBuildSuccessResponseWithBinaryBodyAndContentType() {
+        // When
+        final Response response = ResponseCreators.success("Ym9keQ==", "contentType")
+                .binaryEncoding()
+                .build();
+
+        // Then
+        assertThat(response)
+                .hasStatus(200)
+                .hasBody("Ym9keQ==")
+                .hasEncodedBody()
+                .hasExactHeaders(header("Content-Type", "contentType"));
+    }
+
+    @Test
     public void shouldBuildSuccessResponse() {
         // When
         final Response response = ResponseCreators.success().build();

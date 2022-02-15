@@ -32,6 +32,7 @@ public class ResponseBuilder {
 
     private final Map<String, List<String>> headers = new HashMap<>();
     private String body = "";
+    private boolean encodedBody = false;
     private int status = 200;
     private boolean templated = true;
     private final Map<String, String> transitionsState = new HashMap<>();
@@ -113,7 +114,7 @@ public class ResponseBuilder {
      * @return the response
      */
     Response build() {
-        return new Response(status, body, false, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay);
+        return new Response(status, body, encodedBody, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay);
     }
 
     public ResponseBuilder body(final HttpBodyConverter httpBodyConverter) {
@@ -128,6 +129,14 @@ public class ResponseBuilder {
         return this;
     }
 
+    /**
+     * Sets the body as an encodedBody for binary responses
+     * @return the {@link ResponseBuilder for further customizations}
+     */
+    public ResponseBuilder binaryEncoding() {
+        this.encodedBody = true;
+        return this;
+    }
 
     /**
      * Set fixed delay for the request-response pair
