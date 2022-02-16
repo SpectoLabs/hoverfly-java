@@ -39,6 +39,14 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
         return this;
     }
 
+    public ResponseAssert hasEncodedBody() {
+        isNotNull();
+
+        assertThat(actual.isEncodedBody()).isTrue();
+
+        return this;
+    }
+
     public ResponseAssert hasExactHeaders(final Header... headers) {
         isNotNull();
 
