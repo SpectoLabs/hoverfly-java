@@ -26,6 +26,7 @@ public class SimulationTest {
     private final URL v5Resource = Resources.getResource("simulations/v5-simulation.json");
     private final URL v5ResourceWithoutGlobalActions = Resources.getResource("simulations/v5-simulation-without-global-actions.json");
     private final URL v5ResourceWithUnknownFields = Resources.getResource("simulations/v5-simulation-with-unknown-fields.json");
+    private final URL v5ResourceWithMixedCaseMatcherType = Resources.getResource("simulations/v5-simulation-with-mixed-case-matcher-type.json");
 
 
     @Test
@@ -60,6 +61,19 @@ public class SimulationTest {
 
         // When
         Simulation actual = objectMapper.readValue(v5ResourceWithUnknownFields, Simulation.class);
+
+        // Then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+
+    @Test
+    public void deserializingMatcherTypeShouldBeCaseInsensitive() throws Exception {
+        // Given
+        Simulation expected = getLatestSimulation();
+
+        // When
+        Simulation actual = objectMapper.readValue(v5ResourceWithMixedCaseMatcherType, Simulation.class);
 
         // Then
         assertThat(actual).isEqualTo(expected);

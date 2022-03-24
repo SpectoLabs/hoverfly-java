@@ -1,0 +1,90 @@
+{
+	"data": {
+		"pairs": [
+			{
+				"request": {
+					"cookies": "bad-cookie",
+					"path": [
+						{
+							"matcher": "exact",
+							"value": "/api/bookings/1"
+						}
+					],
+					"method": [
+						{
+							"matcher": "Exact",
+							"value": "GET"
+						}
+					],
+					"destination": [
+						{
+							"matcher": "exaCt",
+							"value": "www.my-test.com"
+						}
+					],
+					"scheme": [
+						{
+							"matcher": "exaCT",
+							"value": "http"
+						}
+					],
+					"body": [
+						{
+							"matcher": "EXACT",
+							"value": ""
+						}
+					],
+					"headers": {
+						"Content-Type": [
+							{
+								"matcher": "exact",
+								"value": "text/plain; charset=utf-8"
+							}
+						]
+					},
+					"query": {
+						"key": [
+							{
+								"matcher": "exact",
+								"value": "value"
+							}
+						]
+					},
+					"deprecatedQuery": [
+						{
+							"matcher": "exact",
+							"value": ""
+						}
+					],
+					"requiresState": {
+						"requiresStateKey": "requiresStateValue"
+					}
+				},
+				"response": {
+					"status": 200,
+					"body": "{\"bookingId\":\"1\"}",
+					"encodedBody": false,
+					"headers": {
+						"Content-Type": [
+							"application/json"
+						]
+					},
+					"templated": false,
+					"transitionsState": {
+						"transitionsStateKey": "transitionsStateValue"
+					},
+					"removesState": [
+						"removesStateKey"
+					],
+					"fixedDelay": 3000
+				}
+			}
+		],
+		"globalActions": {
+			"delays": []
+		}
+	},
+	"meta": {
+		"schemaVersion": "v5.1"
+	}
+}
