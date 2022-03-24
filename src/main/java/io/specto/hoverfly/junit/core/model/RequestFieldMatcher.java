@@ -84,6 +84,10 @@ public class RequestFieldMatcher<T> {
         JSONPARTIAL,
         JSONPATH;
 
+        @JsonCreator
+        public static MatcherType fromValue(String value) {
+            return value == null ? null : MatcherType.valueOf(value.toUpperCase());
+        }
 
         @JsonValue
         public String getValue() {
