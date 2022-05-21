@@ -28,7 +28,7 @@ repositories {
 dependencies {
 
     ext {
-        jacksonVersion = '2.13.1'
+        jacksonVersion = '2.13.3'
     }
 
     compile 'com.squareup.okhttp3:okhttp:4.9.3'
@@ -42,7 +42,7 @@ dependencies {
     compileOnly 'junit:junit:4.13.2'
     testCompile 'com.sun.jersey:jersey-client:1.19.4'
     testCompile 'com.google.guava:guava:31.0.1-jre'
-    testCompile 'org.springframework:spring-web:5.3.16'
+    testCompile 'org.springframework:spring-web:5.3.20'
     testCompile 'org.apache.httpcomponents:httpclient:4.5.13'
     testCompile 'org.assertj:assertj-core:3.22.0'
     testCompile 'net.javacrumbs.json-unit:json-unit:2.32.0'
