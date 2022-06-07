@@ -60,6 +60,12 @@ what you can do is to specify a different Hoverfly working directory:
 
     localConfigs().binaryLocation("/absolute/path/to/hoverfly/directory")
 
+If you can't find the method to set a config, you may pass any `Hoverfly start-up flag <https://docs.hoverfly.io/en/latest/pages/reference/hoverfly/hoverflycommands.html>`_ directly through this
+generic config method, for example:
+
+.. code-block:: java
+
+    localConfigs().addCommands("-listen-on-host", "0.0.0.0")
 
 Logging
 -------
@@ -112,7 +118,7 @@ to set the log level explicitly:
 Middleware
 ----------
 
-You can configure Hoverfly to use a local middleware (for more details, please check out `Hoverfly Middleware <http://hoverfly.readthedocs.io/en/latest/pages/keyconcepts/middleware.html>`_):
+You can configure Hoverfly to use a local middleware (for more details, please check out `Hoverfly Middleware <https://docs.hoverfly.io/en/latest/pages/keyconcepts/middleware.html>`_):
 
 .. code-block:: java
 
