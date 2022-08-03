@@ -36,7 +36,11 @@ class SystemConfigFactory {
         }
 
         if (systemInfo.is64BitSystem()) {
-            archType = ArchType.ARCH_AMD64;
+            if (systemInfo.isOsLinux() && systemInfo.isArmArchitecture()) {
+                archType = ArchType.ARCH_ARM64;
+            } else {
+                archType = ArchType.ARCH_AMD64;
+            }
         } else {
             archType = ArchType.ARCH_386;
         }
@@ -66,6 +70,7 @@ class SystemConfigFactory {
 
     enum ArchType {
         ARCH_AMD64("amd64"),
+        ARCH_ARM64("arm64"),
         ARCH_386("386");
 
         private final String name;

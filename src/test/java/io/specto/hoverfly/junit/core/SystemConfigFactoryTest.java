@@ -6,8 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.powermock.reflect.Whitebox;
 
-import static io.specto.hoverfly.junit.core.SystemConfigFactory.ArchType.ARCH_386;
-import static io.specto.hoverfly.junit.core.SystemConfigFactory.ArchType.ARCH_AMD64;
+import static io.specto.hoverfly.junit.core.SystemConfigFactory.ArchType.*;
 import static io.specto.hoverfly.junit.core.SystemConfigFactory.OsName.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -44,6 +43,18 @@ public class SystemConfigFactoryTest {
         SystemConfig systemConfig = factory.createSystemConfig();
 
         assertThat(systemConfig.getOsName()).isEqualTo(LINUX);
+    }
+
+    @Test
+    public void shouldCreateSystemConfigWithArm64BitArchType() {
+
+        when(systemInfo.isOsLinux()).thenReturn(true);
+        when(systemInfo.is64BitSystem()).thenReturn(true);
+        when(systemInfo.isArmArchitecture()).thenReturn(true);
+
+        SystemConfig systemConfig = factory.createSystemConfig();
+
+        assertThat(systemConfig.getArchType()).isEqualTo(ARCH_ARM64);
     }
 
     @Test
