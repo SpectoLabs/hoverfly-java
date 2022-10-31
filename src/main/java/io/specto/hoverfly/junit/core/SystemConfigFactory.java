@@ -36,7 +36,7 @@ class SystemConfigFactory {
         }
 
         if (systemInfo.is64BitSystem()) {
-            if (systemInfo.isOsLinux() && systemInfo.isArmArchitecture()) {
+            if (systemInfo.isArmArchitecture()) {
                 archType = ArchType.ARCH_ARM64;
             } else {
                 archType = ArchType.ARCH_AMD64;
