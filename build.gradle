@@ -28,7 +28,7 @@ repositories {
 dependencies {
 
     ext {
-        jacksonVersion = '2.13.3'
+        jacksonVersion = '2.13.5'
     }
 
     compile 'com.squareup.okhttp3:okhttp:4.9.3'
