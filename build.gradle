@@ -182,6 +182,7 @@ task (updateHoverflyBinaries) {
             src([
                     "$downloadUrl/$hoverfly_binary_version/hoverfly_bundle_linux_386.zip",
                     "$downloadUrl/$hoverfly_binary_version/hoverfly_bundle_linux_amd64.zip",
+                    "$downloadUrl/$hoverfly_binary_version/hoverfly_bundle_linux_arm64.zip",
                     "$downloadUrl/$hoverfly_binary_version/hoverfly_bundle_OSX_amd64.zip",
                     "$downloadUrl/$hoverfly_binary_version/hoverfly_bundle_OSX_arm64.zip",
                     "$downloadUrl/$hoverfly_binary_version/hoverfly_bundle_windows_386.zip",
