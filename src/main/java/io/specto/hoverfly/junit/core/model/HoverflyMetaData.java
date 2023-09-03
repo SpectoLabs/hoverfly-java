@@ -31,7 +31,7 @@ public class HoverflyMetaData {
     private String timeExported;
 
     public HoverflyMetaData() {
-        schemaVersion = "v5.1";
+        schemaVersion = "v5.2";
     }
 
     @JsonCreator
