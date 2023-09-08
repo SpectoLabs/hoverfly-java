@@ -296,6 +296,6 @@ public class OkHttpHoverflyClientTest {
 
         Simulation exportedSimulation = hoverfly.getSimulation();
         assertThat(exportedSimulation.getHoverflyData().getPairs()).hasSize(1);
-        assertThat(exportedSimulation.getHoverflyMetaData().getSchemaVersion()).isEqualTo("v5.1");
+        assertThat(exportedSimulation.getHoverflyMetaData().getSchemaVersion()).isEqualTo("v5.2");
     }
 }

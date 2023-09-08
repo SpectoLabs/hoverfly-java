@@ -141,7 +141,7 @@ public class SimulationSourceTest {
     public void shouldCreateEmptySimulation() throws JSONException {
         JSONAssert.assertEquals(
                 SimulationSource.empty().getSimulation(),
-                "{\"data\":{\"pairs\":[],\"globalActions\":{\"delays\":[]}},\"meta\":{\"schemaVersion\":\"v5.1\"}}",
+                "{\"data\":{\"pairs\":[],\"globalActions\":{\"delays\":[]}},\"meta\":{\"schemaVersion\":\"v5.2\"}}",
                 false);
     }
 
