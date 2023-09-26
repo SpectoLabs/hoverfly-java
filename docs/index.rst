@@ -1,5 +1,5 @@
 
-.. image:: logo-large.png
+.. image:: _static/logo-large.png
 
 |
 |

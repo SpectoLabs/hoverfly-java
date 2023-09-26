@@ -1,67 +1,57 @@
-import sys
-import os
-import shlex
+import sphinx_rtd_theme
+# Configuration file for the Sphinx documentation builder.
+#
+# For the full list of built-in configuration values, see the documentation:
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-extensions = [
-    'sphinxcontrib.mermaid',
-    'sphinx.ext.extlinks',
-    'sphinx.ext.todo'
-]
+# -- Project information -----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-templates_path = ['_templates']
+project = 'Hoverfly Java'
+copyright = '2023, SpectoLabs'
+author = 'SpectoLabs'
 
-source_suffix = '.rst'
-
-master_doc = 'index'
-
-project = u'Hoverfly Java'
-copyright = u'2017, SpectoLabs'
-author = u'SpectoLabs'
-
-
-version = '0.14.0'
+version = '0.15.0'
 # The full version, including alpha/beta/rc tags.
 release = version
 
-language = None
+# -- General configuration ---------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-exclude_patterns = ['_build']
+extensions = [
+  'sphinxcontrib.mermaid',
+  'sphinxcontrib.jquery',
+  'sphinx.ext.extlinks',
+  'sphinx.ext.todo'
+]
 
+templates_path = ['_templates']
+source_suffix = '.rst'
+master_doc = 'index'
+
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 pygments_style = 'sphinx'
 
 todo_include_todos = False
 
+# -- Options for HTML output -------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-if 'READTHEDOCS' not in os.environ:
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
+html_theme = 'sphinx_rtd_theme'
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 html_static_path = ['_static']
 
 html_context = {
-   'css_files': [                                                           
-            'https://media.readthedocs.org/css/sphinx_rtd_theme.css',            
-            'https://media.readthedocs.org/css/readthedocs-doc-embed.css',       
-            '_static/theme_overrides.css',   
+   'css_files': [
+            'https://media.readthedocs.org/css/sphinx_rtd_theme.css',
+            'https://media.readthedocs.org/css/readthedocs-doc-embed.css',
+            '_static/theme_overrides.css',
         ],
     }
 
 htmlhelp_basename = 'hoverfly-java-doc'
-
-latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    #'papersize': 'letterpaper',
-
-    # The font size ('10pt', '11pt' or '12pt').
-    #'pointsize': '10pt',
-
-    # Additional stuff for the LaTeX preamble.
-    #'preamble': '',
-
-    # Latex figure (float) alignment
-    #'figure_align': 'htbp',
-}
 
 latex_documents = [
     (master_doc, 'hoverfly-java.tex', u'Hoverfly Java Documentation',
