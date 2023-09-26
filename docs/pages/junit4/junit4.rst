@@ -17,6 +17,7 @@ Simulate
     public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(classpath("simulation.json"));
 
 .. _capturemode:
+
 Capture
 -------
 

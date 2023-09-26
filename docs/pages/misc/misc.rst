@@ -42,7 +42,8 @@ If you are using `OkHttpClient <http://square.github.io/okhttp/>`_ to make HTTPS
             .build();
 
 Spring 5 WebClient with Reactor Netty
-------------
+-------------------------------------
+
 If you are using `Spring WebClient <https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-client>`_ to make HTTP requests, here's how you set it to trust Hoverfly's CA cert and
 use Hoverfly as a proxy:
 

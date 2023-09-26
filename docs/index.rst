@@ -29,7 +29,7 @@ What is Hoverfly Java?
 
 It enables you to get around common testing problems caused by external dependencies, such as non-deterministic data, flakiness, not yet implemented API's, licensing fees, slow tests and more.
 
-**Hoverfly Java** is a native language binding which gives you an expressive API for managing Hoverfly in Java.  It gives you a Hoverfly class which abstracts away the binary and API calls, a :ref:`dsl` for creating simulations, and a :ref:`junit` integration for using it within JUnit tests.
+**Hoverfly Java** is a native language binding which gives you an expressive API for managing Hoverfly in Java.  It gives you a Hoverfly class which abstracts away the binary and API calls, a :ref:`dsl` for creating simulations, and a :ref:`junit4` integration for using it within JUnit tests.
 
 Hoverfly Java is developed and maintained by `SpectoLabs <https://specto.io>`_.
 
