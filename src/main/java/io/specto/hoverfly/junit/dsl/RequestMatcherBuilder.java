@@ -133,10 +133,9 @@ public class RequestMatcherBuilder {
         if (values.length == 0 ) {
             query.put(key, singletonList(any()));
         } else {
-            // TODO until we implement an array matcher, hoverfly currently match on array values that are joined by semicolon
-            query.put(key, singletonList(newExactMatcher(Arrays.stream(values)
+            query.put(key, singletonList(newArrayMatcher(Arrays.stream(values)
                     .map(Object::toString)
-                    .collect(Collectors.joining(";")))));
+                    .collect(Collectors.toList()))));
         }
         return this;
     }
