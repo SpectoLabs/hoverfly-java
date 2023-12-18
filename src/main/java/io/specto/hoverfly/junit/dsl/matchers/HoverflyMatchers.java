@@ -1,6 +1,5 @@
 package io.specto.hoverfly.junit.dsl.matchers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
@@ -20,7 +19,7 @@ public class HoverflyMatchers {
      * @param value the value to match on
      * @return an {@link RequestFieldMatcher}
      */
-    public static RequestFieldMatcher equalsTo(Object value) {
+    public static RequestFieldMatcher<String> equalsTo(Object value) {
         return RequestFieldMatcher.newExactMatcher(value.toString());
     }
 
@@ -31,7 +30,7 @@ public class HoverflyMatchers {
      * @param value the GLOB pattern, use the wildcard character '*' to match any characters
      * @return an {@link RequestFieldMatcher}
      */
-    public static RequestFieldMatcher matches(String value) {
+    public static RequestFieldMatcher<String> matches(String value) {
         return RequestFieldMatcher.newGlobMatcher(value);
     }
 
@@ -44,7 +43,7 @@ public class HoverflyMatchers {
      * @param regexPattern the Golang regex pattern
      * @return an {@link RequestFieldMatcher}
      */
-    public static RequestFieldMatcher matchesGoRegex(String regexPattern) {
+    public static RequestFieldMatcher<String> matchesGoRegex(String regexPattern) {
         return RequestFieldMatcher.newRegexMatcher(regexPattern);
     }
 
@@ -53,7 +52,7 @@ public class HoverflyMatchers {
      * @param value the value to start with
      * @return an {@link RequestFieldMatcher}
      */
-    public static RequestFieldMatcher startsWith(String value) {
+    public static RequestFieldMatcher<String> startsWith(String value) {
         return RequestFieldMatcher.newRegexMatcher(String.format("^%s.*", value));
     }
 
@@ -62,7 +61,7 @@ public class HoverflyMatchers {
      * @param value the value to end with
      * @return an {@link RequestFieldMatcher}
      */
-    public static RequestFieldMatcher endsWith(String value) {
+    public static RequestFieldMatcher<String> endsWith(String value) {
         return RequestFieldMatcher.newRegexMatcher(String.format(".*%s$", value));
     }
 
@@ -71,7 +70,7 @@ public class HoverflyMatchers {
      * @param value the value to contain
      * @return an {@link RequestFieldMatcher}
      */
-    public static RequestFieldMatcher contains(String value) {
+    public static RequestFieldMatcher<String> contains(String value) {
         return RequestFieldMatcher.newRegexMatcher(String.format(".*%s.*", value));
     }
 
@@ -79,7 +78,7 @@ public class HoverflyMatchers {
      * Create a matcher that matches on any value
      * @return an {@link RequestFieldMatcher}
      */
-    public static RequestFieldMatcher any() {
+    public static RequestFieldMatcher<String> any() {
         return RequestFieldMatcher.newRegexMatcher(".*");
     }
 
@@ -88,7 +87,7 @@ public class HoverflyMatchers {
      * @param value the JSON string value
      * @return an {@link RequestFieldMatcher}
      */
-    public static RequestFieldMatcher equalsToJson(String value) {
+    public static RequestFieldMatcher<String> equalsToJson(String value) {
         validateJson(value);
         return RequestFieldMatcher.newJsonMatcher(value);
     }
@@ -98,7 +97,7 @@ public class HoverflyMatchers {
      * @param converter the {@link HttpBodyConverter} with an object to be serialized to JSON
      * @return an {@link RequestFieldMatcher} that includes jsonMatch
      */
-    public static RequestFieldMatcher equalsToJson(HttpBodyConverter converter) {
+    public static RequestFieldMatcher<String> equalsToJson(HttpBodyConverter converter) {
         return equalsToJson(converter.body());
     }
 
@@ -107,7 +106,7 @@ public class HoverflyMatchers {
      * @param value the JSON string value
      * @return an {@link RequestFieldMatcher}
      */
-    public static RequestFieldMatcher matchesPartialJson(String value) {
+    public static RequestFieldMatcher<String> matchesPartialJson(String value) {
         validateJson(value);
         return RequestFieldMatcher.newJsonPartialMatcher(value);
     }
@@ -117,7 +116,7 @@ public class HoverflyMatchers {
      * @param converter the {@link HttpBodyConverter} with an object to be serialized to JSON
      * @return an {@link RequestFieldMatcher}
      */
-    public static RequestFieldMatcher matchesPartialJson(HttpBodyConverter converter) {
+    public static RequestFieldMatcher<String> matchesPartialJson(HttpBodyConverter converter) {
         return matchesPartialJson(converter.body());
     }
 
@@ -126,7 +125,7 @@ public class HoverflyMatchers {
      * @param expression the JsonPath expression
      * @return an {@link RequestFieldMatcher}
      */
-    public static RequestFieldMatcher matchesJsonPath(String expression) {
+    public static RequestFieldMatcher<String> matchesJsonPath(String expression) {
         return RequestFieldMatcher.newJsonPathMatch(expression);
     }
 
@@ -135,7 +134,7 @@ public class HoverflyMatchers {
      * @param value the XML string value
      * @return an {@link RequestFieldMatcher}
      */
-    public static RequestFieldMatcher equalsToXml(String value) {
+    public static RequestFieldMatcher<String> equalsToXml(String value) {
         validateXml(value);
         return RequestFieldMatcher.newXmlMatcher(value);
     }
@@ -145,7 +144,7 @@ public class HoverflyMatchers {
      * @param converter the {@link HttpBodyConverter} with an object to be serialized to XML
      * @return an {@link RequestFieldMatcher} that includes xmlMatch
      */
-    public static RequestFieldMatcher equalsToXml(HttpBodyConverter converter) {
+    public static RequestFieldMatcher<String> equalsToXml(HttpBodyConverter converter) {
         return equalsToXml(converter.body());
     }
 
@@ -154,7 +153,7 @@ public class HoverflyMatchers {
      * @param expression the XPath expression
      * @return an {@link RequestFieldMatcher}
      */
-    public static RequestFieldMatcher matchesXPath(String expression) {
+    public static RequestFieldMatcher<String> matchesXPath(String expression) {
         return RequestFieldMatcher.newXpathMatcher(expression);
     }
 

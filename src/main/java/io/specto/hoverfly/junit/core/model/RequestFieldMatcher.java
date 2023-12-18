@@ -5,8 +5,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import static io.specto.hoverfly.junit.core.model.RequestFieldMatcher.MatcherType.EXACT;
-import static io.specto.hoverfly.junit.core.model.RequestFieldMatcher.MatcherType.REGEX;
+import java.util.List;
+
+import static io.specto.hoverfly.junit.core.model.RequestFieldMatcher.MatcherType.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -40,36 +41,44 @@ public class RequestFieldMatcher<T> {
         this.value = value;
     }
 
-    public static RequestFieldMatcher newExactMatcher(String value) {
+    public static RequestFieldMatcher<String> newExactMatcher(String value) {
         return new RequestFieldMatcher<>(EXACT, value);
     }
 
-    public static RequestFieldMatcher newGlobMatcher(String value) {
+    public static RequestFieldMatcher<String> newGlobMatcher(String value) {
         return new RequestFieldMatcher<>(MatcherType.GLOB, value);
     }
 
-    public static RequestFieldMatcher newRegexMatcher(String value) {
+    public static RequestFieldMatcher<String> newRegexMatcher(String value) {
         return new RequestFieldMatcher<>(REGEX, value);
     }
 
-    public static RequestFieldMatcher newXmlMatcher(String value) {
+    public static RequestFieldMatcher<List<String>> newArrayMatcher(List<String> value) {
+        return new RequestFieldMatcher<>(ARRAY, value);
+    }
+
+    public static RequestFieldMatcher<String> newJwtMatcher(String value) {
+        return new RequestFieldMatcher<>(JWT, value);
+    }
+
+    public static RequestFieldMatcher<String> newXmlMatcher(String value) {
         return new RequestFieldMatcher<>(MatcherType.XML, value);
     }
 
-    public static RequestFieldMatcher newXpathMatcher(String value) {
+    public static RequestFieldMatcher<String> newXpathMatcher(String value) {
         return new RequestFieldMatcher<>(MatcherType.XPATH, value);
     }
 
-    public static RequestFieldMatcher newJsonMatcher(String value) {
+    public static RequestFieldMatcher<String> newJsonMatcher(String value) {
         return new RequestFieldMatcher<>(MatcherType.JSON, value);
     }
 
 
-    public static RequestFieldMatcher newJsonPartialMatcher(String value) {
+    public static RequestFieldMatcher<String> newJsonPartialMatcher(String value) {
         return new RequestFieldMatcher<>(MatcherType.JSONPARTIAL, value);
     }
 
-    public static RequestFieldMatcher newJsonPathMatch(String value) {
+    public static RequestFieldMatcher<String> newJsonPathMatch(String value) {
         return new RequestFieldMatcher<>(MatcherType.JSONPATH, value);
     }
 
@@ -78,6 +87,9 @@ public class RequestFieldMatcher<T> {
         EXACT,
         GLOB,
         REGEX,
+        ARRAY,
+        JWT,
+        FORM,
         XML,
         XPATH,
         JSON,
