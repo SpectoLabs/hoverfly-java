@@ -28,7 +28,7 @@ public class SimulationSourceTest {
 
     private static final String EXPECTED = getSimulation();
     private static URL url;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeClass
     public static void setUp() {

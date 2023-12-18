@@ -1,0 +1,89 @@
+{
+	"data": {
+		"pairs": [
+			{
+				"request": {
+					"path": [
+						{
+							"matcher": "exact",
+							"value": "/api/bookings/1"
+						}
+					],
+					"method": [
+						{
+							"matcher": "exact",
+							"value": "GET"
+						}
+					],
+					"destination": [
+						{
+							"matcher": "exact",
+							"value": "www.my-test.com"
+						}
+					],
+					"scheme": [
+						{
+							"matcher": "exact",
+							"value": "http"
+						}
+					],
+					"body": [
+						{
+							"matcher": "exact",
+							"value": ""
+						}
+					],
+					"headers": {
+						"Authorization": [
+							{
+								"matcher": "jwt",
+								"value": "{\"header\":{\"alg\":\"HS256\"},\"payload\":{\"sub\":\"1234567890\",\"name\":\"John Doe\"}}"
+							}
+						]
+					},
+					"query": {
+						"key": [
+							{
+								"matcher": "array",
+								"value": ["value1", "value2"]
+							}
+						]
+					},
+					"deprecatedQuery": [
+						{
+							"matcher": "exact",
+							"value": ""
+						}
+					],
+					"requiresState": {
+						"requiresStateKey": "requiresStateValue"
+					}
+				},
+				"response": {
+					"status": 200,
+					"body": "{\"bookingId\":\"1\"}",
+					"encodedBody": false,
+					"headers": {
+						"Content-Type": [
+							"application/json"
+						]
+					},
+					"templated": false,
+					"transitionsState": {
+						"transitionsStateKey": "transitionsStateValue"
+					},
+					"removesState": [
+						"removesStateKey"
+					],
+					"fixedDelay": 3000
+				}
+			}
+		],
+		"globalActions": {
+			"delays": []
+		}
+	},
+	"meta": {
+		"schemaVersion": "v5.2"
+	}
+}
