@@ -19,6 +19,7 @@ import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.specto.hoverfly.junit.core.model.RequestFieldMatcher.newArrayMatcher;
 import static io.specto.hoverfly.junit.core.model.RequestFieldMatcher.newExactMatcher;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
 import static java.util.Collections.singletonList;
@@ -92,10 +93,9 @@ public class RequestMatcherBuilder {
         if (values.length == 0 ) {
             headers.put(key, singletonList(any()));
         } else {
-            // TODO until we implement an array matcher, hoverfly currently match on array values that are joined by semicolon
-            headers.put(key, singletonList(newExactMatcher(Arrays.stream(values)
+            headers.put(key, singletonList(newArrayMatcher(Arrays.stream(values)
                     .map(Object::toString)
-                    .collect(Collectors.joining(";")))));
+                    .collect(Collectors.toList()))));
         }
         return this;
     }
