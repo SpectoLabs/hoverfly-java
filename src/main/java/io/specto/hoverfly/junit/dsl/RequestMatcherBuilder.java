@@ -181,7 +181,7 @@ public class RequestMatcherBuilder {
 
         Map<String, List<RequestFieldMatcher>> query = isAnyQuery ? null : this.query;
         List<RequestFieldMatcher> body = isAnyBody ? null : this.body;
-        return new Request(path, method, destination, scheme, query, null, body, headers, requiresState);
+        return new Request(path, method, destination, scheme, query, body, headers, requiresState);
     }
 
 }

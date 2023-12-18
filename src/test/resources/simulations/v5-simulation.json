@@ -49,12 +49,6 @@
 							}
 						]
 					},
-					"deprecatedQuery": [
-						{
-							"matcher": "exact",
-							"value": ""
-						}
-					],
 					"requiresState": {
 						"requiresStateKey": "requiresStateValue"
 					}

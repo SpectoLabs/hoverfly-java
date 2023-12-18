@@ -124,7 +124,6 @@ public class SimulationTest {
                 .query(ImmutableMap.of("key", singletonList(RequestFieldMatcher.newArrayMatcher(Arrays.asList("value1", "value2")))))
                 // JWT Matcher
                 .headers(ImmutableMap.of("Authorization", singletonList(RequestFieldMatcher.newJwtMatcher("{\"header\":{\"alg\":\"HS256\"},\"payload\":{\"sub\":\"1234567890\",\"name\":\"John Doe\"}}"))))
-                .deprecatedQuery(singletonList(newExactMatcher("")))
                 .requiresState(ImmutableMap.of("requiresStateKey", "requiresStateValue"));
         Response.Builder responseBuilder = getTestResponseBuilder()
                 .transitionsState(ImmutableMap.of("transitionsStateKey", "transitionsStateValue"))
@@ -138,7 +137,6 @@ public class SimulationTest {
 
     private Simulation getLatestSimulation() {
         Request.Builder requestBuilder = getTestRequestBuilder()
-                .deprecatedQuery(singletonList(newExactMatcher("")))
                 .requiresState(ImmutableMap.of("requiresStateKey", "requiresStateValue"));
         Response.Builder responseBuilder = getTestResponseBuilder()
                 .transitionsState(ImmutableMap.of("transitionsStateKey", "transitionsStateValue"))
