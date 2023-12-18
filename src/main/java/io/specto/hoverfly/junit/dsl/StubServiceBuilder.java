@@ -32,8 +32,8 @@ public class StubServiceBuilder {
     private final List<DelaySettings> delaySettings = new ArrayList<>();
 
     private static final String SEPARATOR = "://";
-    protected final List<RequestFieldMatcher> destination;
-    protected List<RequestFieldMatcher> scheme;
+    protected final List<RequestFieldMatcher<String>> destination;
+    protected List<RequestFieldMatcher<String>> scheme;
 
 
     /**
@@ -230,7 +230,7 @@ public class StubServiceBuilder {
         return this;
     }
 
-    private RequestMatcherBuilder createRequestMatcherBuilder(HttpMethod httpMethod, RequestFieldMatcher path) {
+    private RequestMatcherBuilder createRequestMatcherBuilder(HttpMethod httpMethod, RequestFieldMatcher<String> path) {
         return new RequestMatcherBuilder(this, httpMethod, scheme, destination, singletonList(path));
     }
 
@@ -245,8 +245,8 @@ public class StubServiceBuilder {
         HEAD,
         ANY;
 
-        List<RequestFieldMatcher> getRequestFieldMatcher() {
-            List<RequestFieldMatcher> matchers = null;
+        List<RequestFieldMatcher<String>> getRequestFieldMatcher() {
+            List<RequestFieldMatcher<String>> matchers = null;
             if (this != ANY) {
                 matchers = singletonList(newExactMatcher(this.name()));
             }
