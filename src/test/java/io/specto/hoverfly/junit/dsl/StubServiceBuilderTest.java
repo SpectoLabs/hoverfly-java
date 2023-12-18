@@ -102,7 +102,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildExactQueryMatcher() {
+    public void shouldBuildArrayQueryMatcher() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/").queryParam("foo", "bar")
                 .willReturn(response()).getRequestResponsePairs();
@@ -110,7 +110,7 @@ public class StubServiceBuilderTest {
         // Then
         assertThat(pairs).hasSize(1);
         Map<String, List<RequestFieldMatcher>> query = Iterables.getLast(pairs).getRequest().getQuery();
-        assertThat(query).containsExactly(MapEntry.entry("foo", singletonList(newExactMatcher("bar"))));
+        assertThat(query).containsExactly(MapEntry.entry("foo", singletonList(newArrayMatcher(singletonList("bar")))));
     }
 
     // TODO Not supported
@@ -166,13 +166,13 @@ public class StubServiceBuilderTest {
         assertThat(pairs).hasSize(1);
         Map<String, List<RequestFieldMatcher>> query = Iterables.getLast(pairs).getRequest().getQuery();
         assertThat(query).containsOnly(
-                MapEntry.entry("page", singletonList(newExactMatcher("1"))),
-                MapEntry.entry("size", singletonList(newExactMatcher("10")))
+                MapEntry.entry("page", singletonList(newArrayMatcher(singletonList("1")))),
+                MapEntry.entry("size", singletonList(newArrayMatcher(singletonList("10"))))
         );
     }
 
     @Test
-    public void shouldBuildExactQueryForKeyWithMultipleValues() {
+    public void shouldBuildQueryArrayMatcherForKeyWithMultipleValues() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
                 .queryParam("category", "food", "drink")
@@ -182,7 +182,7 @@ public class StubServiceBuilderTest {
         assertThat(pairs).hasSize(1);
         Map<String, List<RequestFieldMatcher>> query = Iterables.getLast(pairs).getRequest().getQuery();
         assertThat(query).containsExactly(
-                MapEntry.entry("category", singletonList(newExactMatcher("food;drink")))
+                MapEntry.entry("category", singletonList(newArrayMatcher(Arrays.asList("food", "drink"))))
         );
     }
 
@@ -204,7 +204,7 @@ public class StubServiceBuilderTest {
     }
 
     @Test
-    public void shouldBuildQueryWithBothExactAndFuzzyMatchers() {
+    public void shouldBuildQueryWithBothArrayAndFuzzyMatchers() {
         // When
         final Set<RequestResponsePair> pairs = service("www.base-url.com").get("/")
                 .queryParam("page", any())
@@ -216,7 +216,7 @@ public class StubServiceBuilderTest {
         Map<String, List<RequestFieldMatcher>> query = Iterables.getLast(pairs).getRequest().getQuery();
         assertThat(query).containsOnly(
                 MapEntry.entry("page", singletonList(newRegexMatcher(".*"))),
-                MapEntry.entry("category", singletonList(newExactMatcher("food")))
+                MapEntry.entry("category", singletonList(newArrayMatcher(singletonList("food"))))
         );
     }
 
@@ -273,7 +273,7 @@ public class StubServiceBuilderTest {
         assertThat(pairs).hasSize(1);
         Map<String, List<RequestFieldMatcher>> query = Iterables.getLast(pairs).getRequest().getQuery();
         assertThat(query).containsExactly(
-                MapEntry.entry("destination", singletonList(newExactMatcher("New York")))
+                MapEntry.entry("destination", singletonList(newArrayMatcher(singletonList("New York"))))
         );
     }
 
