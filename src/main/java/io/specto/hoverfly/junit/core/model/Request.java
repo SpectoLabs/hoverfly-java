@@ -26,13 +26,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Request {
 
-    private List<RequestFieldMatcher> path;
+    private List<RequestFieldMatcher<String>> path;
 
-    private List<RequestFieldMatcher> method;
+    private List<RequestFieldMatcher<String>> method;
 
-    private List<RequestFieldMatcher> destination;
+    private List<RequestFieldMatcher<String>> destination;
 
-    private List<RequestFieldMatcher> scheme;
+    private List<RequestFieldMatcher<String>> scheme;
 
     private Map<String, List<RequestFieldMatcher>> query;
 
@@ -47,10 +47,10 @@ public class Request {
     public Request() {
     }
 
-    public Request(List<RequestFieldMatcher> path,
-                   List<RequestFieldMatcher> method,
-                   List<RequestFieldMatcher> destination,
-                   List<RequestFieldMatcher> scheme,
+    public Request(List<RequestFieldMatcher<String>> path,
+                   List<RequestFieldMatcher<String>> method,
+                   List<RequestFieldMatcher<String>> destination,
+                   List<RequestFieldMatcher<String>> scheme,
                    Map<String, List<RequestFieldMatcher>> query,
                    List<RequestFieldMatcher> deprecatedQuery,
                    List<RequestFieldMatcher> body,
@@ -67,35 +67,35 @@ public class Request {
         this.requiresState = requiresState;
     }
 
-    public List<RequestFieldMatcher> getPath() {
+    public List<RequestFieldMatcher<String>> getPath() {
         return path;
     }
 
-    public void setPath(List<RequestFieldMatcher> path) {
+    public void setPath(List<RequestFieldMatcher<String>> path) {
         this.path = path;
     }
 
-    public List<RequestFieldMatcher> getMethod() {
+    public List<RequestFieldMatcher<String>> getMethod() {
         return method;
     }
 
-    public void setMethod(List<RequestFieldMatcher> method) {
+    public void setMethod(List<RequestFieldMatcher<String>> method) {
         this.method = method;
     }
 
-    public List<RequestFieldMatcher> getDestination() {
+    public List<RequestFieldMatcher<String>> getDestination() {
         return destination;
     }
 
-    public void setDestination(List<RequestFieldMatcher> destination) {
+    public void setDestination(List<RequestFieldMatcher<String>> destination) {
         this.destination = destination;
     }
 
-    public List<RequestFieldMatcher> getScheme() {
+    public List<RequestFieldMatcher<String>> getScheme() {
         return scheme;
     }
 
-    public void setScheme(List<RequestFieldMatcher> scheme) {
+    public void setScheme(List<RequestFieldMatcher<String>> scheme) {
         this.scheme = scheme;
     }
 
@@ -141,32 +141,32 @@ public class Request {
 
     public static class Builder {
 
-        private List<RequestFieldMatcher> path;
-        private List<RequestFieldMatcher> method;
-        private List<RequestFieldMatcher> destination;
-        private List<RequestFieldMatcher> scheme;
+        private List<RequestFieldMatcher<String>> path;
+        private List<RequestFieldMatcher<String>> method;
+        private List<RequestFieldMatcher<String>> destination;
+        private List<RequestFieldMatcher<String>> scheme;
         private Map<String, List<RequestFieldMatcher>> query;
         private List<RequestFieldMatcher> body;
         private List<RequestFieldMatcher> deprecatedQuery;
         private Map<String, List<RequestFieldMatcher>> headers;
         private Map<String, String> requiresState;
 
-        public Request.Builder path(List<RequestFieldMatcher> path) {
+        public Request.Builder path(List<RequestFieldMatcher<String>> path) {
             this.path = path;
             return this;
         }
 
-        public Request.Builder method(List<RequestFieldMatcher> method) {
+        public Request.Builder method(List<RequestFieldMatcher<String>> method) {
             this.method = method;
             return this;
         }
 
-        public Request.Builder destination(List<RequestFieldMatcher> destination) {
+        public Request.Builder destination(List<RequestFieldMatcher<String>> destination) {
             this.destination = destination;
             return this;
         }
 
-        public Request.Builder scheme(List<RequestFieldMatcher> scheme) {
+        public Request.Builder scheme(List<RequestFieldMatcher<String>> scheme) {
             this.scheme = scheme;
             return this;
         }

@@ -21,7 +21,7 @@ public class AbstractDelaySettingsBuilder {
      *
      * @return URL patterns as string
      */
-    protected String toPattern(List<RequestFieldMatcher> matchers) {
+    protected String toPattern(List<RequestFieldMatcher<String>> matchers) {
         return matchers.stream().filter(m -> m.getMatcher() == RequestFieldMatcher.MatcherType.EXACT || m.getMatcher() == RequestFieldMatcher.MatcherType.REGEX)
                 .findFirst()
                 .map(RequestFieldMatcher::getValue)

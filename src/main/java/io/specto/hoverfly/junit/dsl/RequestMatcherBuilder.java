@@ -29,10 +29,10 @@ import static java.util.Collections.singletonList;
 public class RequestMatcherBuilder {
 
     private final StubServiceBuilder invoker;
-    private final List<RequestFieldMatcher> method;
-    private final List<RequestFieldMatcher> scheme;
-    private final List<RequestFieldMatcher> destination;
-    private final List<RequestFieldMatcher> path;
+    private final List<RequestFieldMatcher<String>> method;
+    private final List<RequestFieldMatcher<String>> scheme;
+    private final List<RequestFieldMatcher<String>> destination;
+    private final List<RequestFieldMatcher<String>> path;
     private final Map<String, List<RequestFieldMatcher>> headers = new HashMap<>();
     private final Map<String, String> requiresState = new HashMap<>();
     private final Map<String, List<RequestFieldMatcher>> query = new HashMap<>(); // default to match on empty query
@@ -42,9 +42,9 @@ public class RequestMatcherBuilder {
 
     RequestMatcherBuilder(final StubServiceBuilder invoker,
                           final StubServiceBuilder.HttpMethod method,
-                          final List<RequestFieldMatcher> scheme,
-                          final List<RequestFieldMatcher> destination,
-                          final List<RequestFieldMatcher> path) {
+                          final List<RequestFieldMatcher<String>> scheme,
+                          final List<RequestFieldMatcher<String>> destination,
+                          final List<RequestFieldMatcher<String>> path) {
         this.invoker = invoker;
         this.method = method.getRequestFieldMatcher();
         this.scheme = scheme;
