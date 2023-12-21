@@ -15,14 +15,20 @@ public class RequestFieldMatcher<T> {
 
     private MatcherType matcher;
     private T value;
+    private MatcherConfig config;
 
     public RequestFieldMatcher() {
     }
 
-    public RequestFieldMatcher(MatcherType matcher,
-                               T value) {
+    public RequestFieldMatcher(MatcherType matcher, T value) {
         this.matcher = matcher;
         this.value = value;
+    }
+
+    public RequestFieldMatcher(MatcherType matcher, T value, MatcherConfig config) {
+        this.matcher = matcher;
+        this.value = value;
+        this.config = config;
     }
 
     public MatcherType getMatcher() {
@@ -41,6 +47,14 @@ public class RequestFieldMatcher<T> {
         this.value = value;
     }
 
+    public MatcherConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(MatcherConfig config) {
+        this.config = config;
+    }
+
     public static RequestFieldMatcher<String> newExactMatcher(String value) {
         return new RequestFieldMatcher<>(EXACT, value);
     }
@@ -55,6 +69,10 @@ public class RequestFieldMatcher<T> {
 
     public static RequestFieldMatcher<List<String>> newArrayMatcher(List<String> value) {
         return new RequestFieldMatcher<>(ARRAY, value);
+    }
+
+    public static RequestFieldMatcher<List<String>> newArrayMatcher(List<String> value, ArrayMatcherConfig arrayMatcherConfig) {
+        return new RequestFieldMatcher<>(ARRAY, value, arrayMatcherConfig);
     }
 
     public static RequestFieldMatcher<String> newJwtMatcher(String value) {

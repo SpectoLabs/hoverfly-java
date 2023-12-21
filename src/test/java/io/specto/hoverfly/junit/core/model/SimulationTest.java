@@ -121,7 +121,7 @@ public class SimulationTest {
     private Simulation getSimulationWithV5_2Matchers() {
         Request.Builder requestBuilder = getTestRequestBuilder()
                 // Array Matcher
-                .query(ImmutableMap.of("key", singletonList(RequestFieldMatcher.newArrayMatcher(Arrays.asList("value1", "value2")))))
+                .query(ImmutableMap.of("key", singletonList(RequestFieldMatcher.newArrayMatcher(Arrays.asList("value1", "value2"), new ArrayMatcherConfig(true, true, false)))))
                 // JWT Matcher
                 .headers(ImmutableMap.of("Authorization", singletonList(RequestFieldMatcher.newJwtMatcher("{\"header\":{\"alg\":\"HS256\"},\"payload\":{\"sub\":\"1234567890\",\"name\":\"John Doe\"}}"))))
                 .requiresState(ImmutableMap.of("requiresStateKey", "requiresStateValue"));

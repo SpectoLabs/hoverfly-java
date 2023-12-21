@@ -45,7 +45,12 @@
 						"key": [
 							{
 								"matcher": "array",
-								"value": ["value1", "value2"]
+								"value": ["value1", "value2"],
+								"config": {
+									"ignoreUnknown": true,
+									"ignoreOrder": true,
+									"ignoreOccurrences": false
+								}
 							}
 						]
 					},
