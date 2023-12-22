@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.List;
+import java.util.Map;
 
 import static io.specto.hoverfly.junit.core.model.RequestFieldMatcher.MatcherType.*;
 
@@ -73,6 +74,10 @@ public class RequestFieldMatcher<T> {
 
     public static RequestFieldMatcher<List<String>> newArrayMatcher(List<String> value, ArrayMatcherConfig arrayMatcherConfig) {
         return new RequestFieldMatcher<>(ARRAY, value, arrayMatcherConfig);
+    }
+
+    public static RequestFieldMatcher<Map<String, List<RequestFieldMatcher<?>>>> newFormMatcher(Map<String, List<RequestFieldMatcher<?>>> value) {
+        return new RequestFieldMatcher<>(FORM, value);
     }
 
     public static RequestFieldMatcher<String> newJwtMatcher(String value) {
