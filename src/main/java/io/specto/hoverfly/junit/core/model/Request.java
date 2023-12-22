@@ -15,6 +15,7 @@ package io.specto.hoverfly.junit.core.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class Request {
 
     private Map<String, List<RequestFieldMatcher>> query;
 
+    @JsonDeserialize(using = BodyRequestMatcherCustomDeserializer.class)
     private List<RequestFieldMatcher> body;
 
     private Map<String, List<RequestFieldMatcher>> headers;

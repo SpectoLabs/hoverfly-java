@@ -29,8 +29,21 @@
 					],
 					"body": [
 						{
-							"matcher": "exact",
-							"value": ""
+							"matcher": "form",
+							"value": {
+								"grant_type": [
+									{
+										"matcher": "exact",
+										"value": "authorization_code"
+									}
+								],
+								"client_assertion": [
+									{
+										"matcher": "jwt",
+										"value": "{\"header\":{\"alg\":\"HS256\"},\"payload\":{\"sub\":\"1234567890\",\"name\":\"John Doe\"}}"
+									}
+								]
+							}
 						}
 					],
 					"headers": {
