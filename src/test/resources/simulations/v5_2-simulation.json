@@ -50,7 +50,15 @@
 						"Authorization": [
 							{
 								"matcher": "jwt",
-								"value": "{\"header\":{\"alg\":\"HS256\"},\"payload\":{\"sub\":\"1234567890\",\"name\":\"John Doe\"}}"
+								"value": "{\"header\":{\"alg\":\"HS256\"},\"payload\":{\"sub\":\"1234567890\",\"name\":\"John Doe\"}}",
+								"doMatch": {
+									"matcher": "jsonpath",
+									"value": "$.payload.name",
+									"doMatch": {
+										"matcher": "exact",
+										"value": "John Doe"
+									}
+								}
 							}
 						]
 					},

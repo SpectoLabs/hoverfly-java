@@ -17,6 +17,7 @@ public class RequestFieldMatcher<T> {
     private MatcherType matcher;
     private T value;
     private MatcherConfig config;
+    private RequestFieldMatcher<?> doMatch;
 
     public RequestFieldMatcher() {
     }
@@ -54,6 +55,14 @@ public class RequestFieldMatcher<T> {
 
     public void setConfig(MatcherConfig config) {
         this.config = config;
+    }
+
+    public RequestFieldMatcher<?> getDoMatch() {
+        return doMatch;
+    }
+
+    public void setDoMatch(RequestFieldMatcher<?> doMatch) {
+        this.doMatch = doMatch;
     }
 
     public static RequestFieldMatcher<String> newExactMatcher(String value) {
@@ -105,6 +114,31 @@ public class RequestFieldMatcher<T> {
         return new RequestFieldMatcher<>(MatcherType.JSONPATH, value);
     }
 
+    public static class MatcherChainingBuilder {
+
+        private final RequestFieldMatcher<?> rootMatcher;
+        private RequestFieldMatcher<?> currentMatcher;
+
+        private MatcherChainingBuilder(RequestFieldMatcher<?> rootMatcher) {
+            this.rootMatcher = rootMatcher;
+            this.currentMatcher = rootMatcher;
+        }
+
+        public static MatcherChainingBuilder root(RequestFieldMatcher<?> matcher) {
+            return new MatcherChainingBuilder(matcher);
+        }
+
+        public MatcherChainingBuilder next(RequestFieldMatcher<?> matcher) {
+            currentMatcher.setDoMatch(matcher);
+            currentMatcher = matcher;
+            return this;
+        }
+
+        public RequestFieldMatcher<?> build() {
+            return rootMatcher;
+        }
+
+    }
 
     public enum MatcherType {
         EXACT,

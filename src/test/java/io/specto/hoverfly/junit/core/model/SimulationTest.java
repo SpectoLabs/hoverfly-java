@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
+import io.specto.hoverfly.junit.core.model.RequestFieldMatcher.MatcherChainingBuilder;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -122,7 +123,12 @@ public class SimulationTest {
                 // Array Matcher
                 .query(ImmutableMap.of("key", singletonList(RequestFieldMatcher.newArrayMatcher(Arrays.asList("value1", "value2"), new ArrayMatcherConfig(true, true, false)))))
                 // JWT Matcher
-                .headers(ImmutableMap.of("Authorization", singletonList(RequestFieldMatcher.newJwtMatcher("{\"header\":{\"alg\":\"HS256\"},\"payload\":{\"sub\":\"1234567890\",\"name\":\"John Doe\"}}"))))
+                .headers(ImmutableMap.of("Authorization", singletonList(
+                    MatcherChainingBuilder.root(RequestFieldMatcher.newJwtMatcher("{\"header\":{\"alg\":\"HS256\"},\"payload\":{\"sub\":\"1234567890\",\"name\":\"John Doe\"}}"))
+                        .next(RequestFieldMatcher.newJsonPathMatch("$.payload.name"))
+                        .next(RequestFieldMatcher.newExactMatcher("John Doe"))
+                        .build()
+                )))
                 .body(singletonList(RequestFieldMatcher.newFormMatcher(ImmutableMap.of(
                     "grant_type", singletonList(RequestFieldMatcher.newExactMatcher("authorization_code")),
                     "client_assertion", singletonList(RequestFieldMatcher.newJwtMatcher("{\"header\":{\"alg\":\"HS256\"},\"payload\":{\"sub\":\"1234567890\",\"name\":\"John Doe\"}}"))
