@@ -95,7 +95,8 @@
 					"removesState": [
 						"removesStateKey"
 					],
-					"fixedDelay": 3000
+					"fixedDelay": 3000,
+					"postServeAction": "callback-script"
 				}
 			}
 		],

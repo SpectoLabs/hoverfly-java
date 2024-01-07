@@ -114,7 +114,7 @@ public class ResponseBuilder {
      * @return the response
      */
     Response build() {
-        return new Response(status, body, encodedBody, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay);
+        return new Response(status, body, encodedBody, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay, null);
     }
 
     public ResponseBuilder body(final HttpBodyConverter httpBodyConverter) {

@@ -137,7 +137,8 @@ public class SimulationTest {
         Response.Builder responseBuilder = getTestResponseBuilder()
                 .transitionsState(ImmutableMap.of("transitionsStateKey", "transitionsStateValue"))
                 .removesState(ImmutableList.of("removesStateKey"))
-                .fixedDelay(3000);
+                .fixedDelay(3000)
+                .postServeAction("callback-script");
         HoverflyData data = getTestHoverflyData(requestBuilder, responseBuilder);
         HoverflyMetaData meta = new HoverflyMetaData();
       return new Simulation(data, meta);

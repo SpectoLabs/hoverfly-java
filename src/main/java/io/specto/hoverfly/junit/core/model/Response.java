@@ -35,6 +35,7 @@ public class Response {
     private final List<String> removesState;
     private final Integer fixedDelay;
     private final LogNormalDelay logNormalDelay;
+    private final String postServeAction;
 
     @JsonCreator
     public Response(
@@ -46,7 +47,8 @@ public class Response {
             @JsonProperty("transitionsState") Map<String, String> transitionsState,
             @JsonProperty("removesState") List<String> removesState,
             @JsonProperty("fixedDelay") Integer fixedDelay,
-            @JsonProperty("logNormalDelay") LogNormalDelay logNormalDelay) {
+            @JsonProperty("logNormalDelay") LogNormalDelay logNormalDelay,
+            @JsonProperty("postServeAction") String postServeAction) {
         this.status = status;
         this.body = body;
         this.encodedBody = encodedBody;
@@ -56,6 +58,7 @@ public class Response {
         this.removesState = removesState;
         this.fixedDelay = fixedDelay;
         this.logNormalDelay = logNormalDelay;
+        this.postServeAction = postServeAction;
     }
 
     public Integer getStatus() {
@@ -95,6 +98,10 @@ public class Response {
         return logNormalDelay;
     }
 
+    public String getPostServeAction() {
+        return postServeAction;
+    }
+
     static class Builder {
         private Integer status;
         private String body;
@@ -105,6 +112,7 @@ public class Response {
         private List<String> removesState;
         private Integer fixedDelay;
         private LogNormalDelay logNormalDelay;
+        private String postServeAction;
 
         Builder status(int status) {
             this.status = status;
@@ -151,8 +159,13 @@ public class Response {
             return this;
         }
 
+        Builder postServeAction(String postServeAction) {
+            this.postServeAction = postServeAction;
+            return this;
+        }
+
         Response build() {
-            return new Response(status, body, encodedBody, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay);
+            return new Response(status, body, encodedBody, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay, postServeAction);
         }
     }
 
