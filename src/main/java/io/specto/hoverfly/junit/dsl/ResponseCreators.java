@@ -21,6 +21,7 @@ public class ResponseCreators {
 
     private static final int CREATED = 201;
     private static final int OK = 200;
+    private static final int ACCEPTED = 202;
     private static final int NO_CONTENT = 204;
     private static final int BAD_REQUEST = 400;
     private static final int SERVER_ERROR = 500;
@@ -66,6 +67,14 @@ public class ResponseCreators {
      */
     public static ResponseBuilder success() {
         return response().status(OK);
+    }
+
+    /**
+     * Builds a 202 response
+     * @return builder with the given fields set
+     */
+    public static ResponseBuilder accepted() {
+        return response().status(ACCEPTED);
     }
 
     /**
