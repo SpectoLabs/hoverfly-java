@@ -3,9 +3,11 @@ package io.specto.hoverfly.ruletest;
 import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.HttpBodyConverter.json;
+import static io.specto.hoverfly.junit.dsl.ResponseCreators.accepted;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.contains;
+import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.equalsTo;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.equalsToJson;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.matches;
 import static io.specto.hoverfly.junit.verification.HoverflyVerifications.never;
@@ -15,7 +17,9 @@ import static org.awaitility.Awaitility.await;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.ImmutableMap;
 import io.specto.hoverfly.junit.core.ObjectMapperFactory;
+import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import io.specto.hoverfly.junit.verification.HoverflyVerificationError;
 import io.specto.hoverfly.models.SimpleBooking;
@@ -24,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Collections;
 import org.apache.http.HttpHost;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -31,9 +36,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -56,6 +66,10 @@ public class HoverflyRuleVerificationTest {
                     .put("/api/bookings/1")
                     .body(equalsToJson(json(BOOKING)))
                     .willReturn(success())
+
+                    .post("/api/bookings")
+                    .body(RequestFieldMatcher.newFormMatcher(ImmutableMap.of("grant_type", Collections.singletonList(equalsTo("authorization_code")))))
+                    .willReturn(accepted())
 
     )).printSimulationData();
 
@@ -161,6 +175,27 @@ public class HoverflyRuleVerificationTest {
             .untilAsserted(() -> hoverflyRule.verify(service("service")
                     .post("/path")
                     .anyBody()));
+    }
+
+    @Test
+    public void shouldVerifyFormRequestBody() {
+
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        map.add("grant_type", "authorization_code");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity("http://api-sandbox.flight.com/api/bookings", request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
+        hoverflyRule.verify(service("http://api-sandbox.flight.com")
+            .post("/api/bookings")
+            .body(RequestFieldMatcher.newFormMatcher(ImmutableMap.of("grant_type", Collections.singletonList(equalsTo("authorization_code")))))
+        );
+
     }
 
     private void delayedRequest() {
