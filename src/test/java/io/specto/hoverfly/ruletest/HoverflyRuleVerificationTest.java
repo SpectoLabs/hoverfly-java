@@ -125,6 +125,7 @@ public class HoverflyRuleVerificationTest {
 
         getBookings();
         putBooking();
+        postBooking();
 
         hoverflyRule.verifyAll();
     }
@@ -180,15 +181,7 @@ public class HoverflyRuleVerificationTest {
     @Test
     public void shouldVerifyFormRequestBody() {
 
-        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
-        map.add("grant_type", "authorization_code");
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity("http://api-sandbox.flight.com/api/bookings", request, String.class);
+        ResponseEntity<String> response = postBooking();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
         hoverflyRule.verify(service("http://api-sandbox.flight.com")
@@ -233,5 +226,17 @@ public class HoverflyRuleVerificationTest {
                 .body(ObjectMapperFactory.getDefaultObjectMapper().writeValueAsString(BOOKING));
 
         return restTemplate.exchange(bookFlightRequest, String.class);
+    }
+
+    private ResponseEntity<String> postBooking() {
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
+        map.add("grant_type", "authorization_code");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+      return restTemplate.postForEntity("http://api-sandbox.flight.com/api/bookings", request, String.class);
     }
 }
