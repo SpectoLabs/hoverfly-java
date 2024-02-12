@@ -3,6 +3,7 @@ package io.specto.hoverfly.junit5.api;
 import io.specto.hoverfly.junit5.HoverflyExtension;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -12,6 +13,7 @@ import java.lang.annotation.Target;
  * By default, it tries to import simulation file from default Hoverfly test resources path ("src/test/resources/hoverfly")
  * with filename equals to the fully qualified class name of the annotated class.
  */
+@Inherited
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HoverflySimulate {
