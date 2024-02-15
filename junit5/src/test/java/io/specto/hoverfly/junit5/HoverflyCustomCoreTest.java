@@ -19,5 +19,4 @@ class HoverflyCustomCoreTest {
         assertThat(hoverfly.getMode()).isEqualTo(HoverflyMode.CAPTURE);
         assertThat(hoverfly.getHoverflyConfig().getDestination()).isEqualTo("hoverfly.io");
     }
-
 }
