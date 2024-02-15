@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
 import static io.specto.hoverfly.junit5.HoverflyExtensionUtils.*;
 import static org.junit.platform.commons.support.AnnotationSupport.isAnnotated;
+import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
 
 /**
  * HoverflyExtension starts Hoverfly proxy server before all test methods are executed and stops it after all. It also reset
@@ -68,7 +69,7 @@ public class HoverflyExtension implements AfterEachCallback, BeforeEachCallback,
         HoverflyConfig config = null;
 
         if (isAnnotated(annotatedElement, HoverflySimulate.class)) {
-            HoverflySimulate hoverflySimulate = annotatedElement.getAnnotation(HoverflySimulate.class);
+            HoverflySimulate hoverflySimulate = findAnnotation(annotatedElement, HoverflySimulate.class).get();
             config = hoverflySimulate.config();
 
             String path = getPath(context, hoverflySimulate.source());
@@ -83,12 +84,12 @@ public class HoverflyExtension implements AfterEachCallback, BeforeEachCallback,
             }
 
         } else if (isAnnotated(annotatedElement, HoverflyCore.class)) {
-            HoverflyCore hoverflyCore = annotatedElement.getAnnotation(HoverflyCore.class);
+            HoverflyCore hoverflyCore = findAnnotation(annotatedElement, HoverflyCore.class).get();
             config = hoverflyCore.config();
             mode = hoverflyCore.mode();
 
         } else if (isAnnotated(annotatedElement, HoverflyCapture.class)) {
-            HoverflyCapture hoverflyCapture = annotatedElement.getAnnotation(HoverflyCapture.class);
+            HoverflyCapture hoverflyCapture = findAnnotation(annotatedElement, HoverflyCapture.class).get();
             config = hoverflyCapture.config();
             mode = HoverflyMode.CAPTURE;
             String filename = hoverflyCapture.filename();
@@ -100,14 +101,14 @@ public class HoverflyExtension implements AfterEachCallback, BeforeEachCallback,
 
             capturePath = getCapturePath(hoverflyCapture.path(), filename);
         } else if (isAnnotated(annotatedElement, HoverflyDiff.class)) {
-            HoverflyDiff hoverflyDiff = annotatedElement.getAnnotation(HoverflyDiff.class);
+            HoverflyDiff hoverflyDiff = findAnnotation(annotatedElement, HoverflyDiff.class).get();
             config = hoverflyDiff.config();
             mode = HoverflyMode.DIFF;
             String path = getPath(context, hoverflyDiff.source());
             HoverflySimulate.SourceType type = hoverflyDiff.source().type();
             source = getSimulationSource(path, type);
         } else if (isAnnotated(annotatedElement, HoverflySpy.class)) {
-            HoverflySpy hoverflySpy = annotatedElement.getAnnotation(HoverflySpy.class);
+            HoverflySpy hoverflySpy = findAnnotation(annotatedElement, HoverflySpy.class).get();
             config = hoverflySpy.config();
             mode = HoverflyMode.SPY;
             String path = getPath(context, hoverflySpy.source());
@@ -186,7 +187,7 @@ public class HoverflyExtension implements AfterEachCallback, BeforeEachCallback,
             context.getElement().orElseThrow(() -> new IllegalStateException("No test class found."));
 
         if (isAnnotated(annotatedElement, HoverflyValidate.class)) {
-            final HoverflyValidate hoverflyValidate = annotatedElement.getAnnotation(HoverflyValidate.class);
+            final HoverflyValidate hoverflyValidate = findAnnotation(annotatedElement, HoverflyValidate.class).get();
             hoverfly.assertThatNoDiffIsReported(hoverflyValidate.reset());
         }
     }
