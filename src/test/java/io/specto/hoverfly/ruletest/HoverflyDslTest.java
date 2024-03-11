@@ -1,6 +1,19 @@
 package io.specto.hoverfly.ruletest;
 
+import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
+import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
+import static io.specto.hoverfly.junit.dsl.HttpBodyConverter.jsonWithSingleQuotes;
+import static io.specto.hoverfly.junit.dsl.ResponseCreators.created;
+import static io.specto.hoverfly.junit.dsl.ResponseCreators.noContent;
+import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
+import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+
 import io.specto.hoverfly.junit.rule.HoverflyRule;
+import java.net.URI;
+import java.net.URISyntaxException;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -9,18 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
-import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
-import static io.specto.hoverfly.junit.dsl.HttpBodyConverter.jsonWithSingleQuotes;
-import static io.specto.hoverfly.junit.dsl.ResponseCreators.*;
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class HoverflyDslTest {
 
@@ -124,7 +125,5 @@ public class HoverflyDslTest {
         // Then
         assertThat(bookFlightResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
-
-
 
 }
