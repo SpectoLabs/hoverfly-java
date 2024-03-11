@@ -1,23 +1,25 @@
 package io.specto.hoverfly.junit.api;
 
-import io.specto.hoverfly.junit.core.ObjectMapperFactory;
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import io.specto.hoverfly.junit.api.command.DestinationCommand;
+import io.specto.hoverfly.junit.api.command.JournalIndexCommand;
 import io.specto.hoverfly.junit.api.command.JournalSearchCommand;
 import io.specto.hoverfly.junit.api.command.ModeCommand;
 import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.DiffView;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
+import io.specto.hoverfly.junit.api.view.JournalIndexView;
 import io.specto.hoverfly.junit.api.view.StateView;
 import io.specto.hoverfly.junit.core.HoverflyMode;
+import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import io.specto.hoverfly.junit.core.model.Journal;
 import io.specto.hoverfly.junit.core.model.Simulation;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -37,6 +39,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
     private static final String DESTINATION_PATH = "api/v2/hoverfly/destination";
     private static final String MODE_PATH = "api/v2/hoverfly/mode";
     private static final String JOURNAL_PATH = "api/v2/journal";
+    private static final String JOURNAL_INDEX_PATH = "api/v2/journal/index";
     private static final String STATE_PATH = "api/v2/state";
     private static final String DIFF_PATH = "api/v2/diff";
 
@@ -166,6 +169,53 @@ class OkHttpHoverflyClient implements HoverflyClient {
         } catch (Exception e) {
             LOGGER.warn("Failed to search journal: {}", e.getMessage());
             throw new HoverflyClientException("Failed to search journal: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<JournalIndexView> getJournalIndex() {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(JOURNAL_INDEX_PATH);
+            final Request request = builder.get().build();
+            CollectionType journalIndexListType = ObjectMapperFactory.getDefaultObjectMapper().getTypeFactory()
+                .constructCollectionType(List.class, JournalIndexView.class);
+            try (Response response = client.newCall(request).execute()) {
+                onFailure(response);
+                String responseJson = response.body().string();
+                // TODO fix in hoverfly
+                if ("null".equals(responseJson)) {
+                    return Collections.emptyList();
+                }
+                return ObjectMapperFactory.getDefaultObjectMapper().readValue(responseJson, journalIndexListType);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Failed to get config information: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to get config information: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void addJournalIndex(JournalIndexCommand journalIndexCommand) {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(JOURNAL_INDEX_PATH);
+            final RequestBody body = createRequestBody(journalIndexCommand);
+            final Request request = builder.post(body).build();
+            exchange(request);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to add journal index: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to journal index: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteJournalIndex(String indexName) {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(JOURNAL_INDEX_PATH + "/" + indexName);
+            final Request request = builder.delete().build();
+            exchange(request);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to delete journal index: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to delete journal index: " + e.getMessage());
         }
     }
 

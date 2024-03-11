@@ -2,16 +2,19 @@ package io.specto.hoverfly.junit.api;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.specto.hoverfly.junit.api.command.JournalIndexCommand;
 import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.DiffView;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
+import io.specto.hoverfly.junit.api.view.JournalIndexView;
 import io.specto.hoverfly.junit.api.view.StateView;
 import io.specto.hoverfly.junit.core.HoverflyConstants;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.Journal;
 import io.specto.hoverfly.junit.core.model.Request;
 import io.specto.hoverfly.junit.core.model.Simulation;
+import java.util.List;
 import okhttp3.OkHttpClient;
 
 /**
@@ -49,6 +52,12 @@ public interface HoverflyClient {
     Journal getJournal(int offset, int limit, SortParams sortParams);
 
     Journal searchJournal(Request request);
+
+    List<JournalIndexView> getJournalIndex();
+
+    void addJournalIndex(JournalIndexCommand journalIndexCommand);
+
+    void deleteJournalIndex(String indexName);
 
     void deleteJournal();
 

@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
+import io.specto.hoverfly.junit.api.command.JournalIndexCommand;
 import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
+import io.specto.hoverfly.junit.api.view.JournalIndexView;
 import io.specto.hoverfly.junit.api.view.StateView;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.ObjectMapperFactory;
@@ -275,6 +277,19 @@ public class OkHttpHoverflyClientTest {
         assertThat(journal.getEntries()).hasSize(1);
 
         assertThat(journal.getEntries().iterator().next().getRequest().getDestination()).isEqualTo("hoverfly.io");
+    }
+
+    @Test
+    public void shouldBeAbleToGetUpdateAndDeleteJournalIndex() {
+
+        assertThat(client.getJournalIndex()).isEmpty();
+
+        client.addJournalIndex(new JournalIndexCommand("Request.QueryParam.myParam"));
+        assertThat(client.getJournalIndex()).usingRecursiveFieldByFieldElementComparator()
+            .containsExactly(new JournalIndexView("Request.QueryParam.myParam", null));
+
+        client.deleteJournalIndex("Request.QueryParam.myParam");
+        assertThat(client.getJournalIndex()).isEmpty();
     }
 
     @After
