@@ -17,8 +17,8 @@ repositories {
 dependencies {
 
     ext {
-        junitJupiterVersion = '5.8.2'
-        junitPlatformVersion = '1.8.2'
+        junitJupiterVersion = '5.10.2'
+        junitPlatformVersion = '1.10.2'
     }
 
     compileOnly "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
