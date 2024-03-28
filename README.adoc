@@ -37,7 +37,7 @@ Full documentation is available http://hoverfly-java.readthedocs.io/[here^]
 <dependency>
     <groupId>io.specto</groupId>
     <artifactId>hoverfly-java</artifactId>
-    <version>0.14.0</version>
+    <version>0.17.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -115,6 +115,6 @@ Feel free to raise an issues on Github.
 
 Apache License version 2.0.
 
-(c) SpectoLabs 2020.
+(c) [iOCO](https://ioco.uk/) 2024.
 
 
