@@ -115,6 +115,6 @@ Feel free to raise an issues on Github.
 
 Apache License version 2.0.
 
-(c) [iOCO](https://ioco.uk/) 2024.
+(c) https://ioco.uk/[iOCO^] 2024.
 
 
