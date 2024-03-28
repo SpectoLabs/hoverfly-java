@@ -1,6 +1,7 @@
 package io.specto.hoverfly.junit.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import io.specto.hoverfly.junit.api.command.DestinationCommand;
@@ -8,6 +9,7 @@ import io.specto.hoverfly.junit.api.command.JournalIndexCommand;
 import io.specto.hoverfly.junit.api.command.JournalSearchCommand;
 import io.specto.hoverfly.junit.api.command.ModeCommand;
 import io.specto.hoverfly.junit.api.command.SortParams;
+import io.specto.hoverfly.junit.api.model.CsvDataSource;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.DiffView;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
@@ -20,6 +22,7 @@ import io.specto.hoverfly.junit.core.model.Simulation;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -40,6 +43,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
     private static final String MODE_PATH = "api/v2/hoverfly/mode";
     private static final String JOURNAL_PATH = "api/v2/journal";
     private static final String JOURNAL_INDEX_PATH = "api/v2/journal/index";
+    private static final String CSV_DATA_SOURCE_PATH = "api/v2/hoverfly/templating-data-source/csv";
     private static final String STATE_PATH = "api/v2/state";
     private static final String DIFF_PATH = "api/v2/diff";
 
@@ -203,7 +207,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
             exchange(request);
         } catch (Exception e) {
             LOGGER.warn("Failed to add journal index: {}", e.getMessage());
-            throw new HoverflyClientException("Failed to journal index: " + e.getMessage());
+            throw new HoverflyClientException("Failed to add journal index: " + e.getMessage());
         }
     }
 
@@ -229,6 +233,46 @@ class OkHttpHoverflyClient implements HoverflyClient {
         } catch (Exception e) {
             LOGGER.warn("Failed to delete journal: {}", e.getMessage());
             throw new HoverflyClientException("Failed to delete journal: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<CsvDataSource> getCsvDataSources() {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(CSV_DATA_SOURCE_PATH);
+            final Request request = builder.get().build();
+            Map<String, List<CsvDataSource>> response = exchange(request,
+                new TypeReference<Map<String, List<CsvDataSource>>>() {
+                });
+            return response.getOrDefault("csvDataSources", Collections.emptyList());
+        } catch (Exception e) {
+            LOGGER.warn("Failed to get csv data source: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to get csv data source: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void addCsvDataSource(CsvDataSource dataSource) {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(CSV_DATA_SOURCE_PATH);
+            final RequestBody body = createRequestBody(dataSource);
+            final Request request = builder.put(body).build();
+            exchange(request);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to csv data source: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to add csv data source: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteCsvDataSource(String name) {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(CSV_DATA_SOURCE_PATH + "/" + name);
+            final Request request = builder.delete().build();
+            exchange(request);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to delete csv data source: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to delete csv data source: " + e.getMessage());
         }
     }
 
@@ -405,6 +449,14 @@ class OkHttpHoverflyClient implements HoverflyClient {
 
     // Deserialize response body on success
     private <T> T exchange(Request request, Class<T> clazz) throws IOException {
+        try (Response response = client.newCall(request).execute()) {
+            onFailure(response);
+            return ObjectMapperFactory.getDefaultObjectMapper().readValue(response.body().string(), clazz);
+        }
+    }
+
+    // Deserialize response body on success with TypeReference
+    private <T> T exchange(Request request, TypeReference<T> clazz) throws IOException {
         try (Response response = client.newCall(request).execute()) {
             onFailure(response);
             return ObjectMapperFactory.getDefaultObjectMapper().readValue(response.body().string(), clazz);

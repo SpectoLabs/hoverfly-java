@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import io.specto.hoverfly.junit.api.command.JournalIndexCommand;
 import io.specto.hoverfly.junit.api.command.SortParams;
+import io.specto.hoverfly.junit.api.model.CsvDataSource;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.api.view.JournalIndexView;
@@ -290,6 +291,21 @@ public class OkHttpHoverflyClientTest {
 
         client.deleteJournalIndex("Request.QueryParam.myParam");
         assertThat(client.getJournalIndex()).isEmpty();
+    }
+
+    @Test
+    public void shouldBeAbleToGetUpdateAndDeleteCsvDataSources() {
+
+        assertThat(client.getCsvDataSources()).isEmpty();
+
+        CsvDataSource csvDataSource = new CsvDataSource("orders", "id,name,marks\n1,Test1,55\n2,Test2,56\n*,Dummy,ABSENT\n");
+        client.addCsvDataSource(csvDataSource);
+
+        assertThat(client.getCsvDataSources()).usingRecursiveFieldByFieldElementComparator()
+            .containsExactly(csvDataSource);
+
+        client.deleteCsvDataSource("orders");
+        assertThat(client.getCsvDataSources()).isEmpty();
     }
 
     @After

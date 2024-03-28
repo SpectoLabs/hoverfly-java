@@ -4,6 +4,7 @@ package io.specto.hoverfly.junit.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.specto.hoverfly.junit.api.command.JournalIndexCommand;
 import io.specto.hoverfly.junit.api.command.SortParams;
+import io.specto.hoverfly.junit.api.model.CsvDataSource;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
 import io.specto.hoverfly.junit.api.view.DiffView;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
@@ -53,13 +54,19 @@ public interface HoverflyClient {
 
     Journal searchJournal(Request request);
 
+    void deleteJournal();
+
     List<JournalIndexView> getJournalIndex();
 
     void addJournalIndex(JournalIndexCommand journalIndexCommand);
 
     void deleteJournalIndex(String indexName);
 
-    void deleteJournal();
+    List<CsvDataSource> getCsvDataSources();
+
+    void addCsvDataSource(CsvDataSource dataSource);
+
+    void deleteCsvDataSource(String name);
 
     /**
      * Deletes all state from Hoverfly.
