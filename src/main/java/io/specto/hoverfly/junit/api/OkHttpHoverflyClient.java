@@ -11,9 +11,11 @@ import io.specto.hoverfly.junit.api.command.ModeCommand;
 import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.CsvDataSource;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
+import io.specto.hoverfly.junit.api.model.PostServeAction;
 import io.specto.hoverfly.junit.api.view.DiffView;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.api.view.JournalIndexView;
+import io.specto.hoverfly.junit.api.view.PostServeActions;
 import io.specto.hoverfly.junit.api.view.StateView;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.ObjectMapperFactory;
@@ -44,6 +46,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
     private static final String JOURNAL_PATH = "api/v2/journal";
     private static final String JOURNAL_INDEX_PATH = "api/v2/journal/index";
     private static final String CSV_DATA_SOURCE_PATH = "api/v2/hoverfly/templating-data-source/csv";
+    private static final String POST_SERVE_ACTION_PATH = "api/v2/hoverfly/post-serve-action";
     private static final String STATE_PATH = "api/v2/state";
     private static final String DIFF_PATH = "api/v2/diff";
 
@@ -273,6 +276,42 @@ class OkHttpHoverflyClient implements HoverflyClient {
         } catch (Exception e) {
             LOGGER.warn("Failed to delete csv data source: {}", e.getMessage());
             throw new HoverflyClientException("Failed to delete csv data source: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public PostServeActions getPostServeActions() {
+        try {
+            final Request request = createRequestBuilderWithUrl(POST_SERVE_ACTION_PATH).get().build();
+            return exchange(request, PostServeActions.class);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to get post serve actions: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to get post serve actions: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void updatePostServeAction(PostServeAction postServeAction) {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(POST_SERVE_ACTION_PATH);
+            final RequestBody body = createRequestBody(postServeAction);
+            final Request request = builder.put(body).build();
+            exchange(request);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to update post serve actions: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to update post serve actions: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void deletePostServeAction(String actionName) {
+        try {
+            final Request.Builder builder = createRequestBuilderWithUrl(POST_SERVE_ACTION_PATH + "/" + actionName);
+            final Request request = builder.delete().build();
+            exchange(request);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to delete post serve actions: {}", e.getMessage());
+            throw new HoverflyClientException("Failed to delete post serve actions: " + e.getMessage());
         }
     }
 

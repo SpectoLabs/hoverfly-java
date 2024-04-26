@@ -6,9 +6,11 @@ import io.specto.hoverfly.junit.api.command.JournalIndexCommand;
 import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.CsvDataSource;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
+import io.specto.hoverfly.junit.api.model.PostServeAction;
 import io.specto.hoverfly.junit.api.view.DiffView;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.api.view.JournalIndexView;
+import io.specto.hoverfly.junit.api.view.PostServeActions;
 import io.specto.hoverfly.junit.api.view.StateView;
 import io.specto.hoverfly.junit.core.HoverflyConstants;
 import io.specto.hoverfly.junit.core.HoverflyMode;
@@ -67,6 +69,12 @@ public interface HoverflyClient {
     void addCsvDataSource(CsvDataSource dataSource);
 
     void deleteCsvDataSource(String name);
+
+    PostServeActions getPostServeActions();
+
+    void updatePostServeAction(PostServeAction postServeAction);
+
+    void deletePostServeAction(String actionName);
 
     /**
      * Deletes all state from Hoverfly.

@@ -10,6 +10,7 @@ import io.specto.hoverfly.junit.api.command.JournalIndexCommand;
 import io.specto.hoverfly.junit.api.command.SortParams;
 import io.specto.hoverfly.junit.api.model.CsvDataSource;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
+import io.specto.hoverfly.junit.api.model.PostServeAction;
 import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
 import io.specto.hoverfly.junit.api.view.JournalIndexView;
 import io.specto.hoverfly.junit.api.view.StateView;
@@ -306,6 +307,21 @@ public class OkHttpHoverflyClientTest {
 
         client.deleteCsvDataSource("orders");
         assertThat(client.getCsvDataSources()).isEmpty();
+    }
+
+    @Test
+    public void shouldBeAbleToGetUpdateAndDeletePostServeActions() {
+
+        assertThat(client.getPostServeActions().getActions()).isEmpty();
+
+        PostServeAction remoteAction = PostServeAction.remote("webhook-trigger", "http://jsontest.com");
+        client.updatePostServeAction(remoteAction);
+
+        assertThat(client.getPostServeActions().getActions()).usingRecursiveFieldByFieldElementComparator()
+            .containsExactly(remoteAction);
+
+        client.deletePostServeAction("webhook-trigger");
+        assertThat(client.getPostServeActions().getActions()).isEmpty();
     }
 
     @After
