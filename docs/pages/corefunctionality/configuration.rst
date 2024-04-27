@@ -189,6 +189,22 @@ matchers, or update matcher types, like weakening matching criteria of captured 
 
 See :ref:`extension` :ref:`extension_config` if you are using JUnit5.
 
+Response body files
+-------------------
+
+Sometimes you may want to keep the response payload files separate from the simulation files for better organisation in your project.
+You can do this by using the `bodyFile` feature, for more details, please check out `Serving response bodies from files <https://docs.hoverfly.io/en/latest/pages/keyconcepts/simulations/pairs.html#serving-response-bodies-from-files>`_.
+When your simulation is using this feature, hoverfly-java will automatically resolve the body files
+against the default Hoverfly resouces folder which is in `test/resources/hoverfly`.
+
+You may specify a different path if you want. You can either set another relative path to the test resources folder,
+or you can set an absolute file path:
+
+.. code-block:: java
+
+    localConfigs().relativeResponseBodyFilesPath("simulations")
+    localConfigs().absoluteResponseBodyFilesPath("/home/hoverfly/simulations")
+
 
 Using externally managed instance
 ---------------------------------
