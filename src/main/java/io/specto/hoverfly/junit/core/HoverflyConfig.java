@@ -198,7 +198,7 @@ public abstract class HoverflyConfig {
     }
 
     /**
-     * Override the default parent path for resolving the response body file. The default parent path is set to the default hoverfly test resources folder
+     * Override the default parent path for resolving the response body file (relative to the test resources folder). The default parent path is set to the default hoverfly test resources folder
      * which is test/resources/hoverfly/
      * @param relativeFilePath parent path for the response body files relative to the test resources folder
      * @return the {@link HoverflyConfig} for further customizations

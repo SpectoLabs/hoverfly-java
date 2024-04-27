@@ -144,4 +144,16 @@ public @interface HoverflyConfig {
 
     boolean enableIncrementalCapture() default false;
 
+
+    /**
+     * Override the default parent path for resolving the response body file (relative to the test resources folder). The default parent path is set to the default hoverfly test resources folder
+     * which is test/resources/hoverfly/
+     */
+    String relativeResponseBodyFilesPath() default "";
+
+    /**
+     * Override the default parent path for resolving the response body file. The default parent path is set to the default hoverfly test resources folder
+     * which is test/resources/hoverfly/
+     */
+    String absoluteResponseBodyFilesPath() default "";
 }

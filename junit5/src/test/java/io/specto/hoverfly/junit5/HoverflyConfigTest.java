@@ -60,7 +60,8 @@ class HoverflyConfigTest {
             simulationPreprocessor = CustomSimulationPreprocessor.class,
             commands = { "-log-level", "error" },
             logLevel = LogLevel.DEBUG,
-            enableIncrementalCapture =true
+            enableIncrementalCapture =true,
+            relativeResponseBodyFilesPath = "hoverfly"
     ))
     @ExtendWith(HoverflyExtension.class)
     class CustomizedSettings {
@@ -82,6 +83,8 @@ class HoverflyConfigTest {
             assertThat(configs.getCommands()).containsExactly("-log-level", "error");
             assertThat(configs.getLogLevel()).isEqualTo(Optional.of(LogLevel.DEBUG));
             assertThat(configs.isIncrementalCapture()).isTrue();
+            assertThat(configs.getResponseBodyFilesPath()).endsWith("resources/test/hoverfly");
+            assertThat(configs.isRelativeResponseBodyFilesPath()).isTrue();
         }
 
     }
