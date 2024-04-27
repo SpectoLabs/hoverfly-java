@@ -2,6 +2,9 @@ package io.specto.hoverfly.junit.core.config;
 
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
+import io.specto.hoverfly.junit.core.HoverflyConstants;
+import java.net.URL;
+import java.nio.file.Paths;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -71,6 +74,17 @@ class HoverflyConfigValidator {
             checkResourceOnClasspath(hoverflyConfig.getProxyCaCertificate().get());
         }
 
+        if (StringUtils.isBlank(hoverflyConfig.getResponseBodyFilesPath())) {
+            // Set to test resources folder
+            getTestResourcesFolderPath(HoverflyConstants.DEFAULT_HOVERFLY_RESOURCE_DIR)
+                .ifPresent(hoverflyConfig::setResponseBodyFilesPath);
+        } else if (hoverflyConfig.isRelativeResponseBodyFilesPath()) {
+            String path = getTestResourcesFolderPath(hoverflyConfig.getResponseBodyFilesPath())
+                .orElseThrow(() -> new IllegalArgumentException(
+                    "Response body files path not found: " + hoverflyConfig.getResponseBodyFilesPath()));
+            hoverflyConfig.setResponseBodyFilesPath(path);
+        }
+
         return hoverflyConfig;
     }
 
@@ -90,5 +104,11 @@ class HoverflyConfigValidator {
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Optional.ofNullable(classLoader.getResource(resourceName))
                 .orElseThrow(() -> new IllegalArgumentException("Resource not found with name: " + resourceName));
+    }
+
+    private Optional<String> getTestResourcesFolderPath(String relativePath) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL url = classLoader.getResource(relativePath);
+        return Optional.ofNullable(url).map(URL::getPath);
     }
 }

@@ -45,6 +45,8 @@ public class HoverflyConfiguration {
     private String clientKeyPath;
     private String clientAuthDestination;
     private String clientCaCertPath;
+    private String responseBodyFilesPath;
+    private boolean isRelativeResponseBodyFilesPath;
 
     /**
      * Create configurations for external hoverfly
@@ -334,5 +336,21 @@ public class HoverflyConfiguration {
 
     public boolean isClientAuthEnabled() {
         return isNotBlank(clientCertPath) && isNotBlank(clientKeyPath) && isNotBlank(clientAuthDestination);
+    }
+
+    public String getResponseBodyFilesPath() {
+        return responseBodyFilesPath;
+    }
+
+    public void setResponseBodyFilesPath(String responseBodyFilesPath) {
+        this.responseBodyFilesPath = responseBodyFilesPath;
+    }
+
+    public boolean isRelativeResponseBodyFilesPath() {
+        return isRelativeResponseBodyFilesPath;
+    }
+
+    public void setRelativeResponseBodyFilesPath(boolean relativeResponseBodyFilesPath) {
+        isRelativeResponseBodyFilesPath = relativeResponseBodyFilesPath;
     }
 }

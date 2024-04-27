@@ -1,0 +1,57 @@
+{
+	"data": {
+		"pairs": [
+			{
+				"request": {
+					"path": [
+						{
+							"matcher": "exact",
+							"value": "/api/bookings/1"
+						}
+					],
+					"method": [
+						{
+							"matcher": "exact",
+							"value": "GET"
+						}
+					],
+					"destination": [
+						{
+							"matcher": "exact",
+							"value": "www.my-test.com"
+						}
+					],
+					"scheme": [
+						{
+							"matcher": "exact",
+							"value": ""
+						}
+					],
+					"body": [
+						{
+							"matcher": "exact",
+							"value": ""
+						}
+					]
+				},
+				"response": {
+					"status": 200,
+					"bodyFile": "responses/booking-200.json",
+					"encodedBody": false,
+					"headers": {
+						"Content-Type": [
+							"application/json"
+						]
+					},
+					"templated": false
+				}
+			}
+		],
+		"globalActions": {
+			"delays": []
+		}
+	},
+	"meta": {
+		"schemaVersion": "v5.2"
+	}
+}

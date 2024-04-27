@@ -36,6 +36,8 @@ public abstract class HoverflyConfig {
     protected boolean statefulCapture;
     protected boolean incrementalCapture;
     protected SimulationPreprocessor simulationPreprocessor;
+    protected String responseBodyFilesPath;
+    protected boolean isRelativeResponseBodyFilesPath;
 
     /**
      * New instance
@@ -192,6 +194,30 @@ public abstract class HoverflyConfig {
      */
     public HoverflyConfig simulationPreprocessor(SimulationPreprocessor simulationPreprocessor) {
         this.simulationPreprocessor = simulationPreprocessor;
+        return this;
+    }
+
+    /**
+     * Override the default parent path for resolving the response body file. The default parent path is set to the default hoverfly test resources folder
+     * which is test/resources/hoverfly/
+     * @param relativeFilePath parent path for the response body files relative to the test resources folder
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public HoverflyConfig relativeResponseBodyFilesPath(String relativeFilePath) {
+        this.responseBodyFilesPath = relativeFilePath;
+        this.isRelativeResponseBodyFilesPath = true;
+        return this;
+    }
+
+    /**
+     * Override the default parent path for resolving the response body file. The default parent path is set to the default hoverfly test resources folder
+     * which is test/resources/hoverfly/
+     * @param absoluteFilePath absolute parent path for the response body files
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public HoverflyConfig absoluteResponseBodyFilesPath(String absoluteFilePath) {
+        this.responseBodyFilesPath = absoluteFilePath;
+        this.isRelativeResponseBodyFilesPath = false;
         return this;
     }
 
