@@ -115,6 +115,14 @@ class HoverflyExtensionUtils {
         if (configParams.enableIncrementalCapture()){
             configs.enableIncrementalCapture();
         }
+
+        if (StringUtils.isNotBlank(configParams.relativeResponseBodyFilesPath())) {
+            configs.relativeResponseBodyFilesPath(configParams.relativeResponseBodyFilesPath());
+        }
+
+        if (StringUtils.isNotBlank(configParams.absoluteResponseBodyFilesPath())) {
+            configs.absoluteResponseBodyFilesPath(configParams.absoluteResponseBodyFilesPath());
+        }
     }
 
     private static SimulationPreprocessor getSimulationPreprocessor(HoverflyConfig configParams) {
