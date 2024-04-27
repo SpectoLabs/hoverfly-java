@@ -246,6 +246,11 @@ public class Hoverfly implements AutoCloseable {
             commands.add(hoverflyConfig.getUpstreamProxy());
         }
 
+        if (StringUtils.isNotBlank(hoverflyConfig.getResponseBodyFilesPath())) {
+            commands.add("-response-body-files-path");
+            commands.add(hoverflyConfig.getResponseBodyFilesPath());
+        }
+
         try {
             startedProcess = new ProcessExecutor()
                     .command(commands)

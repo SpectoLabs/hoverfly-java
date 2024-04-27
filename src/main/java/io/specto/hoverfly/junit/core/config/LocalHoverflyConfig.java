@@ -218,6 +218,8 @@ public class LocalHoverflyConfig extends HoverflyConfig {
         configs.setClientKeyPath(clientKeyPath);
         configs.setClientAuthDestination(clientAuthDestination);
         configs.setClientCaCertPath(clientCaCertPath);
+        configs.setResponseBodyFilesPath(responseBodyFilesPath);
+        configs.setRelativeResponseBodyFilesPath(isRelativeResponseBodyFilesPath);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }
