@@ -22,6 +22,7 @@ import io.specto.hoverfly.junit.core.ObjectMapperFactory;
 import io.specto.hoverfly.junit.core.model.Journal;
 import io.specto.hoverfly.junit.core.model.Simulation;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -217,7 +218,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
     @Override
     public void deleteJournalIndex(String indexName) {
         try {
-            final Request.Builder builder = createRequestBuilderWithUrl(JOURNAL_INDEX_PATH + "/" + indexName);
+            final Request.Builder builder = createRequestBuilderWithUrl(JOURNAL_INDEX_PATH, indexName);
             final Request request = builder.delete().build();
             exchange(request);
         } catch (Exception e) {
@@ -270,7 +271,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
     @Override
     public void deleteCsvDataSource(String name) {
         try {
-            final Request.Builder builder = createRequestBuilderWithUrl(CSV_DATA_SOURCE_PATH + "/" + name);
+            final Request.Builder builder = createRequestBuilderWithUrl(CSV_DATA_SOURCE_PATH, name);
             final Request request = builder.delete().build();
             exchange(request);
         } catch (Exception e) {
@@ -306,7 +307,7 @@ class OkHttpHoverflyClient implements HoverflyClient {
     @Override
     public void deletePostServeAction(String actionName) {
         try {
-            final Request.Builder builder = createRequestBuilderWithUrl(POST_SERVE_ACTION_PATH + "/" + actionName);
+            final Request.Builder builder = createRequestBuilderWithUrl(POST_SERVE_ACTION_PATH, actionName);
             final Request request = builder.delete().build();
             exchange(request);
         } catch (Exception e) {
@@ -473,9 +474,13 @@ class OkHttpHoverflyClient implements HoverflyClient {
     }
 
     // Create request builder from Admin API path
-    private Request.Builder createRequestBuilderWithUrl(String path) {
-        return new Request.Builder()
-                .url(baseUrl.newBuilder().addPathSegments(path).build());
+    private Request.Builder createRequestBuilderWithUrl(String path, String ...pathSegments) {
+        HttpUrl.Builder urlBuilder = baseUrl.newBuilder()
+            .addPathSegments(path);
+        Arrays.stream(pathSegments)
+            .forEach(urlBuilder::addPathSegment);
+        return new Request.Builder().url(urlBuilder.build());
+
     }
 
 

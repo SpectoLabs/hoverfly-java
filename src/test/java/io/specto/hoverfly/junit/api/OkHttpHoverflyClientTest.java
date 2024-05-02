@@ -295,6 +295,19 @@ public class OkHttpHoverflyClientTest {
     }
 
     @Test
+    public void shouldBeAbleToGetUpdateAndDeleteJournalIndexWithCorrectUrlEncoding() {
+
+        assertThat(client.getJournalIndex()).isEmpty();
+
+        client.addJournalIndex(new JournalIndexCommand("Request.Body xpath //header/partnerOrderId"));
+        assertThat(client.getJournalIndex()).usingRecursiveFieldByFieldElementComparator()
+            .containsExactly(new JournalIndexView("Request.Body xpath //header/partnerOrderId", null));
+
+        client.deleteJournalIndex("Request.Body xpath //header/partnerOrderId");
+        assertThat(client.getJournalIndex()).isEmpty();
+    }
+
+    @Test
     public void shouldBeAbleToGetUpdateAndDeleteCsvDataSources() {
 
         assertThat(client.getCsvDataSources()).isEmpty();
