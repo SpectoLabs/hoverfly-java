@@ -29,7 +29,7 @@ public class SimulationTest {
     private final URL v5ResourceWithoutGlobalActions = Resources.getResource("simulations/v5-simulation-without-global-actions.json");
     private final URL v5ResourceWithUnknownFields = Resources.getResource("simulations/v5-simulation-with-unknown-fields.json");
     private final URL v5ResourceWithMixedCaseMatcherType = Resources.getResource("simulations/v5-simulation-with-mixed-case-matcher-type.json");
-    private final URL v5_2Resource = Resources.getResource("simulations/v5_2-simulation.json");
+    private final URL latestResource = Resources.getResource("simulations/latest-simulation.json");
 
 
     @Test
@@ -58,19 +58,19 @@ public class SimulationTest {
     }
 
     @Test
-    public void shouldDeserializeWithV5_2Matchers() throws Exception {
+    public void shouldDeserializeWithLatestMatchers() throws Exception {
         // Given
         Simulation expected = getSimulationWithV5_2Matchers();
 
         // When
-        Simulation actual = objectMapper.readValue(v5_2Resource, Simulation.class);
+        Simulation actual = objectMapper.readValue(latestResource, Simulation.class);
 
         // Then
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void shouldSerializeWithV5_2Matchers() throws Exception {
+    public void shouldSerializeWithLatestMatchers() throws Exception {
         // Given
         Simulation simulation = getSimulationWithV5_2Matchers();
 
@@ -78,7 +78,7 @@ public class SimulationTest {
         String actual = objectMapper.writeValueAsString(simulation);
 
         // then
-        String expected = Resources.toString(v5_2Resource, StandardCharsets.UTF_8);
+        String expected = Resources.toString(latestResource, StandardCharsets.UTF_8);
         JSONAssert.assertEquals(expected, actual, JSONCompareMode.STRICT);
     }
 
