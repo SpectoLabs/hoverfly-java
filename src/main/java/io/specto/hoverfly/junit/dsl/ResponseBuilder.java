@@ -32,6 +32,7 @@ public class ResponseBuilder {
 
     private final Map<String, List<String>> headers = new HashMap<>();
     private String body = "";
+    private String bodyFile;
     private boolean encodedBody = false;
     private int status = 200;
     private boolean templated = true;
@@ -64,6 +65,20 @@ public class ResponseBuilder {
      */
     public ResponseBuilder body(final String body) {
         this.body = body;
+        return this;
+    }
+
+    /**
+     * Sets the file which the response body returns.
+     * You may need to configure the path for Hoverfly to look up the file by using
+     * {@link io.specto.hoverfly.junit.core.HoverflyConfig#absoluteResponseBodyFilesPath(String)} or
+     * {@link io.specto.hoverfly.junit.core.HoverflyConfig#relativeResponseBodyFilesPath(String)}
+     * If both body and bodyFile are set, Hoverfly will log a warning and the bodyFile will be ignored.
+     * @param bodyFile the path of the file which contains the response body
+     * @return the {@link ResponseBuilder for further customizations}
+     */
+    public ResponseBuilder bodyFile(final String bodyFile) {
+        this.bodyFile = bodyFile;
         return this;
     }
 
@@ -114,7 +129,7 @@ public class ResponseBuilder {
      * @return the response
      */
     Response build() {
-        return new Response(status, body, encodedBody, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay, null);
+        return new Response(status, body, bodyFile, encodedBody, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay, null);
     }
 
     public ResponseBuilder body(final HttpBodyConverter httpBodyConverter) {

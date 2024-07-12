@@ -28,6 +28,7 @@ import java.util.Map;
 public class Response {
     private final Integer status;
     private final String body;
+    private final String bodyFile;
     private final boolean encodedBody;
     private final boolean templated;
     private final Map<String, List<String>> headers;
@@ -41,6 +42,7 @@ public class Response {
     public Response(
             @JsonProperty("status") Integer status,
             @JsonProperty("body") String body,
+            @JsonProperty("bodyFile") String bodyFile,
             @JsonProperty("encodedBody") boolean encodedBody,
             @JsonProperty("templated") boolean templated,
             @JsonProperty("headers") Map<String, List<String>> headers,
@@ -51,6 +53,7 @@ public class Response {
             @JsonProperty("postServeAction") String postServeAction) {
         this.status = status;
         this.body = body;
+        this.bodyFile = bodyFile;
         this.encodedBody = encodedBody;
         this.templated = templated;
         this.headers = headers;
@@ -69,10 +72,13 @@ public class Response {
         return body;
     }
 
+    public String getBodyFile() {
+        return bodyFile;
+    }
+
     public boolean isEncodedBody() {
         return encodedBody;
     }
-
 
     public boolean isTemplated() {
         return templated;
@@ -105,6 +111,7 @@ public class Response {
     static class Builder {
         private Integer status;
         private String body;
+        private String bodyFile;
         private boolean encodedBody;
         private boolean templated;
         private Map<String, List<String>> headers;
@@ -121,6 +128,11 @@ public class Response {
 
         Builder body(String body) {
             this.body = body;
+            return this;
+        }
+
+        Builder bodyFile(String bodyFile) {
+            this.bodyFile = bodyFile;
             return this;
         }
 
@@ -165,7 +177,7 @@ public class Response {
         }
 
         Response build() {
-            return new Response(status, body, encodedBody, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay, postServeAction);
+            return new Response(status, body, bodyFile, encodedBody, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay, postServeAction);
         }
     }
 

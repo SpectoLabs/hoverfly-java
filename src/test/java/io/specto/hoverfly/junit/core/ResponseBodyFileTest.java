@@ -1,6 +1,8 @@
 package io.specto.hoverfly.junit.core;
 
 import static io.specto.hoverfly.junit.core.HoverflyMode.SIMULATE;
+import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
+import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -9,7 +11,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -41,7 +45,21 @@ public class ResponseBodyFileTest {
   }
 
   @Test
-  public void shouldThrowExceptionIfRelativeFilesPathNotFound() throws URISyntaxException {
+  public void shouldWorksWithDsl() throws URISyntaxException {
+
+    try (Hoverfly hoverfly = new Hoverfly(HoverflyConfig.localConfigs().relativeResponseBodyFilesPath("simulations"), SIMULATE)) {
+      hoverfly.start();
+      hoverfly.simulate(SimulationSource.dsl(
+          service("www.my-test.com")
+              .get("/api/bookings/1")
+              .willReturn(success().header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).bodyFile("responses/booking-200.json"))));
+
+      checkSimulationSuccessful();
+    }
+  }
+
+  @Test
+  public void shouldThrowExceptionIfRelativeFilesPathNotFound() {
 
     assertThatThrownBy(() -> new Hoverfly(HoverflyConfig.localConfigs().relativeResponseBodyFilesPath("blahblah"), SIMULATE))
         .isInstanceOf(IllegalArgumentException.class)
