@@ -29,6 +29,7 @@ public class SimulationTest {
     private final URL v5ResourceWithoutGlobalActions = Resources.getResource("simulations/v5-simulation-without-global-actions.json");
     private final URL v5ResourceWithUnknownFields = Resources.getResource("simulations/v5-simulation-with-unknown-fields.json");
     private final URL v5ResourceWithMixedCaseMatcherType = Resources.getResource("simulations/v5-simulation-with-mixed-case-matcher-type.json");
+    private final URL v5ResourceWithLabels = Resources.getResource("simulations/v5-simulation-with-labels.json");
     private final URL latestResource = Resources.getResource("simulations/latest-simulation.json");
 
 
@@ -102,6 +103,28 @@ public class SimulationTest {
 
         // When
         Simulation actual = objectMapper.readValue(v5ResourceWithMixedCaseMatcherType, Simulation.class);
+
+        // Then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void deserializingSimulationWithLabels() throws Exception {
+        // Given
+        Request.Builder requestBuilder = getTestRequestBuilder()
+                .requiresState(ImmutableMap.of("requiresStateKey", "requiresStateValue"));
+        Response.Builder responseBuilder = getTestResponseBuilder()
+                .transitionsState(ImmutableMap.of("transitionsStateKey", "transitionsStateValue"))
+                .removesState(ImmutableList.of("removesStateKey"))
+                .fixedDelay(3000);
+        HoverflyData data = new HoverflyData(
+            Sets.newHashSet(new RequestResponsePair(requestBuilder.build(), responseBuilder.build(), ImmutableList.of("create", "bookings"))),
+            new GlobalActions(Collections.emptyList()));
+        HoverflyMetaData meta = new HoverflyMetaData();
+        Simulation expected = new Simulation(data, meta);
+
+        // When
+        Simulation actual = objectMapper.readValue(v5ResourceWithLabels, Simulation.class);
 
         // Then
         assertThat(actual).isEqualTo(expected);

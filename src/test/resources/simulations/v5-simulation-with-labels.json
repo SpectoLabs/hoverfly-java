@@ -1,0 +1,84 @@
+{
+	"data": {
+		"pairs": [
+			{
+				"labels": ["create", "bookings"],
+				"request": {
+					"path": [
+						{
+							"matcher": "exact",
+							"value": "/api/bookings/1"
+						}
+					],
+					"method": [
+						{
+							"matcher": "exact",
+							"value": "GET"
+						}
+					],
+					"destination": [
+						{
+							"matcher": "exact",
+							"value": "www.my-test.com"
+						}
+					],
+					"scheme": [
+						{
+							"matcher": "exact",
+							"value": "http"
+						}
+					],
+					"body": [
+						{
+							"matcher": "exact",
+							"value": ""
+						}
+					],
+					"headers": {
+						"Content-Type": [
+							{
+								"matcher": "exact",
+								"value": "text/plain; charset=utf-8"
+							}
+						]
+					},
+					"query": {
+						"key": [
+							{
+								"matcher": "exact",
+								"value": "value"
+							}
+						]
+					},
+					"requiresState": {
+						"requiresStateKey": "requiresStateValue"
+					}
+				},
+				"response": {
+					"status": 200,
+					"body": "{\"bookingId\":\"1\"}",
+					"encodedBody": false,
+					"headers": {
+						"Content-Type": [
+							"application/json"
+						]
+					},
+					"templated": false,
+					"transitionsState": {
+						"transitionsStateKey": "transitionsStateValue"
+					},
+					"removesState": [
+						"removesStateKey"
+					],
+					"fixedDelay": 3000
+				}
+			}
+		],
+		"globalActions": {
+			"delays": []
+		}
+	},
+	"meta": {
+		"schemaVersion": "v5.3"
+	}
+}
