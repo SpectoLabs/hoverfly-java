@@ -37,7 +37,7 @@ Full documentation is available http://hoverfly-java.readthedocs.io/[here^]
 <dependency>
     <groupId>io.specto</groupId>
     <artifactId>hoverfly-java</artifactId>
-    <version>0.17.0</version>
+    <version>0.19.0</version>
     <scope>test</scope>
 </dependency>
 ```
