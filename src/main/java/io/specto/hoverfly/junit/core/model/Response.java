@@ -64,6 +64,30 @@ public class Response {
         this.postServeAction = postServeAction;
     }
 
+    public Response(
+        Integer status,
+        String body,
+        boolean encodedBody,
+        boolean templated,
+        Map<String, List<String>> headers,
+        Map<String, String> transitionsState,
+        List<String> removesState,
+        Integer fixedDelay,
+        LogNormalDelay logNormalDelay,
+        String postServeAction) {
+        this.status = status;
+        this.body = body;
+        this.bodyFile = null;
+        this.encodedBody = encodedBody;
+        this.templated = templated;
+        this.headers = headers;
+        this.transitionsState = transitionsState;
+        this.removesState = removesState;
+        this.fixedDelay = fixedDelay;
+        this.logNormalDelay = logNormalDelay;
+        this.postServeAction = postServeAction;
+    }
+
     public Integer getStatus() {
         return status;
     }
@@ -111,7 +135,6 @@ public class Response {
     static class Builder {
         private Integer status;
         private String body;
-        private String bodyFile;
         private boolean encodedBody;
         private boolean templated;
         private Map<String, List<String>> headers;
@@ -128,11 +151,6 @@ public class Response {
 
         Builder body(String body) {
             this.body = body;
-            return this;
-        }
-
-        Builder bodyFile(String bodyFile) {
-            this.bodyFile = bodyFile;
             return this;
         }
 
@@ -177,7 +195,7 @@ public class Response {
         }
 
         Response build() {
-            return new Response(status, body, bodyFile, encodedBody, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay, postServeAction);
+            return new Response(status, body, encodedBody, templated, headers, transitionsState, removesState, fixedDelay, logNormalDelay, postServeAction);
         }
     }
 
