@@ -76,6 +76,9 @@ class HoverflyExtensionUtils {
             case FILE:
                 source = SimulationSource.file(Paths.get(value));
                 break;
+            case EMPTY:
+                source = SimulationSource.empty();
+                break;
         }
         return source;
     }
