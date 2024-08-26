@@ -57,6 +57,7 @@ public @interface HoverflySimulate {
         DEFAULT_PATH,
         CLASSPATH,
         URL,
-        FILE
+        FILE,
+        EMPTY
     }
 }
