@@ -1,5 +1,55 @@
 package io.specto.hoverfly.junit.core;
 
+import io.specto.hoverfly.junit.api.HoverflyClient;
+import io.specto.hoverfly.junit.api.HoverflyClientException;
+import io.specto.hoverfly.junit.api.model.ModeArguments;
+import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
+import io.specto.hoverfly.junit.core.config.LocalHoverflyConfig;
+import io.specto.hoverfly.junit.core.config.LogLevel;
+import io.specto.hoverfly.junit.core.model.DelaySettings;
+import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
+import io.specto.hoverfly.junit.core.model.RequestResponsePair;
+import io.specto.hoverfly.junit.core.model.Simulation;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
+import com.google.common.io.Resources;
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.After;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.contrib.java.lang.system.SystemOutRule;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+import org.powermock.reflect.Whitebox;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+import org.zeroturnaround.exec.StartedProcess;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.net.ssl.SSLContext;
+
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
@@ -25,54 +75,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.LoggingEvent;
-import ch.qos.logback.core.Appender;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
-import com.google.common.io.Resources;
-import io.specto.hoverfly.junit.api.HoverflyClient;
-import io.specto.hoverfly.junit.api.HoverflyClientException;
-import io.specto.hoverfly.junit.api.model.ModeArguments;
-import io.specto.hoverfly.junit.api.view.HoverflyInfoView;
-import io.specto.hoverfly.junit.core.config.LocalHoverflyConfig;
-import io.specto.hoverfly.junit.core.config.LogLevel;
-import io.specto.hoverfly.junit.core.model.DelaySettings;
-import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
-import io.specto.hoverfly.junit.core.model.RequestResponsePair;
-import io.specto.hoverfly.junit.core.model.Simulation;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.net.ssl.SSLContext;
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemOutRule;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
-import org.powermock.reflect.Whitebox;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-import org.zeroturnaround.exec.StartedProcess;
 
 public class HoverflyTest {
 
@@ -713,6 +715,15 @@ public class HoverflyTest {
         hoverfly.start();
 
         assertThat(Files.exists(hoverflyBinary)).isTrue();
+    }
+
+    @Test
+    public void shouldFailIfHoverflyNotStartsWithinTimeout() {
+        hoverfly = new Hoverfly(localConfigs().healthCheckTimeout(Duration.ZERO), SIMULATE);
+
+        assertThatThrownBy(hoverfly::start)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Hoverfly has not become healthy in 0 milliseconds");
     }
 
     private void clearBinaryFiles(final String binaryLocation) {

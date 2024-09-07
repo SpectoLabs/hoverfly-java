@@ -12,16 +12,6 @@
  */
 package io.specto.hoverfly.junit.core;
 
-import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
-import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
-import static io.specto.hoverfly.junit.core.HoverflyMode.DIFF;
-import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
-import static io.specto.hoverfly.junit.core.HoverflyUtils.readSimulationFromString;
-import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
-import static io.specto.hoverfly.junit.verification.HoverflyVerifications.atLeastOnce;
-import static io.specto.hoverfly.junit.verification.HoverflyVerifications.never;
-import static io.specto.hoverfly.junit.verification.HoverflyVerifications.times;
-
 import io.specto.hoverfly.junit.api.HoverflyClient;
 import io.specto.hoverfly.junit.api.HoverflyClientException;
 import io.specto.hoverfly.junit.api.model.ModeArguments;
@@ -38,6 +28,12 @@ import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
 import io.specto.hoverfly.junit.verification.HoverflyDiffAssertionError;
 import io.specto.hoverfly.junit.verification.VerificationCriteria;
 import io.specto.hoverfly.junit.verification.VerificationData;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.StartedProcess;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -58,11 +54,16 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.zeroturnaround.exec.ProcessExecutor;
-import org.zeroturnaround.exec.StartedProcess;
+
+import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
+import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
+import static io.specto.hoverfly.junit.core.HoverflyMode.DIFF;
+import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
+import static io.specto.hoverfly.junit.core.HoverflyUtils.readSimulationFromString;
+import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
+import static io.specto.hoverfly.junit.verification.HoverflyVerifications.atLeastOnce;
+import static io.specto.hoverfly.junit.verification.HoverflyVerifications.never;
+import static io.specto.hoverfly.junit.verification.HoverflyVerifications.times;
 
 /**
  * A wrapper class for the Hoverfly binary.  Manage the lifecycle of the processes, and then manage Hoverfly itself by using it's API endpoints.
@@ -70,8 +71,6 @@ import org.zeroturnaround.exec.StartedProcess;
 public class Hoverfly implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hoverfly.class);
-    private static final int BOOT_TIMEOUT_SECONDS = 10;
-    private static final int RETRY_BACKOFF_INTERVAL_MS = 100;
 
 
     private final HoverflyConfiguration hoverflyConfig;
@@ -533,16 +532,17 @@ public class Hoverfly implements AutoCloseable {
     private void waitForHoverflyToBecomeHealthy() {
         final Instant now = Instant.now();
 
-        while (Duration.between(now, Instant.now()).getSeconds() < BOOT_TIMEOUT_SECONDS) {
+        while (Duration.between(now, Instant.now()).toMillis() < hoverflyConfig.getHealthCheckTimeout().toMillis()) {
             if (hoverflyClient.getHealth()) return;
             try {
                 // TODO: prefer executors and tasks to threads
-                Thread.sleep(RETRY_BACKOFF_INTERVAL_MS);
+                Thread.sleep(hoverflyConfig.getHealthCheckRetryInterval().toMillis());
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
-        throw new IllegalStateException("Hoverfly has not become healthy in " + BOOT_TIMEOUT_SECONDS + " seconds");
+        throw new IllegalStateException(
+            "Hoverfly has not become healthy in " + hoverflyConfig.getHealthCheckTimeout().toMillis() + " milliseconds");
     }
 
     private void setModeWithArguments(HoverflyMode mode, HoverflyConfiguration config) {

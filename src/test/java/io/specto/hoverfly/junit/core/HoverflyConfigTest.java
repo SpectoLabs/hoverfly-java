@@ -1,19 +1,19 @@
 package io.specto.hoverfly.junit.core;
 
 import io.specto.hoverfly.junit.core.config.HoverflyConfiguration;
-import java.net.InetSocketAddress;
-import java.util.Optional;
-
 import io.specto.hoverfly.junit.core.config.LogLevel;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+import java.time.Duration;
+import java.util.Optional;
+
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 public class HoverflyConfigTest {
@@ -47,6 +47,9 @@ public class HoverflyConfigTest {
         assertThat(configs.getClientKeyPath()).isNull();
         assertThat(configs.getClientAuthDestination()).isNull();
         assertThat(configs.getClientCaCertPath()).isNull();
+
+        assertThat(configs.getHealthCheckTimeout()).isEqualTo(Duration.ofSeconds(10));
+        assertThat(configs.getHealthCheckRetryInterval()).isEqualTo(Duration.ofMillis(100));
     }
 
     @Test
@@ -237,4 +240,31 @@ public class HoverflyConfigTest {
         assertThat(configs.getClientCaCertPath()).isEqualTo("ssl/ca.pem");
     }
 
+    @Test
+    public void shouldSetHealthCheckTimeoutInLocalConfig() {
+        HoverflyConfiguration configs = localConfigs().healthCheckTimeout(Duration.ofSeconds(20)).build();
+
+        assertThat(configs.getHealthCheckTimeout()).isEqualTo(Duration.ofSeconds(20));
+    }
+
+    @Test
+    public void shouldSetHealthCheckRetryIntervalInLocalConfig() {
+        HoverflyConfiguration configs = localConfigs().healthCheckRetryInterval(Duration.ofSeconds(5)).build();
+
+        assertThat(configs.getHealthCheckRetryInterval()).isEqualTo(Duration.ofSeconds(5));
+    }
+
+    @Test
+    public void shouldSetHealthCheckTimeoutInRemoteConfig() {
+        HoverflyConfiguration configs = remoteConfigs().healthCheckTimeout(Duration.ofSeconds(20)).build();
+
+        assertThat(configs.getHealthCheckTimeout()).isEqualTo(Duration.ofSeconds(20));
+    }
+
+    @Test
+    public void shouldSetHealthCheckRetryIntervalInRemoteConfig() {
+        HoverflyConfiguration configs = remoteConfigs().healthCheckRetryInterval(Duration.ofSeconds(5)).build();
+
+        assertThat(configs.getHealthCheckRetryInterval()).isEqualTo(Duration.ofSeconds(5));
+    }
 }

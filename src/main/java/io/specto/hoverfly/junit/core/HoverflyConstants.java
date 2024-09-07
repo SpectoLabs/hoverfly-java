@@ -1,10 +1,16 @@
 package io.specto.hoverfly.junit.core;
 
+import java.time.Duration;
+
 public class HoverflyConstants {
 
     public static final int DEFAULT_PROXY_PORT = 8500;
     public static final int DEFAULT_ADMIN_PORT = 8888;
     public static final int DEFAULT_HTTPS_ADMIN_PORT = 443;
+
+    // Timeout
+    public static final Duration DEFAULT_HEALTH_CHECK_TIMEOUT = Duration.ofSeconds(10);
+    public static final Duration DEFAULT_HEALTH_CHECK_RETRY_INTERVAL = Duration.ofMillis(100);
 
     // Hoverfly custom auth header name
     public static final String X_HOVERFLY_AUTHORIZATION = "X-HOVERFLY-AUTHORIZATION";

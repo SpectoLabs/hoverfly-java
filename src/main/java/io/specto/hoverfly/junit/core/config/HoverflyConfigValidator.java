@@ -3,14 +3,13 @@ package io.specto.hoverfly.junit.core.config;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
 import io.specto.hoverfly.junit.core.HoverflyConstants;
-import java.net.URL;
-import java.nio.file.Paths;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Optional;
 
 
@@ -67,6 +66,14 @@ class HoverflyConfigValidator {
             if (hoverflyConfig.getAdminPort() == 0) {
                 hoverflyConfig.setAdminPort(findUnusedPort());
             }
+        }
+
+        if (hoverflyConfig.getHealthCheckTimeout() == null) {
+            hoverflyConfig.setHealthCheckTimeout(HoverflyConstants.DEFAULT_HEALTH_CHECK_TIMEOUT);
+        }
+
+        if (hoverflyConfig.getHealthCheckRetryInterval() == null) {
+            hoverflyConfig.setHealthCheckRetryInterval(HoverflyConstants.DEFAULT_HEALTH_CHECK_RETRY_INTERVAL);
         }
 
         // Check proxy CA cert exists
