@@ -4,6 +4,7 @@ import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.SimulationPreprocessor;
 import org.slf4j.Logger;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,8 @@ public class HoverflyConfiguration {
     private String clientCaCertPath;
     private String responseBodyFilesPath;
     private boolean isRelativeResponseBodyFilesPath;
+    private Duration healthCheckTimeout;
+    private Duration healthCheckRetryInterval;
 
     /**
      * Create configurations for external hoverfly
@@ -352,5 +355,21 @@ public class HoverflyConfiguration {
 
     public void setRelativeResponseBodyFilesPath(boolean relativeResponseBodyFilesPath) {
         isRelativeResponseBodyFilesPath = relativeResponseBodyFilesPath;
+    }
+
+    public Duration getHealthCheckTimeout() {
+        return healthCheckTimeout;
+    }
+
+    public void setHealthCheckTimeout(Duration healthCheckTimeout) {
+        this.healthCheckTimeout = healthCheckTimeout;
+    }
+
+    public Duration getHealthCheckRetryInterval() {
+        return healthCheckRetryInterval;
+    }
+
+    public void setHealthCheckRetryInterval(Duration healthCheckRetryInterval) {
+        this.healthCheckRetryInterval = healthCheckRetryInterval;
     }
 }

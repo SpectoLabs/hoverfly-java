@@ -14,12 +14,14 @@ package io.specto.hoverfly.junit.core.config;
 
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Config builder interface for settings specific to {@link Hoverfly} managed internally
@@ -40,6 +42,8 @@ public class LocalHoverflyConfig extends HoverflyConfig {
     private String clientKeyPath;
     private String clientAuthDestination;
     private String clientCaCertPath;
+    private Duration healthCheckTimeout;
+    private Duration healthCheckRetryInterval;
 
     /**
      * Sets the certificate file to override the default Hoverfly's CA cert
@@ -202,6 +206,26 @@ public class LocalHoverflyConfig extends HoverflyConfig {
         return this;
     }
 
+    /**
+     * Set the maximum time to wait for Hoverfly to be healthy.
+     * @param healthCheckTimeout the health check timeout
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public HoverflyConfig healthCheckTimeout(Duration healthCheckTimeout) {
+        this.healthCheckTimeout = healthCheckTimeout;
+        return this;
+    }
+
+    /**
+     * Set the interval between health checks.
+     * @param healthCheckRetryInterval the health check retry interval
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public HoverflyConfig healthCheckRetryInterval(Duration healthCheckRetryInterval) {
+        this.healthCheckRetryInterval = healthCheckRetryInterval;
+        return this;
+    }
+
     @Override
     public HoverflyConfiguration build() {
         HoverflyConfiguration configs = new HoverflyConfiguration(proxyPort, adminPort, proxyLocalHost, destination,
@@ -220,6 +244,8 @@ public class LocalHoverflyConfig extends HoverflyConfig {
         configs.setClientCaCertPath(clientCaCertPath);
         configs.setResponseBodyFilesPath(responseBodyFilesPath);
         configs.setRelativeResponseBodyFilesPath(isRelativeResponseBodyFilesPath);
+        configs.setHealthCheckTimeout(healthCheckTimeout);
+        configs.setHealthCheckRetryInterval(healthCheckRetryInterval);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }

@@ -4,6 +4,8 @@ import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyConfig;
 import io.specto.hoverfly.junit.core.HoverflyConstants;
 
+import java.time.Duration;
+
 import static io.specto.hoverfly.junit.core.HoverflyConstants.DEFAULT_ADMIN_PORT;
 import static io.specto.hoverfly.junit.core.HoverflyConstants.DEFAULT_PROXY_PORT;
 
@@ -16,6 +18,8 @@ public class RemoteHoverflyConfig extends HoverflyConfig {
     private String scheme;
     private String authToken;
     private String adminCertificate; // file name relative to test resources folder
+    private Duration healthCheckTimeout;
+    private Duration healthCheckRetryInterval;
 
 
     /**
@@ -59,6 +63,26 @@ public class RemoteHoverflyConfig extends HoverflyConfig {
         return this;
     }
 
+    /**
+     * Set the maximum time to wait for Hoverfly to be healthy.
+     * @param healthCheckTimeout the health check timeout
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public HoverflyConfig healthCheckTimeout(Duration healthCheckTimeout) {
+        this.healthCheckTimeout = healthCheckTimeout;
+        return this;
+    }
+
+    /**
+     * Set the interval between health checks.
+     * @param healthCheckRetryInterval the health check retry interval
+     * @return the {@link HoverflyConfig} for further customizations
+     */
+    public HoverflyConfig healthCheckRetryInterval(Duration healthCheckRetryInterval) {
+        this.healthCheckRetryInterval = healthCheckRetryInterval;
+        return this;
+    }
+
     // TODO add support for custom server certificate for admin endpoint
 
     @Override
@@ -72,6 +96,8 @@ public class RemoteHoverflyConfig extends HoverflyConfig {
         HoverflyConfiguration configs = new HoverflyConfiguration(scheme, host, proxyPort, adminPort, proxyLocalHost,
                 destination, proxyCaCert, authToken, adminCertificate, captureHeaders, webServer, statefulCapture, incrementalCapture,
                 simulationPreprocessor);
+        configs.setHealthCheckTimeout(healthCheckTimeout);
+        configs.setHealthCheckRetryInterval(healthCheckRetryInterval);
         HoverflyConfigValidator validator = new HoverflyConfigValidator();
         return validator.validate(configs);
     }
