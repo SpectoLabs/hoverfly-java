@@ -723,7 +723,7 @@ public class HoverflyTest {
 
         assertThatThrownBy(hoverfly::start)
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("Hoverfly has not become healthy in 0 milliseconds");
+                .hasMessageContaining("Hoverfly has not become healthy in 0 seconds");
     }
 
     private void clearBinaryFiles(final String binaryLocation) {

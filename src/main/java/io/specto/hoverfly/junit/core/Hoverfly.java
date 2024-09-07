@@ -56,8 +56,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
-import static io.specto.hoverfly.junit.core.HoverflyMode.CAPTURE;
-import static io.specto.hoverfly.junit.core.HoverflyMode.DIFF;
 import static io.specto.hoverfly.junit.core.HoverflyUtils.checkPortInUse;
 import static io.specto.hoverfly.junit.core.HoverflyUtils.readSimulationFromString;
 import static io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any;
@@ -532,27 +530,30 @@ public class Hoverfly implements AutoCloseable {
     private void waitForHoverflyToBecomeHealthy() {
         final Instant now = Instant.now();
 
-        while (Duration.between(now, Instant.now()).toMillis() < hoverflyConfig.getHealthCheckTimeout().toMillis()) {
+        while (Duration.between(now, Instant.now()).compareTo(hoverflyConfig.getHealthCheckTimeout()) < 0) {
             if (hoverflyClient.getHealth()) return;
             try {
-                // TODO: prefer executors and tasks to threads
                 Thread.sleep(hoverflyConfig.getHealthCheckRetryInterval().toMillis());
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
         throw new IllegalStateException(
-            "Hoverfly has not become healthy in " + hoverflyConfig.getHealthCheckTimeout().toMillis() + " milliseconds");
+            "Hoverfly has not become healthy in " + hoverflyConfig.getHealthCheckTimeout().getSeconds() + " seconds");
     }
 
     private void setModeWithArguments(HoverflyMode mode, HoverflyConfiguration config) {
-        if (mode == CAPTURE) {
-            hoverflyClient.setMode(mode, new ModeArguments(config.getCaptureHeaders(), config.isStatefulCapture()));
-        } else if (mode == DIFF) {
-            hoverflyClient.setMode(mode, new ModeArguments(config.getCaptureHeaders()));
-        } else {
-            hoverflyClient.setMode(mode);
-        }
+      switch (mode) {
+        case CAPTURE:
+          hoverflyClient.setMode(mode, new ModeArguments(config.getCaptureHeaders(), config.isStatefulCapture()));
+          break;
+        case DIFF:
+          hoverflyClient.setMode(mode, new ModeArguments(config.getCaptureHeaders()));
+          break;
+        default:
+          hoverflyClient.setMode(mode);
+          break;
+      }
     }
 
     private void cleanUp() {
