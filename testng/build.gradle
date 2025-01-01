@@ -7,8 +7,8 @@ buildscript {
 group = 'io.specto'
 archivesBaseName = 'hoverfly-java-testng'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
 
 repositories {
     mavenCentral()
@@ -23,7 +23,7 @@ dependencies {
     compile(rootProject) {
         exclude group: 'junit'
     }
-    testCompile files(rootProject.sourceSets.test.output.classesDir)
+    testCompile files(rootProject.sourceSets.test.output.classesDirs)
     testCompile "org.testng:testng:$testNgVersion"
     testCompile 'junit:junit:4.12'
     testCompile 'org.springframework:spring-web:4.3.20.RELEASE'

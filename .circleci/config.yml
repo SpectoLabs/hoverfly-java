@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: cimg/openjdk:8.0
+      - image: cimg/openjdk:11.0
     working_directory: ~/hoverfly-java
     steps:
       - checkout
@@ -33,7 +33,7 @@ jobs:
 
   deploy:
     docker:
-      - image: cimg/openjdk:8.0
+      - image: cimg/openjdk:11.0
     working_directory: ~/hoverfly-java
     steps:
       - checkout
