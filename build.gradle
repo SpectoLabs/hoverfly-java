@@ -38,7 +38,7 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.12.0'
     compile 'org.zeroturnaround:zt-exec:1.12'
     compile 'org.slf4j:slf4j-api:1.7.36'
-    compile 'ch.qos.logback:logback-classic:1.2.13'
+    compile 'ch.qos.logback:logback-classic:1.5.13'
     compileOnly 'junit:junit:4.13.2'
     testCompile 'com.sun.jersey:jersey-client:1.19.4'
     testCompile 'com.google.guava:guava:33.0.0-jre'
