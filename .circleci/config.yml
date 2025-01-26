@@ -45,8 +45,8 @@ jobs:
             choco install -y gradle
       - run:
           name: Run Tests
-          command: |
-            .\gradlew.bat clean test jacocoTestReport
+          shell: cmd
+          command: ".\\gradlew.bat clean test jacocoTestReport"
       - persist_to_workspace:
           root: C:/hoverfly-java/
           paths:
