@@ -1,7 +1,7 @@
 version: 2
 
 jobs:
-  build:
+  build-linux:
     docker:
       - image: cimg/openjdk:11.0
     working_directory: ~/hoverfly-java
@@ -31,6 +31,27 @@ jobs:
           paths:
             - hoverfly-java/
 
+  build-windows:
+    machine:
+      image: windows-server-2019-standard
+    working_directory: C:/hoverfly-java
+    steps:
+      - checkout
+      - run:
+          name: Set up Gradle Wrapper & Java
+          command: |
+            choco install -y openjdk11
+            choco install -y gradle
+            gradlew --version
+      - run:
+          name: Run Tests
+          command: |
+            .\gradlew.bat clean test jacocoTestReport
+      - persist_to_workspace:
+          root: C:/hoverfly-java/
+          paths:
+            - ./
+
   deploy:
     docker:
       - image: cimg/openjdk:11.0
@@ -58,10 +79,12 @@ workflows:
   version: 2
   build:
     jobs:
-      - build
+      - build-linux
+      - build-windows
       - deploy:
           requires:
-            - build
+            - build-linux
+            - build-windows
           filters:
             branches:
               only: master
