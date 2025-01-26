@@ -1,6 +1,5 @@
 package io.specto.hoverfly.junit5;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.ObjectMapperFactory;

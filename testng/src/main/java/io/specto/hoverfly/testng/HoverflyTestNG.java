@@ -17,13 +17,13 @@ import io.specto.hoverfly.junit.core.model.Simulation;
 import io.specto.hoverfly.junit.dsl.RequestMatcherBuilder;
 import io.specto.hoverfly.junit.dsl.StubServiceBuilder;
 import io.specto.hoverfly.junit.verification.VerificationCriteria;
-import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Predicate;
+import org.testng.util.Strings;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConstants.DEFAULT_HOVERFLY_EXPORT_PATH;
@@ -130,7 +130,7 @@ public class HoverflyTestNG {
      * @return the rule
      */
     public static HoverflyTestNG inCaptureMode(String outputDir, String outputFilename, HoverflyConfig hoverflyConfig) {
-        if (StringUtils.isBlank(outputFilename)) {
+        if (Strings.isNullOrEmpty(outputFilename)) {
             throw new IllegalArgumentException("Output simulation file name can not be blank.");
         }
         Path exportPath = createDirectoryIfNotExist(outputDir);
