@@ -33,7 +33,8 @@ jobs:
 
   build-windows:
     machine:
-      image: windows-server-2019-standard
+      image: windows-server-2019
+      resource_class: windows.medium
     working_directory: C:/hoverfly-java
     steps:
       - checkout
