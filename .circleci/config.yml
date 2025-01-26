@@ -42,7 +42,9 @@ jobs:
           name: Set up Gradle Wrapper & Java
           command: |
             choco install -y openjdk11
-            choco install -y gradle
+            setx /M JAVA_HOME "C:\Program Files\OpenJDK\openjdk-11"
+            setx /M PATH "%JAVA_HOME%\bin;%PATH%"
+            echo "JAVA_HOME is set to %JAVA_HOME%"
       - run:
           name: Run Tests
           shell: cmd
