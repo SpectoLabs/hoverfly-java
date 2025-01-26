@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Optional;
 
 
@@ -116,6 +117,14 @@ class HoverflyConfigValidator {
     private Optional<String> getTestResourcesFolderPath(String relativePath) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         URL url = classLoader.getResource(relativePath);
-        return Optional.ofNullable(url).map(URL::getPath);
+        return Optional.ofNullable(url).map(this::toPath);
+    }
+
+    private String toPath(URL url) {
+        try {
+            return Path.of(url.toURI()).toString();
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
 }
