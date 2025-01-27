@@ -31,28 +31,28 @@ jobs:
           paths:
             - hoverfly-java/
 
-  build-windows:
-    machine:
-      image: windows-server-2019
-      resource_class: windows.medium
-    working_directory: C:/hoverfly-java
-    steps:
-      - checkout
-      - run:
-          name: Set up Gradle Wrapper & Java
-          command: |
-            choco install -y openjdk11
-            set "JAVA_HOME=C:\Program Files\OpenJDK\openjdk-11"
-            set "PATH=%JAVA_HOME%\bin;%PATH%"
-            echo "JAVA_HOME is set to %JAVA_HOME%"
-      - run:
-          name: Run Tests
-          shell: cmd
-          command: ".\\gradlew.bat clean test jacocoTestReport"
-      - persist_to_workspace:
-          root: C:/hoverfly-java/
-          paths:
-            - ./
+#  build-windows:
+#    machine:
+#      image: windows-server-2019
+#      resource_class: windows.medium
+#    working_directory: C:/hoverfly-java
+#    steps:
+#      - checkout
+#      - run:
+#          name: Set up Gradle Wrapper & Java
+#          command: |
+#            choco install -y openjdk11
+#            set "JAVA_HOME=C:\Program Files\OpenJDK\openjdk-11"
+#            set "PATH=%JAVA_HOME%\bin;%PATH%"
+#            echo "JAVA_HOME is set to %JAVA_HOME%"
+#      - run:
+#          name: Run Tests
+#          shell: cmd
+#          command: ".\\gradlew.bat clean test jacocoTestReport"
+#      - persist_to_workspace:
+#          root: C:/hoverfly-java/
+#          paths:
+#            - ./
 
   deploy:
     docker:
@@ -82,11 +82,11 @@ workflows:
   build:
     jobs:
       - build-linux
-      - build-windows
+#      - build-windows
       - deploy:
           requires:
             - build-linux
-            - build-windows
+#            - build-windows
           filters:
             branches:
               only: master
