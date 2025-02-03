@@ -1,3 +1,2 @@
 include 'junit5'
-include 'testng'
 
