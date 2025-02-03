@@ -50,6 +50,9 @@ jobs:
              chmod +x maven-release.sh
              echo ${GPG_PRIVATE_KEY} | base64 --decode -i | gpg2 --import --passphrase ${MAVEN_GPG_PASSPHRASE}
              gpg --export-secret-keys > ~/.gnupg/secring.gpg --passphrase ${MAVEN_GPG_PASSPHRASE}
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:DxJdrq04MBBofWkHQGzUbFqVRKD18udZp4+1ZQtO74Q"
       - run:
           name: Run Maven release
           command: ./maven-release.sh
