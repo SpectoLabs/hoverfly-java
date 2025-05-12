@@ -7,11 +7,11 @@ import io.specto.hoverfly.junit.core.config.LocalHoverflyConfig;
 import io.specto.hoverfly.junit5.api.HoverflyConfig;
 import io.specto.hoverfly.junit5.api.HoverflySimulate;
 import io.specto.hoverfly.junit5.api.UnsetSimulationPreprocessor;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.platform.commons.util.ReflectionUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.junit.platform.commons.util.StringUtils;
 
 import static io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs;
 import static io.specto.hoverfly.junit.core.HoverflyConfig.remoteConfigs;
