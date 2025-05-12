@@ -8,7 +8,7 @@ about: Suggest an idea to improve Hoverfly Java
 Welcome to the Hoverfly Java issue tracker! Before creating an issue, please note:
 
 1. This tracker should only be used to request features / enhancements to Hoverfly
-    - For questions and general support, use https://gitter.im/SpectoLabs/hoverfly
+    - For questions and general support, use https://github.com/SpectoLabs/hoverfly/discussions
 2. Use the search function before creating a new issue. Duplicates will be closed and directed to
    the original discussion.
 -->
