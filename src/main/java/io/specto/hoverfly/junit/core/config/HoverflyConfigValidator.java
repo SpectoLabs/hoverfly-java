@@ -123,7 +123,7 @@ class HoverflyConfigValidator {
     private String toPath(URL url) {
         try {
             return Path.of(url.toURI()).toString();
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             return null;
         }
     }
