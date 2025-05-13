@@ -8,10 +8,10 @@ import sphinx_rtd_theme
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'Hoverfly Java'
-copyright = '2023, SpectoLabs'
-author = 'SpectoLabs'
+copyright = '2025, iOCO'
+author = 'iOCO'
 
-version = '0.15.0'
+version = '0.20.1'
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -55,7 +55,7 @@ htmlhelp_basename = 'hoverfly-java-doc'
 
 latex_documents = [
     (master_doc, 'hoverfly-java.tex', u'Hoverfly Java Documentation',
-     u'SpectoLabs', 'manual'),
+     u'iOCO', 'manual'),
 ]
 
 man_pages = [
