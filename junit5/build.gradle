@@ -24,7 +24,7 @@ dependencies {
 
     compileOnly "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
     compileOnly "org.junit.platform:junit-platform-commons:$junitPlatformVersion"
-    implementation(rootProject) {
+    compile(rootProject) {
         exclude group: 'junit'
     }
 
