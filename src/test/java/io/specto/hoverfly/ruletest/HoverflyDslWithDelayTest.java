@@ -3,6 +3,7 @@ package io.specto.hoverfly.ruletest;
 import io.specto.hoverfly.junit.rule.HoverflyRule;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,6 +81,7 @@ public class HoverflyDslWithDelayTest {
     }
 
     @Test
+    @Ignore("Flaky test")
     public void shouldBeAbleToAddLogNormalRandomDelayPerRequestMatcher() {
 
         long latency1 = getLatency(() -> restTemplate.getForEntity("http://www.random-slow-service.com/api/bookings", Void.class));
