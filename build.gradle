@@ -35,7 +35,7 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion"
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
     implementation 'org.zeroturnaround:zt-exec:1.12'
     implementation 'org.slf4j:slf4j-api:1.7.36'
     compileOnly 'junit:junit:4.13.2'
