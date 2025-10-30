@@ -25,6 +25,10 @@ repositories {
     mavenCentral()
 }
 
+test {
+    useJUnitPlatform()
+}
+
 dependencies {
 
     ext {
@@ -39,6 +43,12 @@ dependencies {
     implementation 'org.zeroturnaround:zt-exec:1.12'
     implementation 'org.slf4j:slf4j-api:1.7.36'
     compileOnly 'junit:junit:4.13.2'
+
+    // JUnit 5 (Jupiter) + Mockito JUnit 5 integration
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.12.0'
+
+    // Keep existing test utilities
     testImplementation 'ch.qos.logback:logback-classic:1.5.13'
     testImplementation 'com.sun.jersey:jersey-client:1.19.4'
     testImplementation 'com.google.guava:guava:33.0.0-jre'
@@ -50,12 +60,19 @@ dependencies {
     testImplementation 'org.eclipse.jetty:jetty-server:9.3.11.v20160721'
     testImplementation 'org.skyscreamer:jsonassert:1.5.0'
     testImplementation 'org.mockito:mockito-core:4.2.0'
+
+    // PowerMock is JUnit 4 only; will continue to run via Vintage for now if needed
     testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
+
+    // JUnit 4 System Rules (will be migrated to System Lambda in follow-ups)
     testImplementation 'com.github.stefanbirkner:system-rules:1.19.0'
+
     testImplementation 'io.projectreactor.ipc:reactor-netty:0.7.15.RELEASE'
     testImplementation 'io.projectreactor:reactor-test:3.2.3.RELEASE'
     testImplementation 'org.awaitility:awaitility:4.1.1'
 
+    // Enable running existing JUnit 4 tests on JUnit Platform during migration
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.10.2'
 }
 
 allprojects { subproj ->
